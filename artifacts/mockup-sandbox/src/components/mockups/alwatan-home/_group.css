@@ -1,0 +1,28 @@
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+.alwatan-current {
+  --background: 0 0% 99%;
+  --foreground: 220 50% 15%;
+  --border: 220 15% 90%;
+  --card: 0 0% 100%;
+  --card-foreground: 220 50% 15%;
+  --primary: 152 85% 25%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 222 55% 12%;
+  --secondary-foreground: 0 0% 100%;
+  --muted: 220 15% 94%;
+  --muted-foreground: 220 15% 45%;
+  color: hsl(var(--foreground));
+  background: hsl(var(--background));
+  font-family: 'Cairo', sans-serif;
+}
+
+.alwatan-current * { box-sizing: border-box; }
+.alwatan-current a { color: inherit; text-decoration: none; }
+.alwatan-current button { font: inherit; cursor: pointer; }
+.alwatan-current .aw-container { width: 100%; max-width: 1280px; margin-inline: auto; padding-inline: 1.5rem; }
+.alwatan-current .aw-video { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+@media (min-width: 768px) {
+  .alwatan-current .aw-container { padding-inline: 1.5rem; }
+}

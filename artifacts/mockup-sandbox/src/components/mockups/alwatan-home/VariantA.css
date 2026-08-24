@@ -1,0 +1,36 @@
+.alwatan-variant {
+  --ink: #112536;
+  --ink-soft: #526675;
+  --paper: #f7f8f6;
+  --line: #dce4e5;
+  --teal: #087f78;
+  --teal-deep: #075b5a;
+  --sand: #e7d3b2;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: "Cairo", sans-serif;
+}
+
+.alwatan-variant .av-container { width: min(1240px, calc(100% - 40px)); margin-inline: auto; }
+.alwatan-variant .av-display { font-family: "Inter", sans-serif; letter-spacing: -0.045em; }
+.alwatan-variant .av-grid { background-image: linear-gradient(to right, rgba(17,37,54,.055) 1px, transparent 1px); background-size: 25% 100%; }
+.alwatan-variant .av-hero-media { animation: av-hero-in 1.2s cubic-bezier(.22,.61,.36,1) both; }
+.alwatan-variant .av-reveal { animation: av-rise .8s cubic-bezier(.22,.61,.36,1) both; }
+.alwatan-variant .av-reveal-delay { animation-delay: .12s; }
+.alwatan-variant .av-reveal-delay-2 { animation-delay: .22s; }
+.alwatan-variant .av-outline-btn, .alwatan-variant .av-solid-btn { transition: transform .25s ease, background-color .25s ease, color .25s ease, border-color .25s ease; }
+.alwatan-variant .av-outline-btn:hover, .alwatan-variant .av-solid-btn:hover { transform: translateY(-2px); }
+.alwatan-variant .av-card { transition: transform .3s ease, border-color .3s ease, box-shadow .3s ease; }
+.alwatan-variant .av-card:hover { transform: translateY(-5px); border-color: rgba(8,127,120,.5); box-shadow: 0 18px 40px rgba(17,37,54,.09); }
+.alwatan-variant .av-noise { position: relative; overflow: hidden; }
+.alwatan-variant .av-noise::after { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .06; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.6'/%3E%3C/svg%3E"); }
+@keyframes av-rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes av-hero-in { from { opacity: 0; transform: scale(1.04); } to { opacity: 1; transform: scale(1); } }
+@media (max-width: 767px) {
+  .alwatan-variant .av-container { width: min(100% - 28px, 620px); }
+  .alwatan-variant .av-grid { background-size: 50% 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .alwatan-variant .av-reveal, .alwatan-variant .av-hero-media { animation: none; }
+  .alwatan-variant .av-outline-btn, .alwatan-variant .av-solid-btn, .alwatan-variant .av-card { transition: none; }
+}
