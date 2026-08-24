@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "AlWatan Ready-Mix Company"
+description = "A bilingual Arabic-first website and admin CMS for AlWatan Ready-Mix Company, featuring ready-mix concrete products, branches, certifications, blog content, and quote requests for customers and construction partners."
+version = "1.0.0"
+id = "artifacts/alwatan-ready-mix"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 25719
+
+[services.development]
+run = "pnpm --filter @workspace/alwatan-ready-mix run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/alwatan-ready-mix", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/alwatan-ready-mix/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "25719"
+BASE_PATH = "/"

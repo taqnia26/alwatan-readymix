@@ -1,0 +1,206 @@
+TOOL: Replit — السبب: موقع تعريفي فيه CMS كامل (تحكم بكل نص/زر/محتوى)، نموذج طلب عرض سعر بالبريد، وداشبورد إدارية احترافية — هذا يحتاج Backend حقيقي (قاعدة بيانات + مصادقة + معالجة نماذج)، وهو بالضبط مجال قوة Replit.
+
+[1] PROJECT OVERVIEW
+اسم المشروع: شركة الوطن للخرسانة الجاهزة | AlWatan Ready-Mix Company
+النشاط: مصنع خرسانة جاهزة بثلاثة فروع في الرياض
+الهدف: موقع تعريفي فاخر بالهوية البصرية الرسمية، فيه طلب عرض سعر يصل بالإيميل، وداشبورد إدارية بها CMS كامل — أي نص أو زر أو مقالة بالموقع قابل للتعديل من الداشبورد بدون لمس الكود
+الجمهور: أفراد ومقاولون وشركات إنشاءات وجهات حكومية بحاجة لخرسانة جاهزة
+الدومين: www.alwatan2030.com
+اللغات: العربية (الأساس) + الإنجليزية مع دعم RTL/LTR كامل
+[2] TECH STACK
+Frontend:
+- React + Vite
+- Tailwind CSS + shadcn/ui
+- Framer Motion للأنيميشن
+- Lucide React للأيقونات
+- react-i18next للترجمة (AR/EN)
+- TipTap أو React-Quill (محرر نصوص غني للمقالات داخل الداشبورد)
+
+Backend:
+- Node.js + Express
+- PostgreSQL (database: alwatan_db)
+- Drizzle ORM
+- JWT للمصادقة (Admin فقط — لا حسابات عملاء بهذا المشروع)
+- Nodemailer (إرسال نموذج طلب عرض السعر كإيميل مباشر)
+- Multer / Cloudinary (رفع صور الشعارات، الشهادات، صور المقالات، صور الفروع)
+
+Hosting: Replit Deployments
+[3] PAGES & ROUTES
+الواجهة العامة
+/                       → Home (Hero + عن الشركة مختصر + المنتجات + الفروع + الشهادات + CTA طلب عرض سعر)
+/about                  → من نحن (الرؤية، الرسالة، القيم — محتوى من البروفايل)
+/products               → قائمة أنواع الخرسانة الجاهزة
+/products/[slug]        → تفاصيل نوع خرسانة محدد (المواصفات، الاستخدامات، القوة الانضغاطية)
+/branches               → الفروع الثلاثة (حي النظيم، ملهم، الفرسان) + خريطة Google Maps لكل فرع
+/certificates           → صفحة الشهادات والاعتمادات (SASO وغيرها) بعرض بصري احترافي
+/quote                  → نموذج طلب عرض سعر (متعدد الخطوات: نوع المنتج → الكمية → الموقع → معلومات التواصل)
+/blog                   → المدونة/الأخبار (تُدار بالكامل من الداشبورد)
+/blog/[slug]            → مقالة محددة
+/contact                → تواصل + واتساب + نموذج + خريطة الفروع
+الداشبورد الإدارية (محمية — /admin)
+/admin                  → Overview (عدد طلبات عروض الأسعار الجديدة، زيارات، آخر المقالات)
+/admin/quotes           → إدارة طلبات عروض الأسعار الواردة (حالة: جديد/تم التواصل/مغلق)
+/admin/content          → CMS: تعديل كل نص وزر بكل صفحة عامة (Home, About, Contact, إلخ) — لا حاجة لإعادة نشر الكود
+/admin/products         → إضافة/تعديل/حذف أنواع الخرسانة ومواصفاتها
+/admin/branches         → إدارة بيانات الفروع الثلاثة (العنوان، الإحداثيات، ساعات العمل، الهاتف)
+/admin/certificates     → رفع/تعديل/حذف شهادات واعتمادات (صور + وصف)
+/admin/blog             → إدارة المقالات (محرر نصوص غني + صور + نشر/مسودة)
+/admin/media            → مكتبة وسائط مركزية (كل الصور المرفوعة بمكان واحد)
+/admin/settings         → إعدادات عامة (رقم واتساب، إيميل استقبال طلبات العروض، روابط سوشيال ميديا)
+/admin/users            → إدارة حسابات الداشبورد (لو أكثر من موظف يدخل)
+[4] DESIGN SYSTEM
+الألوان (مستخرجة من الشعار الرسمي)
+css
+--primary-green:     #1E7B3E   /* أخضر الشعار — النص العربي "الوطن" */
+--primary-navy:      #0B2340   /* كحلي داكن — النص الإنجليزي والوصف */
+--bg-light:          #FFFFFF
+--bg-section-alt:    #F5F7F6   /* رمادي مائل للأخضر الفاتح جداً للتباين بين الأقسام */
+--text-dark:         #1A1A1A
+--text-muted:        #5B6670
+--accent-industrial: #8A96A3   /* رمادي صناعي للتفاصيل التقنية/الجداول */
+
+ملاحظة تنفيذية لريبلت: حمّل ملف الشعار الرسمي وضعه بـ /public/logo.png، واستخرج منه الألوان الدقيقة تلقائياً (Dominant color extraction) للتأكد من التطابق ١٠٠٪ مع الهوية الفعلية قبل استخدام القيم أعلاه كـ Fallback.
+
+Typography
+Arabic Primary:  IBM Plex Sans Arabic أو Tajawal (fallback: Cairo)
+English Primary: Inter أو Plus Jakarta Sans
+
+Sizes:
+Display (Hero): 48-60px
+H1: 36-44px
+H2: 28-32px
+H3: 20-24px
+Body: 16px
+Small/Captions: 14px
+Spacing & Theme
+Base: 8px grid
+Container max-width: 1280px
+Border radius: 12px (بطاقات)، 8px (أزرار)
+Theme: Light فقط — صناعة الخرسانة تحتاج وضوح ونظافة بصرية، لا Dark mode بهذا المشروع
+الأخضر يُستخدم كلون أساسي للأزرار وCTA، الكحلي للعناوين الكبيرة والفوتر
+[5] COMPONENTS & UI ELEMENTS
+Navbar: Sticky، شفاف على Hero ثم Solid عند Scroll. الشعار + قائمة + Language Toggle + زر "اطلب عرض سعر" بارز بالأخضر
+Hero: خلفية صورة/فيديو لمصنع خرسانة حقيقي + عنوان قوي + إحصائيات (سنوات خبرة، عدد المشاريع، ٣ فروع) + زرّي CTA (اطلب عرض سعر / تعرف على منتجاتنا)
+Product Cards: بطاقة لكل نوع خرسانة (صورة + اسم + مواصفة مختصرة + زر "التفاصيل")
+Trust Badges Strip: شريط أفقي بشعارات الشهادات (SASO وغيرها) بجودة عالية، بيانات كل شهادة تُدار من /admin/certificates
+Branch Cards: بطاقة لكل فرع (اسم، عنوان، ساعات عمل، رقم مباشر) + خريطة مصغّرة، تفتح خريطة كاملة عند الضغط
+Quote Request Wizard: نموذج متعدد الخطوات (Progress bar): ١) نوع الخرسانة ٢) الكمية التقريبية والموقع ٣) معلومات التواصل (اسم، جوال، إيميل) ٤) تأكيد وإرسال — عند الإرسال يذهب كإيميل فوري لصندوق الشركة + يُحفظ بـ /admin/quotes
+Stats Counter: عداد Count-up عند دخول الـ Viewport
+Blog Cards: صورة + عنوان + مقتطف + تاريخ
+Rich Text Renderer: لعرض محتوى المقالات المُدارة من محرر TipTap بالداشبورد بتنسيق سليم (عناوين، صور، قوائم)
+Footer: ٤ أعمدة (روابط سريعة / المنتجات / الفروع / تواصل) + أيقونات سوشيال ميديا + حقوق النشر
+[6] ANIMATIONS & INTERACTIONS
+Page Load: عناصر Hero تدخل بتسلسل (Stagger 250ms)
+Scroll: بطاقات المنتجات والفروع Fade in + Slide up عند دخول الـ Viewport
+Stats: Count-up animation
+Hover: بطاقات Lift خفيف (4px) + ظل يتوسع، أزرار Scale 1.02
+Quote Wizard: انتقال Slide بين الخطوات + Success animation (checkmark) عند الإرسال
+Page Transitions: Fade سلس بين الصفحات (Framer Motion)
+[7] BILINGUAL & RTL
+الافتراضي: العربية
+Toggle AR/EN في الـ Navbar (يُحفظ بـ localStorage)
+react-i18next مع ملفين منفصلين (ar.json / en.json) — كل نص ثابت بالكود يمر عبر مفاتيح الترجمة، وكل نص يُدار من CMS يُخزَّن بالحقلين (عربي/إنجليزي) بقاعدة البيانات
+RTL: dir="rtl" + Tailwind logical properties
+الأرقام: Arabic-Indic بالواجهة العربية، Western بالإنجليزية
+[8] INTEGRATIONS
+Email: Nodemailer + SMTP (أو Resend/SendGrid) — إرسال فوري لكل طلب عرض سعر جديد لصندوق بريد الشركة المحدد بـ /admin/settings
+
+WhatsApp: زر Float ثابت + رابط wa.me — الرقم يُدخَل من /admin/settings
+(الرقم غير مؤكد لدي حالياً — اجعله حقل قابل للتعديل من الداشبورد فور التسليم، لا تكتبه Hardcoded بالكود)
+
+Maps: Google Maps Embed API لكل فرع من الفروع الثلاثة (حي النظيم، ملهم، الفرسان)
+
+Analytics: Google Analytics 4
+[9] ADMIN DASHBOARD — تفاصيل الـ CMS الكامل
+
+هذا القسم هو جوهر المشروع — الداشبورد ليست "إدارة بيانات" فقط بل محرر مباشر لكل عنصر بالموقع:
+
+محرر المحتوى المرئي (/admin/content): لكل صفحة عامة (Home, About, Contact...) قائمة بكل Section فيها — كل عنوان، فقرة نص، ونص زر قابل للتعديل مباشرة عبر نموذج، مع معاينة فورية (Preview) قبل النشر
+إدارة الأزرار والـ CTA: نص كل زر + الرابط الذي يوجه إليه قابلان للتعديل من الداشبورد (لا نص Hardcoded بالكود لأي CTA)
+دور واحد بالبداية: Admin كامل الصلاحيات (يمكن توسيعه لأدوار متعددة لاحقاً مثل موظف تسويق يدير المقالات فقط)
+سجل تعديلات (Audit Log) بسيط: من عدّل أي نص ومتى — لحماية المحتوى من تعديلات غير مقصودة
+[10] DATABASE SCHEMA
+sql
+admin_users (id, name, email, password_hash, role, created_at)
+
+products (id, name_ar, name_en, slug, description_ar, description_en,
+          specs_ar, specs_en, image_url, compressive_strength, created_at)
+
+branches (id, name_ar, name_en, address_ar, address_en, city,
+          lat, lng, phone, working_hours, order_index)
+
+certificates (id, title_ar, title_en, description_ar, description_en,
+              image_url, issued_by, issued_date)
+
+quote_requests (id, product_id, quantity_estimate, project_location,
+                 full_name, phone, email, notes, status, created_at)
+
+blog_posts (id, title_ar, title_en, content_ar, content_en, slug,
+            cover_image, status, published_at, author_id)
+
+page_content (id, page_slug, section_key, field_key,
+              value_ar, value_en, content_type, updated_by, updated_at)
+              -- هذا الجدول هو أساس نظام CMS: كل نص بالموقع = صف واحد هنا
+
+site_settings (id, key, value)
+              -- رقم واتساب، إيميل استقبال طلبات العروض، روابط سوشيال ميديا
+[11] AUTHENTICATION & SECURITY
+Auth: Email + Password للداشبورد فقط (لا حسابات عملاء بهذا المشروع)
+JWT: Access (15 دقيقة) + Refresh (٧ أيام)
+Rate Limiting: 5 محاولات دخول/دقيقة
+CSRF Protection على كل POST/PUT/DELETE بالداشبورد
+Password Policy: 8+ أحرف، حروف كبيرة وصغيرة، رقم، رمز خاص
+Validation صارم على نموذج طلب عرض السعر (منع Spam bots — reCAPTCHA v3 أو honeypot field)
+[12] SEO & PERFORMANCE
+Meta tags ديناميكية (عربي + إنجليزي) لكل صفحة، قابلة للتعديل من /admin/content
+Schema.org: LocalBusiness + Product (لكل نوع خرسانة)
+Sitemap.xml تلقائي (يتحدث تلقائياً عند إضافة مقالة أو منتج جديد)
+Hreflang tags للصفحات الثنائية اللغة
+Image optimization (WebP + Lazy Load) — مهم جداً لصور المصنع والمنتجات الثقيلة
+Lighthouse target: 90+
+[13] MOBILE RESPONSIVENESS
+Mobile-first كامل
+Hamburger Menu بدل Navbar بالجوال
+Quote Wizard: كل خطوة تملأ الشاشة بالجوال (Full-screen steps)
+خرائط الفروع: Full-width بالجوال مع بطاقة معلومات أسفلها
+زر واتساب Float ثابت أسفل يمين الشاشة
+[14] EDGE CASES & ERROR HANDLING
+Empty states لكل قائمة بالداشبورد (لا منتجات/لا طلبات بعد)
+Loading skeletons (لا Spinners تقليدية)
+404 + 500 مخصصة بهوية الوطن (أخضر/كحلي)
+Form validation فورية (Real-time) على نموذج طلب عرض السعر
+فشل إرسال الإيميل → إعادة محاولة تلقائية + حفظ الطلب بالداشبورد بغض النظر (لا يُفقد الطلب أبداً حتى لو تعطل الإيميل)
+Session expired بالداشبورد → إعادة توجيه تلقائي لصفحة الدخول
+[15] DEPLOYMENT & ENV VARIABLES
+env
+DATABASE_URL=postgresql://...@localhost/alwatan_db
+
+JWT_SECRET=
+JWT_REFRESH_SECRET=
+
+SMTP_HOST=
+SMTP_USER=
+SMTP_PASS=
+QUOTE_NOTIFICATION_EMAIL=      # إيميل استقبال طلبات عروض الأسعار
+
+CLOUDINARY_CLOUD_NAME=
+CLOUDINARY_API_KEY=
+CLOUDINARY_API_SECRET=
+
+GOOGLE_MAPS_API_KEY=
+RECAPTCHA_SITE_KEY=
+RECAPTCHA_SECRET_KEY=
+Verification Checklist بعد التوليد:
+ كل صفحة وكل زر بالموقع فعّال وله وظيفة حقيقية
+ نموذج طلب عرض السعر يرسل إيميل فعلي ويُحفظ بالداشبورد
+ الفروع الثلاثة (حي النظيم، ملهم، الفرسان) تظهر بخرائط صحيحة
+ صفحة الشهادات تعرض الشهادات المرفوعة من /admin/certificates
+ CMS: تعديل أي نص من /admin/content ينعكس فوراً بالموقع العام
+ RTL/LTR Toggle يعمل بكل الصفحات
+ الألوان مطابقة تماماً لشعار الوطن الرسمي
+ الموقع متجاوب بالكامل على الجوال
+ Lighthouse score 85+
+
+Reply with the list of files you'll create, the database schema, and any clarifying questions before writing code.
+
+بهذا خلصنا الأربع مشاريع كاملة ✅ (مصنع الوطن، مسك اللولو، العبنق Phase 1، وعرض منصة الاستشارات لـ Bolt). حسب روتينك اليومي — تبي أسجل الآن Task بـ Notion لكل مشروع (Mega-Prompt - [اسم المشروع]، الأداة، عدد الأقسام)، أو تفضل تراجعها كلها أول وتأكد قبل ما نوثقها؟

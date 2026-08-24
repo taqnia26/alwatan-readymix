@@ -3,13 +3,19 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: AlWatan Ready-Mix Company public website and admin CMS API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: public
+    description: Public website content
+  - name: quotes
+    description: Quote request flows
+  - name: admin
+    description: Admin CMS operations
 paths:
   /healthz:
     get:
@@ -24,7 +30,327 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /public/home:
+    get:
+      operationId: getHome
+      tags: [public]
+      summary: Get the homepage content
+      responses:
+        "200":
+          description: Homepage content
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HomePayload"
+  /public/content/{pageSlug}:
+    get:
+      operationId: getPageContent
+      tags: [public]
+      summary: Get CMS content for a page
+      parameters:
+        - $ref: "#/components/parameters/PageSlug"
+      responses:
+        "200":
+          description: Page content
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PageContent"
+  /products:
+    get:
+      operationId: listProducts
+      tags: [public]
+      summary: List ready-mix products
+      responses:
+        "200":
+          description: Products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Product"
+    post:
+      operationId: createProduct
+      tags: [admin]
+      summary: Create a product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductInput"
+      responses:
+        "201":
+          description: Created product
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+  /products/{slug}:
+    get:
+      operationId: getProduct
+      tags: [public]
+      summary: Get a product by slug
+      parameters:
+        - $ref: "#/components/parameters/ProductSlug"
+      responses:
+        "200":
+          description: Product
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    patch:
+      operationId: updateProduct
+      tags: [admin]
+      summary: Update a product
+      parameters:
+        - $ref: "#/components/parameters/ProductSlug"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductUpdate"
+      responses:
+        "200":
+          description: Updated product
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+    delete:
+      operationId: deleteProduct
+      tags: [admin]
+      summary: Delete a product
+      parameters:
+        - $ref: "#/components/parameters/ProductSlug"
+      responses:
+        "204":
+          description: Deleted
+  /branches:
+    get:
+      operationId: listBranches
+      tags: [public]
+      summary: List company branches
+      responses:
+        "200":
+          description: Branches
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Branch"
+  /certificates:
+    get:
+      operationId: listCertificates
+      tags: [public]
+      summary: List certificates
+      responses:
+        "200":
+          description: Certificates
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Certificate"
+  /blog:
+    get:
+      operationId: listBlogPosts
+      tags: [public]
+      summary: List published blog posts
+      responses:
+        "200":
+          description: Blog posts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BlogPost"
+    post:
+      operationId: createBlogPost
+      tags: [admin]
+      summary: Create a blog post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BlogPostInput"
+      responses:
+        "201":
+          description: Created post
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BlogPost"
+  /blog/{slug}:
+    get:
+      operationId: getBlogPost
+      tags: [public]
+      summary: Get a blog post
+      parameters:
+        - $ref: "#/components/parameters/BlogSlug"
+      responses:
+        "200":
+          description: Blog post
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BlogPost"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /quotes:
+    post:
+      operationId: createQuote
+      tags: [quotes]
+      summary: Submit a quote request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/QuoteInput"
+      responses:
+        "201":
+          description: Quote request received
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QuoteRequest"
+  /admin/summary:
+    get:
+      operationId: getAdminSummary
+      tags: [admin]
+      summary: Get dashboard summary
+      responses:
+        "200":
+          description: Dashboard summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminSummary"
+  /admin/quotes:
+    get:
+      operationId: listQuotes
+      tags: [admin]
+      summary: List quote requests
+      responses:
+        "200":
+          description: Quote requests
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/QuoteRequest"
+  /admin/quotes/{id}:
+    patch:
+      operationId: updateQuoteStatus
+      tags: [admin]
+      summary: Update quote status
+      parameters:
+        - $ref: "#/components/parameters/EntityId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/QuoteStatusUpdate"
+      responses:
+        "200":
+          description: Updated quote request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QuoteRequest"
+  /admin/content:
+    get:
+      operationId: listPageContent
+      tags: [admin]
+      summary: List editable CMS content
+      responses:
+        "200":
+          description: Editable content
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PageContent"
+  /admin/content/{id}:
+    patch:
+      operationId: updatePageContent
+      tags: [admin]
+      summary: Update a CMS field
+      parameters:
+        - $ref: "#/components/parameters/EntityId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PageContentUpdate"
+      responses:
+        "200":
+          description: Updated CMS field
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PageContent"
+  /settings/public:
+    get:
+      operationId: getPublicSettings
+      tags: [public]
+      summary: Get public contact settings
+      responses:
+        "200":
+          description: Public settings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicSettings"
 components:
+  parameters:
+    EntityId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: number
+    PageSlug:
+      name: pageSlug
+      in: path
+      required: true
+      schema:
+        type: string
+    ProductSlug:
+      name: slug
+      in: path
+      required: true
+      schema:
+        type: string
+    BlogSlug:
+      name: slug
+      in: path
+      required: true
+      schema:
+        type: string
+  responses:
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
   schemas:
     HealthStatus:
       type: object
@@ -33,4 +359,194 @@ components:
           type: string
       required:
         - status
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+      required: [error]
+    Product:
+      type: object
+      properties:
+        id: { type: number }
+        nameAr: { type: string }
+        nameEn: { type: string }
+        slug: { type: string }
+        descriptionAr: { type: string }
+        descriptionEn: { type: string }
+        specsAr: { type: string }
+        specsEn: { type: string }
+        imageUrl: { type: string }
+        compressiveStrength: { type: string }
+      required: [id, nameAr, nameEn, slug, descriptionAr, descriptionEn, specsAr, specsEn, imageUrl, compressiveStrength]
+    ProductInput:
+      type: object
+      properties:
+        nameAr: { type: string }
+        nameEn: { type: string }
+        slug: { type: string }
+        descriptionAr: { type: string }
+        descriptionEn: { type: string }
+        specsAr: { type: string }
+        specsEn: { type: string }
+        imageUrl: { type: string }
+        compressiveStrength: { type: string }
+      required: [nameAr, nameEn, slug, descriptionAr, descriptionEn, specsAr, specsEn, imageUrl, compressiveStrength]
+    ProductUpdate:
+      allOf:
+        - $ref: "#/components/schemas/ProductInput"
+    Branch:
+      type: object
+      properties:
+        id: { type: number }
+        nameAr: { type: string }
+        nameEn: { type: string }
+        addressAr: { type: string }
+        addressEn: { type: string }
+        city: { type: string }
+        lat: { type: number }
+        lng: { type: number }
+        phone: { type: string }
+        workingHours: { type: string }
+        orderIndex: { type: number }
+      required: [id, nameAr, nameEn, addressAr, addressEn, city, lat, lng, phone, workingHours, orderIndex]
+    Certificate:
+      type: object
+      properties:
+        id: { type: number }
+        titleAr: { type: string }
+        titleEn: { type: string }
+        descriptionAr: { type: string }
+        descriptionEn: { type: string }
+        imageUrl: { type: string }
+        issuedBy: { type: string }
+        issuedDate: { type: string }
+      required: [id, titleAr, titleEn, descriptionAr, descriptionEn, imageUrl, issuedBy, issuedDate]
+    BlogPost:
+      type: object
+      properties:
+        id: { type: number }
+        titleAr: { type: string }
+        titleEn: { type: string }
+        excerptAr: { type: string }
+        excerptEn: { type: string }
+        contentAr: { type: string }
+        contentEn: { type: string }
+        slug: { type: string }
+        coverImage: { type: string }
+        status: { type: string, enum: [draft, published] }
+        publishedAt: { type: string }
+      required: [id, titleAr, titleEn, excerptAr, excerptEn, contentAr, contentEn, slug, coverImage, status, publishedAt]
+    BlogPostInput:
+      type: object
+      properties:
+        titleAr: { type: string }
+        titleEn: { type: string }
+        excerptAr: { type: string }
+        excerptEn: { type: string }
+        contentAr: { type: string }
+        contentEn: { type: string }
+        slug: { type: string }
+        coverImage: { type: string }
+        status: { type: string, enum: [draft, published] }
+      required: [titleAr, titleEn, excerptAr, excerptEn, contentAr, contentEn, slug, coverImage, status]
+    QuoteRequest:
+      type: object
+      properties:
+        id: { type: number }
+        productId: { type: number }
+        productName: { type: string }
+        quantityEstimate: { type: string }
+        projectLocation: { type: string }
+        fullName: { type: string }
+        phone: { type: string }
+        email: { type: string }
+        notes: { type: string }
+        status: { type: string, enum: [new, contacted, closed] }
+        createdAt: { type: string }
+      required: [id, productId, productName, quantityEstimate, projectLocation, fullName, phone, email, notes, status, createdAt]
+    QuoteInput:
+      type: object
+      properties:
+        productId: { type: number }
+        quantityEstimate: { type: string }
+        projectLocation: { type: string }
+        fullName: { type: string }
+        phone: { type: string }
+        email: { type: string }
+        notes: { type: string }
+        website: { type: string }
+      required: [productId, quantityEstimate, projectLocation, fullName, phone, email]
+    QuoteStatusUpdate:
+      type: object
+      properties:
+        status: { type: string, enum: [new, contacted, closed] }
+      required: [status]
+    PageContent:
+      type: object
+      properties:
+        id: { type: number }
+        pageSlug: { type: string }
+        sectionKey: { type: string }
+        fieldKey: { type: string }
+        valueAr: { type: string }
+        valueEn: { type: string }
+        contentType: { type: string, enum: [text, richtext, url] }
+        updatedAt: { type: string }
+      required: [id, pageSlug, sectionKey, fieldKey, valueAr, valueEn, contentType, updatedAt]
+    PageContentUpdate:
+      type: object
+      properties:
+        valueAr: { type: string }
+        valueEn: { type: string }
+      required: [valueAr, valueEn]
+    PublicSettings:
+      type: object
+      properties:
+        whatsapp: { type: string }
+        quoteEmail: { type: string }
+        phone: { type: string }
+        email: { type: string }
+        instagramUrl: { type: string }
+        linkedinUrl: { type: string }
+      required: [whatsapp, quoteEmail, phone, email, instagramUrl, linkedinUrl]
+    AdminSummary:
+      type: object
+      properties:
+        newQuotes: { type: number }
+        totalQuotes: { type: number }
+        publishedPosts: { type: number }
+        products: { type: number }
+        branches: { type: number }
+        recentQuotes:
+          type: array
+          items:
+            $ref: "#/components/schemas/QuoteRequest"
+      required: [newQuotes, totalQuotes, publishedPosts, products, branches, recentQuotes]
+    HomePayload:
+      type: object
+      properties:
+        products:
+          type: array
+          items:
+            $ref: "#/components/schemas/Product"
+        branches:
+          type: array
+          items:
+            $ref: "#/components/schemas/Branch"
+        certificates:
+          type: array
+          items:
+            $ref: "#/components/schemas/Certificate"
+        blogPosts:
+          type: array
+          items:
+            $ref: "#/components/schemas/BlogPost"
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/PageContent"
+        settings:
+          $ref: "#/components/schemas/PublicSettings"
+      required: [products, branches, certificates, blogPosts, content, settings]
 
