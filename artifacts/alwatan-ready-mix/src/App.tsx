@@ -20,6 +20,7 @@ import Blog from '@/pages/public/Blog';
 import BlogPostDetail from '@/pages/public/BlogPostDetail';
 import Contact from '@/pages/public/Contact';
 import Quote from '@/pages/public/Quote';
+import CompanyProfile from '@/pages/public/CompanyProfile';
 
 import AdminDashboard from '@/pages/admin/AdminDashboard';
 import AdminQuotes from '@/pages/admin/AdminQuotes';
@@ -59,6 +60,7 @@ function Router() {
               <Route path="/blog" component={Blog} />
               <Route path="/blog/:slug" component={BlogPostDetail} />
               <Route path="/contact" component={Contact} />
+              <Route path="/company-profile" component={CompanyProfile} />
               <Route path="/quote" component={Quote} />
               <Route component={NotFound} />
             </Switch>

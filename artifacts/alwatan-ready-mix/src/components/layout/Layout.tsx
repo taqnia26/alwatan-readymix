@@ -1,6 +1,6 @@
 import { useLanguage } from '@/lib/i18n';
 import { Link, useLocation } from 'wouter';
-import { Menu, X, Globe, Building, ArrowRight } from 'lucide-react';
+import { Menu, X, Globe, Building, FileText } from 'lucide-react';
 import { useState } from 'react';
 import logo from '@assets/ChatGPT_Image_9_يوليو_2026،_04_29_03_م_1787598723614.png';
 import { Button } from '@/components/ui/button';
@@ -48,18 +48,24 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </Link>
 
           {/* Desktop Nav */}
-          <nav className="hidden lg:flex items-center gap-8">
+          <nav className="hidden lg:flex items-center gap-5 xl:gap-7">
             {navLinks.map((link) => (
               <Link 
                 key={link.href} 
                 href={link.href}
-                className={`font-semibold transition-colors hover:text-primary ${
+                className={`text-sm xl:text-base font-semibold transition-colors hover:text-primary ${
                   location === link.href ? 'text-primary border-b-2 border-primary pb-1' : 'text-foreground'
                 }`}
               >
                 {link.label}
               </Link>
             ))}
+            <Link href="/company-profile">
+              <Button variant="outline" className="font-bold gap-2 border-primary/40 text-primary hover:bg-primary/10">
+                {t('الملف التعريفي', 'Company Profile')}
+                <FileText className="w-4 h-4" />
+              </Button>
+            </Link>
             <Link href="/quote">
               <Button className="font-bold gap-2">
                 {t('اطلب تسعيرة', 'Request a Quote')}
@@ -92,6 +98,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 {link.label}
               </Link>
             ))}
+            <Link href="/company-profile" onClick={() => setMobileMenuOpen(false)}>
+              <Button variant="outline" className="w-full font-bold gap-2 border-primary/40 text-primary">
+                {t('الملف التعريفي', 'Company Profile')}
+                <FileText className="w-4 h-4" />
+              </Button>
+            </Link>
             <Link href="/quote" onClick={() => setMobileMenuOpen(false)}>
               <Button className="w-full font-bold gap-2">
                 {t('اطلب تسعيرة', 'Request a Quote')}
@@ -122,6 +134,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <li><Link href="/about" className="hover:text-primary transition-colors">{t('عن الشركة', 'About Company')}</Link></li>
               <li><Link href="/products" className="hover:text-primary transition-colors">{t('المنتجات', 'Products')}</Link></li>
               <li><Link href="/certificates" className="hover:text-primary transition-colors">{t('الاعتمادات', 'Certificates')}</Link></li>
+              <li><Link href="/company-profile" className="hover:text-primary transition-colors">{t('الملف التعريفي', 'Company Profile')}</Link></li>
               <li><Link href="/contact" className="hover:text-primary transition-colors">{t('اتصل بنا', 'Contact Us')}</Link></li>
             </ul>
           </div>
