@@ -1,14 +1,25 @@
 import { useLanguage } from '@/lib/i18n';
 import { Link, useLocation } from 'wouter';
-import { Menu, X, Globe, Building, FileText } from 'lucide-react';
+import { Menu, X, Globe, Building, FileText, MessageCircle } from 'lucide-react';
 import { useState } from 'react';
 import logo from '@assets/ChatGPT_Image_9_يوليو_2026،_04_29_03_م_1787598723614.png';
 import { Button } from '@/components/ui/button';
+import { useGetPublicSettings } from '@workspace/api-client-react';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const { t, language, setLanguage, isRtl } = useLanguage();
   const [location] = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { data: settings } = useGetPublicSettings();
+
+  const phone = settings?.phone || '059 599 9659';
+  const email = settings?.email || 'info@alwatan2030.com';
+  const whatsappNumber = (settings?.whatsapp || '966595999659').replace(/\D/g, '');
+  const whatsappMessage = t(
+    'مرحبًا، أرغب في الاستفسار عن خدمات شركة الوطن للخرسانة الجاهزة.',
+    'Hello, I would like to inquire about AlWatan Ready-Mix services.',
+  );
+  const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappMessage)}`;
 
   const toggleLang = () => setLanguage(language === 'ar' ? 'en' : 'ar');
 
@@ -142,8 +153,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <h4 className="text-xl font-bold mb-6 text-primary">{t('تواصل معنا', 'Contact Us')}</h4>
             <ul className="space-y-4 font-medium text-secondary-foreground/80">
               <li>{t('الرياض، المملكة العربية السعودية', 'Riyadh, Saudi Arabia')}</li>
-              <li>info@alwatanreadymix.com</li>
-              <li>+966 50 000 0000</li>
+              <li><a href={`mailto:${email}`} className="hover:text-primary transition-colors">{email}</a></li>
+              <li><a href={`tel:${phone.replace(/\s/g, '')}`} className="hover:text-primary transition-colors" dir="ltr">{phone}</a></li>
+              <li><a href="https://www.alwatan2030.com" target="_blank" rel="noreferrer" className="hover:text-primary transition-colors" dir="ltr">www.alwatan2030.com</a></li>
             </ul>
           </div>
         </div>
@@ -151,6 +163,17 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <p>© {new Date().getFullYear()} {t('شركة مصنع الوطن للخرسانة الجاهزة. جميع الحقوق محفوظة.', 'AlWatan Ready-Mix Concrete Co. All rights reserved.')}</p>
         </div>
       </footer>
+
+      <a
+        href={whatsappUrl}
+        target="_blank"
+        rel="noreferrer"
+        aria-label={t('تواصل معنا عبر واتساب', 'Contact us on WhatsApp')}
+        className="group fixed bottom-5 right-5 z-[60] flex items-center gap-3 rounded-full bg-[#25D366] p-3 text-white shadow-[0_12px_35px_rgba(0,0,0,0.25)] transition-all hover:-translate-y-1 hover:bg-[#20bd5a] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#25D366]/35 md:px-5"
+      >
+        <MessageCircle className="h-7 w-7 fill-current" />
+        <span className="hidden font-bold md:inline">{t('تواصل عبر واتساب', 'Chat on WhatsApp')}</span>
+      </a>
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import { useLanguage } from '@/lib/i18n';
 import { useGetPublicSettings } from '@workspace/api-client-react';
-import { MapPin, Phone, Mail, Instagram, Linkedin } from 'lucide-react';
+import { MapPin, Phone, Mail, Instagram, Linkedin, Globe2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -37,14 +37,29 @@ export default function Contact() {
                   <Phone className="w-6 h-6 text-primary shrink-0" />
                   <div>
                     <h4 className="font-bold text-secondary mb-1">{t('الهاتف', 'Phone')}</h4>
-                    <p className="text-muted-foreground font-medium" dir="ltr">{settings?.phone || '+966 50 000 0000'}</p>
+                    <p className="text-muted-foreground font-medium" dir="ltr">{settings?.phone || '059 599 9659'}</p>
                   </div>
                 </li>
                 <li className="flex gap-4">
                   <Mail className="w-6 h-6 text-primary shrink-0" />
                   <div>
                     <h4 className="font-bold text-secondary mb-1">{t('البريد الإلكتروني', 'Email')}</h4>
-                    <p className="text-muted-foreground font-medium">{settings?.email || 'info@alwatanreadymix.com'}</p>
+                    <p className="text-muted-foreground font-medium">{settings?.email || 'info@alwatan2030.com'}</p>
+                  </div>
+                </li>
+                <li className="flex gap-4">
+                  <Globe2 className="w-6 h-6 text-primary shrink-0" />
+                  <div>
+                    <h4 className="font-bold text-secondary mb-1">{t('الموقع الإلكتروني', 'Website')}</h4>
+                    <a
+                      href="https://www.alwatan2030.com"
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-muted-foreground font-medium hover:text-primary transition-colors"
+                      dir="ltr"
+                    >
+                      www.alwatan2030.com
+                    </a>
                   </div>
                 </li>
               </ul>
