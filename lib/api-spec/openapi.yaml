@@ -75,6 +75,7 @@ paths:
     post:
       operationId: createProduct
       tags: [admin]
+      security: [{ cookieAuth: [] }]
       summary: Create a product
       requestBody:
         required: true
@@ -108,6 +109,7 @@ paths:
     patch:
       operationId: updateProduct
       tags: [admin]
+      security: [{ cookieAuth: [] }]
       summary: Update a product
       parameters:
         - $ref: "#/components/parameters/ProductSlug"
@@ -127,6 +129,7 @@ paths:
     delete:
       operationId: deleteProduct
       tags: [admin]
+      security: [{ cookieAuth: [] }]
       summary: Delete a product
       parameters:
         - $ref: "#/components/parameters/ProductSlug"
@@ -147,6 +150,22 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Branch"
+    post:
+      operationId: createBranch
+      tags: [admin]
+      security: [{ cookieAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BranchInput"
+      responses:
+        "201":
+          description: Created branch
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Branch" }
   /certificates:
     get:
       operationId: listCertificates
@@ -161,6 +180,21 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Certificate"
+    post:
+      operationId: createCertificate
+      tags: [admin]
+      security: [{ cookieAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CertificateInput" }
+      responses:
+        "201":
+          description: Created certificate
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Certificate" }
   /blog:
     get:
       operationId: listBlogPosts
@@ -178,6 +212,7 @@ paths:
     post:
       operationId: createBlogPost
       tags: [admin]
+      security: [{ cookieAuth: [] }]
       summary: Create a blog post
       requestBody:
         required: true
@@ -208,6 +243,31 @@ paths:
                 $ref: "#/components/schemas/BlogPost"
         "404":
           $ref: "#/components/responses/NotFound"
+    patch:
+      operationId: updateBlogPost
+      tags: [admin]
+      security: [{ cookieAuth: [] }]
+      parameters:
+        - $ref: "#/components/parameters/BlogSlug"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/BlogPostUpdate" }
+      responses:
+        "200":
+          description: Updated post
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/BlogPost" }
+    delete:
+      operationId: deleteBlogPost
+      tags: [admin]
+      security: [{ cookieAuth: [] }]
+      parameters:
+        - $ref: "#/components/parameters/BlogSlug"
+      responses:
+        "204": { description: Deleted }
   /quotes:
     post:
       operationId: createQuote
@@ -230,6 +290,7 @@ paths:
     get:
       operationId: getAdminSummary
       tags: [admin]
+      security: [{ cookieAuth: [] }]
       summary: Get dashboard summary
       responses:
         "200":
@@ -242,20 +303,37 @@ paths:
     get:
       operationId: listQuotes
       tags: [admin]
+      security: [{ cookieAuth: [] }]
       summary: List quote requests
+      parameters:
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/PageSize"
+        - $ref: "#/components/parameters/Status"
+        - $ref: "#/components/parameters/Search"
       responses:
         "200":
           description: Quote requests
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/QuoteRequest"
+                $ref: "#/components/schemas/PaginatedQuotes"
   /admin/quotes/{id}:
+    get:
+      operationId: getQuote
+      tags: [admin]
+      security: [{ cookieAuth: [] }]
+      parameters:
+        - $ref: "#/components/parameters/EntityId"
+      responses:
+        "200":
+          description: Quote request
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/QuoteRequest" }
     patch:
       operationId: updateQuoteStatus
       tags: [admin]
+      security: [{ cookieAuth: [] }]
       summary: Update quote status
       parameters:
         - $ref: "#/components/parameters/EntityId"
@@ -272,10 +350,19 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/QuoteRequest"
+    delete:
+      operationId: deleteQuote
+      tags: [admin]
+      security: [{ cookieAuth: [] }]
+      parameters:
+        - $ref: "#/components/parameters/EntityId"
+      responses:
+        "204": { description: Deleted }
   /admin/content:
     get:
       operationId: listPageContent
       tags: [admin]
+      security: [{ cookieAuth: [] }]
       summary: List editable CMS content
       responses:
         "200":
@@ -290,6 +377,7 @@ paths:
     patch:
       operationId: updatePageContent
       tags: [admin]
+      security: [{ cookieAuth: [] }]
       summary: Update a CMS field
       parameters:
         - $ref: "#/components/parameters/EntityId"
@@ -318,7 +406,379 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PublicSettings"
+  /auth/login:
+    post:
+      operationId: login
+      tags: [admin]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/LoginInput" }
+      responses:
+        "200":
+          description: Authenticated admin
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AuthSession" }
+  /auth/logout:
+    post:
+      operationId: logout
+      tags: [admin]
+      security: [{ cookieAuth: [] }]
+      responses:
+        "204": { description: Logged out }
+  /auth/me:
+    get:
+      operationId: getAuthMe
+      tags: [admin]
+      security: [{ cookieAuth: [] }]
+      responses:
+        "200":
+          description: Current admin
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AuthMeResponse" }
+  /admin/branches:
+    get:
+      operationId: listAdminBranches
+      tags: [admin]
+      security: [{ cookieAuth: [] }]
+      responses:
+        "200":
+          description: All branches
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: "#/components/schemas/Branch" } }
+  /branches/{id}:
+    patch:
+      operationId: updateBranch
+      tags: [admin]
+      security: [{ cookieAuth: [] }]
+      parameters: [{ $ref: "#/components/parameters/EntityId" }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/BranchUpdate" }
+      responses:
+        "200":
+          description: Updated branch
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Branch" }
+    delete:
+      operationId: deleteBranch
+      tags: [admin]
+      security: [{ cookieAuth: [] }]
+      parameters: [{ $ref: "#/components/parameters/EntityId" }]
+      responses:
+        "204": { description: Deleted }
+  /admin/certificates:
+    get:
+      operationId: listAdminCertificates
+      tags: [admin]
+      security: [{ cookieAuth: [] }]
+      responses:
+        "200":
+          description: All certificates
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: "#/components/schemas/Certificate" } }
+  /certificates/{id}:
+    patch:
+      operationId: updateCertificate
+      tags: [admin]
+      security: [{ cookieAuth: [] }]
+      parameters: [{ $ref: "#/components/parameters/EntityId" }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CertificateUpdate" }
+      responses:
+        "200":
+          description: Updated certificate
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Certificate" }
+    delete:
+      operationId: deleteCertificate
+      tags: [admin]
+      security: [{ cookieAuth: [] }]
+      parameters: [{ $ref: "#/components/parameters/EntityId" }]
+      responses:
+        "204": { description: Deleted }
+  /admin/blog:
+    get:
+      operationId: listAdminBlogPosts
+      tags: [admin]
+      security: [{ cookieAuth: [] }]
+      responses:
+        "200":
+          description: All blog posts including drafts
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: "#/components/schemas/BlogPost" } }
+  /admin/users:
+    get:
+      operationId: listAdminUsers
+      tags: [admin]
+      security: [{ cookieAuth: [] }]
+      responses:
+        "200":
+          description: Admin users
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: "#/components/schemas/AdminUser" } }
+    post:
+      operationId: createAdminUser
+      tags: [admin]
+      security: [{ cookieAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/AdminUserInput" }
+      responses:
+        "201":
+          description: Created user
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AdminUser" }
+  /admin/users/{id}:
+    patch:
+      operationId: updateAdminUser
+      tags: [admin]
+      security: [{ cookieAuth: [] }]
+      parameters: [{ $ref: "#/components/parameters/EntityId" }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/AdminUserUpdate" }
+      responses:
+        "200":
+          description: Updated user
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AdminUser" }
+  /admin/users/{id}/status:
+    patch:
+      operationId: setAdminUserStatus
+      tags: [admin]
+      security: [{ cookieAuth: [] }]
+      parameters: [{ $ref: "#/components/parameters/EntityId" }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/AdminUserStatusUpdate" }
+      responses:
+        "200":
+          description: Updated user
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AdminUser" }
+  /admin/users/{id}/password:
+    post:
+      operationId: changeAdminUserPassword
+      tags: [admin]
+      security: [{ cookieAuth: [] }]
+      parameters: [{ $ref: "#/components/parameters/EntityId" }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/PasswordUpdate" }
+      responses:
+        "200":
+          description: Updated user
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AdminUser" }
+  /admin/quotes.csv:
+    get:
+      operationId: exportQuotes
+      tags: [admin]
+      security: [{ cookieAuth: [] }]
+      responses:
+        "200":
+          description: UTF-8 BOM CSV export
+          content:
+            text/csv: { schema: { type: string } }
+  /admin/settings:
+    get:
+      operationId: getAdminSettings
+      tags: [admin]
+      security: [{ cookieAuth: [] }]
+      responses:
+        "200":
+          description: All site settings
+          content:
+            application/json:
+              schema: { type: object, additionalProperties: { type: string } }
+    patch:
+      operationId: updateAdminSettings
+      tags: [admin]
+      security: [{ cookieAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/SiteSettingsUpdate" }
+      responses:
+        "200":
+          description: Updated settings
+          content:
+            application/json:
+              schema: { type: object, additionalProperties: { type: string } }
+  /contact:
+    post:
+      operationId: createContactMessage
+      tags: [quotes]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ContactMessageInput" }
+      responses:
+        "201":
+          description: Message submitted
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ContactSubmission" }
+  /admin/contact:
+    get:
+      operationId: listContactMessages
+      tags: [admin]
+      security: [{ cookieAuth: [] }]
+      parameters:
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/PageSize"
+        - $ref: "#/components/parameters/Status"
+        - $ref: "#/components/parameters/Search"
+      responses:
+        "200":
+          description: Contact messages
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/PaginatedContactMessages" }
+  /admin/contact/{id}:
+    get:
+      operationId: getContactMessage
+      tags: [admin]
+      security: [{ cookieAuth: [] }]
+      parameters: [{ $ref: "#/components/parameters/EntityId" }]
+      responses:
+        "200":
+          description: Contact message
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ContactMessage" }
+    patch:
+      operationId: updateContactMessageStatus
+      tags: [admin]
+      security: [{ cookieAuth: [] }]
+      parameters: [{ $ref: "#/components/parameters/EntityId" }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ContactStatusUpdate" }
+      responses:
+        "200":
+          description: Updated message
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ContactMessage" }
+    delete:
+      operationId: deleteContactMessage
+      tags: [admin]
+      security: [{ cookieAuth: [] }]
+      parameters: [{ $ref: "#/components/parameters/EntityId" }]
+      responses:
+        "204": { description: Deleted }
+  /storage/uploads/request-url:
+    post:
+      operationId: requestMediaUpload
+      tags: [admin]
+      security: [{ cookieAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/MediaUploadRequest" }
+      responses:
+        "200":
+          description: Presigned upload URL
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/MediaUploadResponse" }
+  /admin/media:
+    get:
+      operationId: listMedia
+      tags: [admin]
+      security: [{ cookieAuth: [] }]
+      responses:
+        "200":
+          description: Media assets
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: "#/components/schemas/MediaAsset" } }
+  /admin/media/finalize:
+    post:
+      operationId: finalizeMedia
+      tags: [admin]
+      security: [{ cookieAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/MediaFinalizeInput" }
+      responses:
+        "201":
+          description: Media asset
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/MediaAsset" }
+  /admin/media/{id}:
+    delete:
+      operationId: deleteMedia
+      tags: [admin]
+      security: [{ cookieAuth: [] }]
+      parameters: [{ $ref: "#/components/parameters/EntityId" }]
+      responses:
+        "204": { description: Deleted }
+        "409": { description: Asset is referenced }
+  /storage/objects/{path}:
+    get:
+      operationId: serveMedia
+      tags: [public]
+      parameters:
+        - name: path
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200": { description: Object bytes }
+  /storage/public-objects/{filePath}:
+    get:
+      operationId: servePublicMedia
+      tags: [public]
+      parameters:
+        - name: filePath
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200": { description: Public object bytes }
 components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: alwatan_admin_session
   parameters:
     EntityId:
       name: id
@@ -344,6 +804,22 @@ components:
       required: true
       schema:
         type: string
+    Page:
+      name: page
+      in: query
+      schema: { type: number, minimum: 1, default: 1 }
+    PageSize:
+      name: pageSize
+      in: query
+      schema: { type: number, minimum: 1, maximum: 100, default: 20 }
+    Status:
+      name: status
+      in: query
+      schema: { type: string }
+    Search:
+      name: search
+      in: query
+      schema: { type: string }
   responses:
     NotFound:
       description: Resource not found
@@ -414,14 +890,16 @@ components:
       type: object
       properties:
         id: { type: number }
+        certificateNumber: { type: ["string", "null"] }
         titleAr: { type: string }
         titleEn: { type: string }
         descriptionAr: { type: string }
         descriptionEn: { type: string }
         imageUrl: { type: string }
+        fileUrl: { type: string }
         issuedBy: { type: string }
         issuedDate: { type: string }
-      required: [id, titleAr, titleEn, descriptionAr, descriptionEn, imageUrl, issuedBy, issuedDate]
+      required: [id, certificateNumber, titleAr, titleEn, descriptionAr, descriptionEn, imageUrl, fileUrl, issuedBy, issuedDate]
     BlogPost:
       type: object
       properties:
@@ -549,4 +1027,220 @@ components:
         settings:
           $ref: "#/components/schemas/PublicSettings"
       required: [products, branches, certificates, blogPosts, content, settings]
+    BranchInput:
+      type: object
+      required: [nameAr, nameEn, addressAr, addressEn, city, lat, lng, phone, workingHours]
+      properties:
+        nameAr: { type: string }
+        nameEn: { type: string }
+        addressAr: { type: string }
+        addressEn: { type: string }
+        city: { type: string }
+        lat: { type: number }
+        lng: { type: number }
+        phone: { type: string }
+        workingHours: { type: string }
+        orderIndex: { type: number }
+    BranchUpdate:
+      type: object
+      additionalProperties: true
+      properties:
+        nameAr: { type: string }
+        nameEn: { type: string }
+        addressAr: { type: string }
+        addressEn: { type: string }
+        city: { type: string }
+        lat: { type: number }
+        lng: { type: number }
+        phone: { type: string }
+        workingHours: { type: string }
+        orderIndex: { type: number }
+    CertificateInput:
+      type: object
+      required: [titleAr, titleEn, descriptionAr, descriptionEn, issuedBy, issuedDate]
+      properties:
+        certificateNumber: { type: ["string", "null"] }
+        titleAr: { type: string }
+        titleEn: { type: string }
+        descriptionAr: { type: string }
+        descriptionEn: { type: string }
+        imageUrl: { type: string }
+        fileUrl: { type: string }
+        issuedBy: { type: string }
+        issuedDate: { type: string }
+    CertificateUpdate:
+      type: object
+      properties:
+        certificateNumber: { type: ["string", "null"] }
+        titleAr: { type: string }
+        titleEn: { type: string }
+        descriptionAr: { type: string }
+        descriptionEn: { type: string }
+        imageUrl: { type: string }
+        fileUrl: { type: string }
+        issuedBy: { type: string }
+        issuedDate: { type: string }
+    BlogPostUpdate:
+      type: object
+      properties:
+        titleAr: { type: string }
+        titleEn: { type: string }
+        excerptAr: { type: string }
+        excerptEn: { type: string }
+        contentAr: { type: string }
+        contentEn: { type: string }
+        slug: { type: string }
+        coverImage: { type: string }
+        status: { type: string, enum: [draft, published] }
+    PaginatedQuotes:
+      type: object
+      required: [page, pageSize, total, items]
+      properties:
+        page: { type: number }
+        pageSize: { type: number }
+        total: { type: number }
+        items: { type: array, items: { $ref: "#/components/schemas/QuoteRequest" } }
+    LoginInput:
+      type: object
+      required: [username, password]
+      properties:
+        username: { type: string }
+        password: { type: string, format: password }
+    AuthSession:
+      type: object
+      required: [user, expiresAt]
+      properties:
+        user: { $ref: "#/components/schemas/AdminUser" }
+        expiresAt: { type: string, format: date-time }
+    AuthMeResponse:
+      type: object
+      required: [user]
+      properties:
+        user: { $ref: "#/components/schemas/AdminUser" }
+    AdminUser:
+      type: object
+      required: [id, username, name, email, role, isActive, createdAt, updatedAt]
+      properties:
+        id: { type: number }
+        username: { type: ["string", "null"] }
+        name: { type: string }
+        email: { type: string }
+        role: { type: string }
+        isActive: { type: boolean }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+    AdminUserInput:
+      type: object
+      required: [username, email, password]
+      properties:
+        username: { type: string }
+        name: { type: string }
+        email: { type: string }
+        password: { type: string, format: password }
+        role: { type: string }
+        isActive: { type: boolean }
+    AdminUserUpdate:
+      type: object
+      properties:
+        username: { type: string }
+        name: { type: string }
+        email: { type: string }
+        password: { type: string, format: password }
+        role: { type: string }
+        isActive: { type: boolean }
+    AdminUserStatusUpdate:
+      type: object
+      required: [isActive]
+      properties:
+        isActive: { type: boolean }
+    PasswordUpdate:
+      type: object
+      required: [password]
+      properties:
+        password: { type: string, format: password }
+    ContactMessage:
+      type: object
+      required: [id, fullName, email, phone, subject, message, status, createdAt, updatedAt]
+      properties:
+        id: { type: number }
+        fullName: { type: string }
+        email: { type: string }
+        phone: { type: string }
+        subject: { type: string }
+        message: { type: string }
+        status: { type: string }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+    ContactMessageInput:
+      type: object
+      required: [fullName, email, message]
+      properties:
+        fullName: { type: string }
+        email: { type: string }
+        phone: { type: string }
+        subject: { type: string }
+        message: { type: string }
+    ContactSubmission:
+      type: object
+      required: [id, submitted]
+      properties:
+        id: { type: number }
+        submitted: { type: boolean }
+    ContactStatusUpdate:
+      type: object
+      required: [status]
+      properties:
+        status: { type: string }
+    PaginatedContactMessages:
+      type: object
+      required: [page, pageSize, total, items]
+      properties:
+        page: { type: number }
+        pageSize: { type: number }
+        total: { type: number }
+        items: { type: array, items: { $ref: "#/components/schemas/ContactMessage" } }
+    MediaUploadRequest:
+      type: object
+      required: [name, size, contentType]
+      properties:
+        name: { type: string }
+        size: { type: number }
+        contentType: { type: string }
+    MediaUploadResponse:
+      type: object
+      required: [uploadURL, objectPath, metadata]
+      properties:
+        uploadURL: { type: string }
+        objectPath: { type: string }
+        metadata:
+          type: object
+          properties:
+            name: { type: string }
+            size: { type: number }
+            contentType: { type: string }
+    MediaFinalizeInput:
+      type: object
+      required: [objectPath, originalName, contentType]
+      properties:
+        objectPath: { type: string }
+        originalName: { type: string }
+        contentType: { type: string }
+        size: { type: number }
+        altText: { type: string }
+    MediaAsset:
+      type: object
+      required: [id, objectPath, originalName, contentType, size, altText, createdAt, updatedAt]
+      properties:
+        id: { type: number }
+        objectPath: { type: string }
+        originalName: { type: string }
+        contentType: { type: string }
+        size: { type: number }
+        altText: { type: string }
+        createdBy: { type: ["number", "null"] }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+    SiteSettingsUpdate:
+      type: object
+      additionalProperties: { type: string }
 

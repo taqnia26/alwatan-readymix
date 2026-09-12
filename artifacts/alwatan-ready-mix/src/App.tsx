@@ -9,6 +9,7 @@ import NotFound from '@/pages/not-found';
 
 import Layout from '@/components/layout/Layout';
 import AdminLayout from '@/components/layout/AdminLayout';
+import AdminAuthGuard from '@/components/layout/AdminAuthGuard';
 
 import Home from '@/pages/public/Home';
 import About from '@/pages/public/About';
@@ -22,9 +23,18 @@ import Contact from '@/pages/public/Contact';
 import Quote from '@/pages/public/Quote';
 import CompanyProfile from '@/pages/public/CompanyProfile';
 
+import AdminLogin from '@/pages/admin/AdminLogin';
 import AdminDashboard from '@/pages/admin/AdminDashboard';
 import AdminQuotes from '@/pages/admin/AdminQuotes';
 import AdminContent from '@/pages/admin/AdminContent';
+import AdminProducts from '@/pages/admin/AdminProducts';
+import AdminArticles from '@/pages/admin/AdminArticles';
+import AdminBranches from '@/pages/admin/AdminBranches';
+import AdminCertificates from '@/pages/admin/AdminCertificates';
+import AdminMedia from '@/pages/admin/AdminMedia';
+import AdminUsers from '@/pages/admin/AdminUsers';
+import AdminMessages from '@/pages/admin/AdminMessages';
+import AdminSettings from '@/pages/admin/AdminSettings';
 
 const queryClient = new QueryClient();
 
@@ -32,19 +42,29 @@ function Router() {
   return (
     <RoutedErrorBoundary>
       <Switch>
-        {/* Admin Routes */}
-        <Route path="/admin">
-          <AdminLayout><AdminDashboard /></AdminLayout>
-        </Route>
-        <Route path="/admin/quotes">
-          <AdminLayout><AdminQuotes /></AdminLayout>
-        </Route>
-        <Route path="/admin/content">
-          <AdminLayout><AdminContent /></AdminLayout>
-        </Route>
+        {/* Admin Login Route */}
+        <Route path="/admin/login" component={AdminLogin} />
 
-        <Route path="/">
-          <Layout><Home /></Layout>
+        {/* Protected Admin Routes */}
+        <Route path="/admin/:rest*">
+          <AdminAuthGuard>
+            <AdminLayout>
+              <Switch>
+                <Route path="/admin" component={AdminDashboard} />
+                <Route path="/admin/quotes" component={AdminQuotes} />
+                <Route path="/admin/content" component={AdminContent} />
+                <Route path="/admin/products" component={AdminProducts} />
+                <Route path="/admin/articles" component={AdminArticles} />
+                <Route path="/admin/branches" component={AdminBranches} />
+                <Route path="/admin/certificates" component={AdminCertificates} />
+                <Route path="/admin/media" component={AdminMedia} />
+                <Route path="/admin/users" component={AdminUsers} />
+                <Route path="/admin/messages" component={AdminMessages} />
+                <Route path="/admin/settings" component={AdminSettings} />
+                <Route component={NotFound} />
+              </Switch>
+            </AdminLayout>
+          </AdminAuthGuard>
         </Route>
 
         {/* Public Routes */}

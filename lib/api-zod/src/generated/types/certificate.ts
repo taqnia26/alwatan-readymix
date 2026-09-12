@@ -8,11 +8,14 @@
 
 export interface Certificate {
   id: number;
+  /** @nullable */
+  certificateNumber: string | null;
   titleAr: string;
   titleEn: string;
   descriptionAr: string;
   descriptionEn: string;
   imageUrl: string;
+  fileUrl: string;
   issuedBy: string;
   issuedDate: string;
 }

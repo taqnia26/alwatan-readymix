@@ -56,11 +56,14 @@ export interface Branch {
 
 export interface Certificate {
   id: number;
+  /** @nullable */
+  certificateNumber: string | null;
   titleAr: string;
   titleEn: string;
   descriptionAr: string;
   descriptionEn: string;
   imageUrl: string;
+  fileUrl: string;
   issuedBy: string;
   issuedDate: string;
 }
@@ -206,8 +209,257 @@ export interface HomePayload {
   settings: PublicSettings;
 }
 
+export interface BranchInput {
+  nameAr: string;
+  nameEn: string;
+  addressAr: string;
+  addressEn: string;
+  city: string;
+  lat: number;
+  lng: number;
+  phone: string;
+  workingHours: string;
+  orderIndex?: number;
+}
+
+export interface BranchUpdate {
+  nameAr?: string;
+  nameEn?: string;
+  addressAr?: string;
+  addressEn?: string;
+  city?: string;
+  lat?: number;
+  lng?: number;
+  phone?: string;
+  workingHours?: string;
+  orderIndex?: number;
+  [key: string]: unknown;
+ }
+
+export interface CertificateInput {
+  /** @nullable */
+  certificateNumber?: string | null;
+  titleAr: string;
+  titleEn: string;
+  descriptionAr: string;
+  descriptionEn: string;
+  imageUrl?: string;
+  fileUrl?: string;
+  issuedBy: string;
+  issuedDate: string;
+}
+
+export interface CertificateUpdate {
+  /** @nullable */
+  certificateNumber?: string | null;
+  titleAr?: string;
+  titleEn?: string;
+  descriptionAr?: string;
+  descriptionEn?: string;
+  imageUrl?: string;
+  fileUrl?: string;
+  issuedBy?: string;
+  issuedDate?: string;
+}
+
+export type BlogPostUpdateStatus = typeof BlogPostUpdateStatus[keyof typeof BlogPostUpdateStatus];
+
+
+export const BlogPostUpdateStatus = {
+  draft: 'draft',
+  published: 'published',
+} as const;
+
+export interface BlogPostUpdate {
+  titleAr?: string;
+  titleEn?: string;
+  excerptAr?: string;
+  excerptEn?: string;
+  contentAr?: string;
+  contentEn?: string;
+  slug?: string;
+  coverImage?: string;
+  status?: BlogPostUpdateStatus;
+}
+
+export interface PaginatedQuotes {
+  page: number;
+  pageSize: number;
+  total: number;
+  items: QuoteRequest[];
+}
+
+export interface LoginInput {
+  username: string;
+  password: string;
+}
+
+export interface AdminUser {
+  id: number;
+  /** @nullable */
+  username: string | null;
+  name: string;
+  email: string;
+  role: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AuthSession {
+  user: AdminUser;
+  expiresAt: string;
+}
+
+export interface AuthMeResponse {
+  user: AdminUser;
+}
+
+export interface AdminUserInput {
+  username: string;
+  name?: string;
+  email: string;
+  password: string;
+  role?: string;
+  isActive?: boolean;
+}
+
+export interface AdminUserUpdate {
+  username?: string;
+  name?: string;
+  email?: string;
+  password?: string;
+  role?: string;
+  isActive?: boolean;
+}
+
+export interface AdminUserStatusUpdate {
+  isActive: boolean;
+}
+
+export interface PasswordUpdate {
+  password: string;
+}
+
+export interface ContactMessage {
+  id: number;
+  fullName: string;
+  email: string;
+  phone: string;
+  subject: string;
+  message: string;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ContactMessageInput {
+  fullName: string;
+  email: string;
+  phone?: string;
+  subject?: string;
+  message: string;
+}
+
+export interface ContactSubmission {
+  id: number;
+  submitted: boolean;
+}
+
+export interface ContactStatusUpdate {
+  status: string;
+}
+
+export interface PaginatedContactMessages {
+  page: number;
+  pageSize: number;
+  total: number;
+  items: ContactMessage[];
+}
+
+export interface MediaUploadRequest {
+  name: string;
+  size: number;
+  contentType: string;
+}
+
+export type MediaUploadResponseMetadata = {
+  name?: string;
+  size?: number;
+  contentType?: string;
+};
+
+export interface MediaUploadResponse {
+  uploadURL: string;
+  objectPath: string;
+  metadata: MediaUploadResponseMetadata;
+}
+
+export interface MediaFinalizeInput {
+  objectPath: string;
+  originalName: string;
+  contentType: string;
+  size?: number;
+  altText?: string;
+}
+
+export interface MediaAsset {
+  id: number;
+  objectPath: string;
+  originalName: string;
+  contentType: string;
+  size: number;
+  altText: string;
+  /** @nullable */
+  createdBy?: number | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface SiteSettingsUpdate {[key: string]: string}
+
 /**
  * Resource not found
  */
 export type NotFoundResponse = Error;
+
+export type PageParameter = number;
+
+export type PageSizeParameter = number;
+
+export type StatusParameter = string;
+
+export type SearchParameter = string;
+
+export type ListQuotesParams = {
+/**
+ * @minimum 1
+ */
+page?: PageParameter;
+/**
+ * @minimum 1
+ * @maximum 100
+ */
+pageSize?: PageSizeParameter;
+status?: StatusParameter;
+search?: SearchParameter;
+};
+
+export type GetAdminSettings200 = {[key: string]: string};
+
+export type UpdateAdminSettings200 = {[key: string]: string};
+
+export type ListContactMessagesParams = {
+/**
+ * @minimum 1
+ */
+page?: PageParameter;
+/**
+ * @minimum 1
+ * @maximum 100
+ */
+pageSize?: PageSizeParameter;
+status?: StatusParameter;
+search?: SearchParameter;
+};
 

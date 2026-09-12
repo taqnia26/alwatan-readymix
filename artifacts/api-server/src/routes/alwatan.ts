@@ -1,5 +1,5 @@
 import { Router, type IRouter } from "express";
-import { and, asc, count, desc, eq } from "drizzle-orm";
+import { and, asc, count, desc, eq, ilike, or } from "drizzle-orm";
 import {
   CreateBlogPostBody,
   CreateBlogPostResponse,
@@ -22,7 +22,6 @@ import {
   ListCertificatesResponse,
   ListPageContentResponse,
   ListProductsResponse,
-  ListQuotesResponse,
   UpdatePageContentBody,
   UpdatePageContentParams,
   UpdatePageContentResponse,
@@ -43,8 +42,11 @@ import {
   quoteRequestsTable,
   siteSettingsTable,
 } from "@workspace/db";
+import { requireAdmin, requireSameOrigin } from "../lib/auth";
 
 const router: IRouter = Router();
+const adminMutation = [requireAdmin, requireSameOrigin] as const;
+const adminOnly = [requireAdmin] as const;
 
 const imageFallbacks = {
   product: "/construction-1.png",
@@ -90,11 +92,13 @@ function mapBranch(branch: typeof branchesTable.$inferSelect) {
 function mapCertificate(certificate: typeof certificatesTable.$inferSelect) {
   return {
     id: certificate.id,
+    certificateNumber: certificate.certificateNumber,
     titleAr: certificate.titleAr,
     titleEn: certificate.titleEn,
     descriptionAr: certificate.descriptionAr,
     descriptionEn: certificate.descriptionEn,
     imageUrl: certificate.imageUrl || imageFallbacks.certificate,
+    fileUrl: certificate.fileUrl,
     issuedBy: certificate.issuedBy,
     issuedDate: certificate.issuedDate,
   };
@@ -195,7 +199,7 @@ router.get("/products", async (_req, res): Promise<void> => {
   res.json(ListProductsResponse.parse(products.map(mapProduct)));
 });
 
-router.post("/products", async (req, res): Promise<void> => {
+router.post("/products", ...adminMutation, async (req, res): Promise<void> => {
   const parsed = CreateProductBody.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: parsed.error.message });
@@ -226,7 +230,7 @@ router.get("/products/:slug", async (req, res): Promise<void> => {
   res.json(GetProductResponse.parse(mapProduct(product)));
 });
 
-router.patch("/products/:slug", async (req, res): Promise<void> => {
+router.patch("/products/:slug", ...adminMutation, async (req, res): Promise<void> => {
   const params = UpdateProductParams.safeParse(req.params);
   const parsed = UpdateProductBody.safeParse(req.body);
   if (!params.success || !parsed.success) {
@@ -248,7 +252,7 @@ router.patch("/products/:slug", async (req, res): Promise<void> => {
   res.json(UpdateProductResponse.parse(mapProduct(product)));
 });
 
-router.delete("/products/:slug", async (req, res): Promise<void> => {
+router.delete("/products/:slug", ...adminMutation, async (req, res): Promise<void> => {
   const params = DeleteProductParams.safeParse(req.params);
   if (!params.success) {
     res.status(400).json({ error: params.error.message });
@@ -290,7 +294,7 @@ router.get("/blog", async (_req, res): Promise<void> => {
   res.json(ListBlogPostsResponse.parse(posts.map(mapPost)));
 });
 
-router.post("/blog", async (req, res): Promise<void> => {
+router.post("/blog", ...adminMutation, async (req, res): Promise<void> => {
   const parsed = CreateBlogPostBody.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: parsed.error.message });
@@ -385,7 +389,7 @@ router.post("/quotes", async (req, res): Promise<void> => {
   );
 });
 
-router.get("/admin/summary", async (_req, res): Promise<void> => {
+router.get("/admin/summary", ...adminOnly, async (_req, res): Promise<void> => {
   const [quoteCount, newQuoteCount, productCount, branchCount, publishedCount, recent] =
     await Promise.all([
       db.select({ value: count() }).from(quoteRequestsTable),
@@ -429,16 +433,33 @@ router.get("/admin/summary", async (_req, res): Promise<void> => {
   );
 });
 
-router.get("/admin/quotes", async (_req, res): Promise<void> => {
-  const [quotes, products] = await Promise.all([
-    db.select().from(quoteRequestsTable).orderBy(desc(quoteRequestsTable.createdAt)),
+router.get("/admin/quotes", ...adminOnly, async (_req, res): Promise<void> => {
+  const page = Math.max(1, Number(_req.query.page) || 1);
+  const pageSize = Math.min(100, Math.max(1, Number(_req.query.pageSize) || 20));
+  const status = typeof _req.query.status === "string" ? _req.query.status : undefined;
+  const search = typeof _req.query.search === "string" ? _req.query.search.trim() : undefined;
+  const where = and(
+    status ? eq(quoteRequestsTable.status, status as "new" | "contacted" | "closed") : undefined,
+    search ? or(
+      ilike(quoteRequestsTable.fullName, `%${search}%`),
+      ilike(quoteRequestsTable.email, `%${search}%`),
+      ilike(quoteRequestsTable.phone, `%${search}%`),
+      ilike(quoteRequestsTable.projectLocation, `%${search}%`),
+    ) : undefined,
+  );
+  const [quotes, products, totalRows] = await Promise.all([
+    db.select().from(quoteRequestsTable).where(where).orderBy(desc(quoteRequestsTable.createdAt)).limit(pageSize).offset((page - 1) * pageSize),
     db.select().from(productsTable),
+    db.select({ value: count() }).from(quoteRequestsTable).where(where),
   ]);
   const productNames = new Map(products.map((product) => [product.id, product.nameAr]));
 
   res.json(
-    ListQuotesResponse.parse(
-      quotes.map((quote) => ({
+    ({
+      page,
+      pageSize,
+      total: Number(totalRows[0]?.value ?? 0),
+      items: quotes.map((quote) => ({
         id: quote.id,
         productId: quote.productId,
         productName: productNames.get(quote.productId) ?? "",
@@ -451,11 +472,11 @@ router.get("/admin/quotes", async (_req, res): Promise<void> => {
         status: quote.status,
         createdAt: iso(quote.createdAt),
       })),
-    ),
+    }),
   );
 });
 
-router.patch("/admin/quotes/:id", async (req, res): Promise<void> => {
+router.patch("/admin/quotes/:id", ...adminMutation, async (req, res): Promise<void> => {
   const params = UpdateQuoteStatusParams.safeParse(req.params);
   const parsed = UpdateQuoteStatusBody.safeParse(req.body);
   if (!params.success || !parsed.success) {
@@ -496,12 +517,12 @@ router.patch("/admin/quotes/:id", async (req, res): Promise<void> => {
   );
 });
 
-router.get("/admin/content", async (_req, res): Promise<void> => {
+router.get("/admin/content", ...adminOnly, async (_req, res): Promise<void> => {
   const content = await db.select().from(pageContentTable).orderBy(asc(pageContentTable.id));
   res.json(ListPageContentResponse.parse(content.map(mapContent)));
 });
 
-router.patch("/admin/content/:id", async (req, res): Promise<void> => {
+router.patch("/admin/content/:id", ...adminMutation, async (req, res): Promise<void> => {
   const params = UpdatePageContentParams.safeParse(req.params);
   const parsed = UpdatePageContentBody.safeParse(req.body);
   if (!params.success || !parsed.success) {

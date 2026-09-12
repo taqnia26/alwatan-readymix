@@ -1,7 +1,9 @@
 import {
   doublePrecision,
+  boolean,
   integer,
   pgEnum,
+  index,
   pgTable,
   serial,
   text,
@@ -24,11 +26,16 @@ export const contentTypeEnum = pgEnum("content_type", [
 
 export const adminUsersTable = pgTable("admin_users", {
   id: serial("id").primaryKey(),
-  clerkUserId: text("clerk_user_id").notNull().unique(),
-  name: text("name").notNull(),
+  // Kept nullable for a safe transition from the former Clerk-backed schema.
+  clerkUserId: text("clerk_user_id").unique(),
+  username: text("username").unique(),
+  name: text("name").notNull().default("Administrator"),
   email: text("email").notNull().unique(),
+  passwordHash: text("password_hash"),
   role: text("role").notNull().default("admin"),
+  isActive: boolean("is_active").notNull().default(true),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),
 });
 
 export const productsTable = pgTable("products", {
@@ -43,6 +50,7 @@ export const productsTable = pgTable("products", {
   imageUrl: text("image_url").notNull(),
   compressiveStrength: text("compressive_strength").notNull(),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),
 });
 
 export const branchesTable = pgTable("branches", {
@@ -57,17 +65,23 @@ export const branchesTable = pgTable("branches", {
   phone: text("phone").notNull(),
   workingHours: text("working_hours").notNull(),
   orderIndex: integer("order_index").notNull().default(0),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),
 });
 
 export const certificatesTable = pgTable("certificates", {
   id: serial("id").primaryKey(),
+  certificateNumber: text("certificate_number"),
   titleAr: text("title_ar").notNull(),
   titleEn: text("title_en").notNull(),
   descriptionAr: text("description_ar").notNull(),
   descriptionEn: text("description_en").notNull(),
   imageUrl: text("image_url").notNull(),
+  fileUrl: text("file_url").notNull().default(""),
   issuedBy: text("issued_by").notNull(),
   issuedDate: text("issued_date").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),
 });
 
 export const quoteRequestsTable = pgTable("quote_requests", {
@@ -81,6 +95,7 @@ export const quoteRequestsTable = pgTable("quote_requests", {
   notes: text("notes").notNull().default(""),
   status: quoteStatusEnum("status").notNull().default("new"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),
 });
 
 export const blogPostsTable = pgTable("blog_posts", {
@@ -96,6 +111,8 @@ export const blogPostsTable = pgTable("blog_posts", {
   status: postStatusEnum("status").notNull().default("draft"),
   publishedAt: timestamp("published_at", { withTimezone: true }),
   authorId: integer("author_id"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),
 });
 
 export const pageContentTable = pgTable("page_content", {
@@ -108,7 +125,9 @@ export const pageContentTable = pgTable("page_content", {
   contentType: contentTypeEnum("content_type").notNull().default("text"),
   updatedBy: integer("updated_by"),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),
-});
+}, (table) => ({
+  pageSlugIndex: index("page_content_page_slug_idx").on(table.pageSlug),
+}));
 
 export const siteSettingsTable = pgTable("site_settings", {
   id: serial("id").primaryKey(),
@@ -124,3 +143,45 @@ export const auditLogTable = pgTable("audit_log", {
   entityId: integer("entity_id"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
+
+export const contactMessagesTable = pgTable("contact_messages", {
+  id: serial("id").primaryKey(),
+  fullName: text("full_name").notNull(),
+  email: text("email").notNull(),
+  phone: text("phone").notNull().default(""),
+  subject: text("subject").notNull().default(""),
+  message: text("message").notNull(),
+  status: text("status").notNull().default("new"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),
+}, (table) => ({
+  statusIndex: index("contact_messages_status_idx").on(table.status),
+  createdAtIndex: index("contact_messages_created_at_idx").on(table.createdAt),
+}));
+
+export const mediaAssetsTable = pgTable("media_assets", {
+  id: serial("id").primaryKey(),
+  objectPath: text("object_path").notNull().unique(),
+  originalName: text("original_name").notNull(),
+  contentType: text("content_type").notNull(),
+  size: integer("size").notNull().default(0),
+  altText: text("alt_text").notNull().default(""),
+  createdBy: integer("created_by"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),
+}, (table) => ({
+  objectPathIndex: index("media_assets_object_path_idx").on(table.objectPath),
+}));
+
+export const adminSessionsTable = pgTable("admin_sessions", {
+  id: serial("id").primaryKey(),
+  adminUserId: integer("admin_user_id").notNull(),
+  tokenHash: text("token_hash").notNull().unique(),
+  expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+  revokedAt: timestamp("revoked_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  lastUsedAt: timestamp("last_used_at", { withTimezone: true }),
+}, (table) => ({
+  userIndex: index("admin_sessions_user_idx").on(table.adminUserId),
+  expiryIndex: index("admin_sessions_expiry_idx").on(table.expiresAt),
+}));

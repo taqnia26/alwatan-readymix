@@ -7,6 +7,7 @@ import { ArrowRight, ArrowLeft, ChevronRight, ChevronLeft, HardHat, Building2, D
 import useEmblaCarousel from 'embla-carousel-react';
 import { useCallback, useEffect, useState } from 'react';
 import qualityImg from '@assets/Generated_Image_July_29,_2026_-_4_33AM_1787598707000.png';
+import DOMPurify from 'dompurify';
 
 const DESKTOP_SLIDES = [
   '/media/slider-fleet-day.png',
@@ -89,9 +90,21 @@ function HeroSlider({ isRtl }: { isRtl: boolean }) {
   );
 }
 
-function IntroSection() {
+function IntroSection({ content }: { content: any[] }) {
   const { t, isRtl } = useLanguage();
   const ArrowIcon = isRtl ? ArrowLeft : ArrowRight;
+
+  const getContent = (sectionKey: string, fieldKey: string) => {
+    const item = content?.find(c => c.sectionKey === sectionKey && c.fieldKey === fieldKey);
+    return item ? (isRtl ? item.valueAr : item.valueEn) : '';
+  };
+
+  const getCleanHtml = (html: string) => {
+    return { __html: DOMPurify.sanitize(html) };
+  };
+
+  const title = getContent('intro', 'title') || t('أساسات قوية لمستقبل مستدام', 'Strong Foundations for a Sustainable Future');
+  const subtitle = getContent('intro', 'subtitle') || t('الوطن للخرسانة الجاهزة. شريكك الموثوق في توريد الخرسانة عالية الأداء للمشاريع الضخمة والبنية التحتية في المملكة.', 'AlWatan Ready-Mix. Your trusted partner for high-performance concrete supply for mega projects and infrastructure in the Kingdom.');
 
   return (
     <section className="py-20 md:py-32 bg-background border-b border-border">
@@ -103,14 +116,12 @@ function IntroSection() {
               <span className="font-bold text-sm tracking-wider uppercase">{t('الجودة في كل قطرة', 'Quality in every drop')}</span>
             </div>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-foreground leading-tight mb-8">
-              {t('أساسات قوية لمستقبل مستدام', 'Strong Foundations for a Sustainable Future')}
+              {title}
             </h1>
-            <p className="text-lg md:text-xl text-muted-foreground leading-relaxed mb-10 font-medium">
-              {t(
-                'الوطن للخرسانة الجاهزة. شريكك الموثوق في توريد الخرسانة عالية الأداء للمشاريع الضخمة والبنية التحتية في المملكة.',
-                'AlWatan Ready-Mix. Your trusted partner for high-performance concrete supply for mega projects and infrastructure in the Kingdom.'
-              )}
-            </p>
+            <div 
+              className="text-lg md:text-xl text-muted-foreground leading-relaxed mb-10 font-medium prose prose-lg max-w-none"
+              dangerouslySetInnerHTML={getCleanHtml(subtitle)}
+            />
             <div className="flex flex-wrap gap-4">
               <Link href="/quote">
                 <Button size="lg" className="h-14 px-8 text-lg font-bold shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all">
@@ -119,7 +130,7 @@ function IntroSection() {
                 </Button>
               </Link>
               <Link href="/about">
-                <Button size="lg" variant="outline" className="h-14 px-8 text-lg font-bold bg-transparent">
+                <Button size="lg" variant="outline" className="h-14 px-8 text-lg font-bold bg-transparent border-gray-200">
                   {t('تعرف علينا', 'Discover Us')}
                 </Button>
               </Link>
@@ -137,8 +148,17 @@ function IntroSection() {
   );
 }
 
-function MediaSection() {
-  const { t } = useLanguage();
+function MediaSection({ content }: { content: any[] }) {
+  const { t, isRtl } = useLanguage();
+
+  const getContent = (sectionKey: string, fieldKey: string) => {
+    const item = content?.find(c => c.sectionKey === sectionKey && c.fieldKey === fieldKey);
+    return item ? (isRtl ? item.valueAr : item.valueEn) : '';
+  };
+
+  const title = getContent('media', 'title') || t('القوة والموثوقية في كل تفصيل', 'Strength and Reliability in Every Detail');
+  const description = getContent('media', 'description') || t('تعرف على شركة مصنع الوطن للخرسانة الجاهزة من خلال هذه المقاطع التي تعكس التزامنا بالجودة وقدرتنا على تنفيذ أضخم المشاريع.', 'Discover AlWatan Ready-Mix Concrete Co. through these clips that reflect our commitment to quality and our capability to execute the largest projects.');
+
   return (
     <section className="py-24 bg-card">
       <div className="container mx-auto px-6">
@@ -147,10 +167,10 @@ function MediaSection() {
             {t('هويتنا وقدراتنا', 'Our Identity and Capabilities')}
           </h2>
           <h3 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-foreground mb-6">
-            {t('القوة والموثوقية في كل تفصيل', 'Strength and Reliability in Every Detail')}
+            {title}
           </h3>
           <p className="text-lg text-muted-foreground leading-relaxed">
-            {t('تعرف على شركة مصنع الوطن للخرسانة الجاهزة من خلال هذه المقاطع التي تعكس التزامنا بالجودة وقدرتنا على تنفيذ أضخم المشاريع.', 'Discover AlWatan Ready-Mix Concrete Co. through these clips that reflect our commitment to quality and our capability to execute the largest projects.')}
+            {description}
           </p>
         </div>
 
@@ -171,10 +191,10 @@ function MediaSection() {
             </div>
             <div className="p-8 bg-card flex-1 border-t border-border">
               <h4 className="text-2xl font-bold text-foreground mb-3">
-                {t('صوت الوطن', 'Voice of AlWatan')}
+                {getContent('media_1', 'title') || t('صوت الوطن', 'Voice of AlWatan')}
               </h4>
               <p className="text-muted-foreground leading-relaxed text-lg">
-                {t('رسالة الشركة وأهدافها المستقبلية في بناء أساسات متينة تدعم رؤية المملكة التنموية الطموحة.', 'Our mission and future goals in building solid foundations that support the Kingdom\'s ambitious developmental vision.')}
+                {getContent('media_1', 'description') || t('رسالة الشركة وأهدافها المستقبلية في بناء أساسات متينة تدعم رؤية المملكة التنموية الطموحة.', 'Our mission and future goals in building solid foundations that support the Kingdom\'s ambitious developmental vision.')}
               </p>
             </div>
           </div>
@@ -195,10 +215,10 @@ function MediaSection() {
             </div>
             <div className="p-8 bg-card flex-1 border-t border-border">
               <h4 className="text-2xl font-bold text-foreground mb-3">
-                {t('قدراتنا الصناعية', 'Our Industrial Capabilities')}
+                {getContent('media_2', 'title') || t('قدراتنا الصناعية', 'Our Industrial Capabilities')}
               </h4>
               <p className="text-muted-foreground leading-relaxed text-lg">
-                {t('نظرة على أسطولنا الضخم ومصانعنا المتطورة التي تضمن إمداد المشاريع الكبرى بالخرسانة دون انقطاع.', 'A look at our massive fleet and advanced plants that ensure uninterrupted concrete supply to major projects.')}
+                {getContent('media_2', 'description') || t('نظرة على أسطولنا الضخم ومصانعنا المتطورة التي تضمن إمداد المشاريع الكبرى بالخرسانة دون انقطاع.', 'A look at our massive fleet and advanced plants that ensure uninterrupted concrete supply to major projects.')}
               </p>
             </div>
           </div>
@@ -225,10 +245,21 @@ export default function Home() {
     );
   }
 
+  const content = homeData?.content || [];
+
+  const getCleanHtml = (html: string) => {
+    return { __html: DOMPurify.sanitize(html) };
+  };
+
+  const getContent = (sectionKey: string, fieldKey: string) => {
+    const item = content?.find(c => c.sectionKey === sectionKey && c.fieldKey === fieldKey);
+    return item ? (isRtl ? item.valueAr : item.valueEn) : '';
+  };
+
   return (
     <div className="flex flex-col min-h-screen">
       <HeroSlider isRtl={isRtl} />
-      <IntroSection />
+      <IntroSection content={content} />
       
       {/* Features Section */}
       <section className="py-24 bg-muted/30">
@@ -238,7 +269,7 @@ export default function Home() {
               {t('لماذا تختارنا', 'Why Choose Us')}
             </h2>
             <h3 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-foreground">
-              {t('معايير لا تقبل المساومة', 'Uncompromising Standards')}
+              {getContent('features', 'title') || t('معايير لا تقبل المساومة', 'Uncompromising Standards')}
             </h3>
           </div>
           
@@ -246,18 +277,18 @@ export default function Home() {
             {[
               {
                 icon: HardHat,
-                title: t('خبرة هندسية', 'Engineering Expertise'),
-                desc: t('فريق متكامل من المهندسين والفنيين ذوي الخبرة العالية في تصميم الخلطات الخرسانية المطابقة لأدق المواصفات.', 'A complete team of engineers and technicians highly experienced in designing concrete mixes that meet exact specifications.')
+                title: getContent('feature_1', 'title') || t('خبرة هندسية', 'Engineering Expertise'),
+                desc: getContent('feature_1', 'description') || t('فريق متكامل من المهندسين والفنيين ذوي الخبرة العالية في تصميم الخلطات الخرسانية المطابقة لأدق المواصفات.', 'A complete team of engineers and technicians highly experienced in designing concrete mixes that meet exact specifications.')
               },
               {
                 icon: Building2,
-                title: t('مشاريع عملاقة', 'Mega Projects'),
-                desc: t('سجل حافل بالنجاحات والموثوقية في توريد الخرسانة لأكبر المشاريع التنموية ومشاريع البنية التحتية.', 'A proven track record of success and reliability in supplying concrete to the largest developmental and infrastructure projects.')
+                title: getContent('feature_2', 'title') || t('مشاريع عملاقة', 'Mega Projects'),
+                desc: getContent('feature_2', 'description') || t('سجل حافل بالنجاحات والموثوقية في توريد الخرسانة لأكبر المشاريع التنموية ومشاريع البنية التحتية.', 'A proven track record of success and reliability in supplying concrete to the largest developmental and infrastructure projects.')
               },
               {
                 icon: Droplets,
-                title: t('جودة عالية', 'High Quality'),
-                desc: t('مواد خام مختارة بعناية واختبارات معملية دقيقة ومستمرة لضمان أعلى درجات المقاومة والتحمل.', 'Carefully selected raw materials and precise, continuous laboratory testing to ensure the highest degrees of resistance and durability.')
+                title: getContent('feature_3', 'title') || t('جودة عالية', 'High Quality'),
+                desc: getContent('feature_3', 'description') || t('مواد خام مختارة بعناية واختبارات معملية دقيقة ومستمرة لضمان أعلى درجات المقاومة والتحمل.', 'Carefully selected raw materials and precise, continuous laboratory testing to ensure the highest degrees of resistance and durability.')
               }
             ].map((feat, idx) => (
               <div key={idx} className="bg-card p-10 rounded-3xl shadow-sm hover:shadow-xl transition-all duration-300 border border-border group hover:-translate-y-1">
@@ -265,14 +296,14 @@ export default function Home() {
                   <feat.icon className="w-8 h-8" />
                 </div>
                 <h4 className="text-2xl font-bold text-foreground mb-4">{feat.title}</h4>
-                <p className="text-muted-foreground text-lg leading-relaxed">{feat.desc}</p>
+                <div className="text-muted-foreground text-lg leading-relaxed" dangerouslySetInnerHTML={getCleanHtml(feat.desc)} />
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      <MediaSection />
+      <MediaSection content={content} />
 
       {/* Products Highlight */}
       <section className="py-24 bg-secondary text-secondary-foreground border-t-[12px] border-primary">
@@ -283,7 +314,7 @@ export default function Home() {
                 {t('منتجاتنا', 'Our Products')}
               </h2>
               <h3 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-white">
-                {t('تشكيلة واسعة من الخرسانة الجاهزة', 'A Wide Range of Ready-Mix Concrete')}
+                {getContent('products_section', 'title') || t('تشكيلة واسعة من الخرسانة الجاهزة', 'A Wide Range of Ready-Mix Concrete')}
               </h3>
             </div>
             <Link href="/products">
@@ -332,14 +363,15 @@ export default function Home() {
             <div className="absolute bottom-0 left-0 -mb-16 -ml-16 w-96 h-96 bg-black/10 rounded-full blur-3xl pointer-events-none"></div>
             
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-8 relative z-10">
-              {t('هل لديك مشروع قادم؟', 'Do you have an upcoming project?')}
+              {getContent('cta', 'title') || t('هل لديك مشروع قادم؟', 'Do you have an upcoming project?')}
             </h2>
-            <p className="text-xl md:text-2xl mb-12 max-w-3xl mx-auto text-primary-foreground/90 relative z-10 font-medium leading-relaxed">
-              {t(
+            <div 
+              className="text-xl md:text-2xl mb-12 max-w-3xl mx-auto text-primary-foreground/90 relative z-10 font-medium leading-relaxed prose prose-xl prose-invert"
+              dangerouslySetInnerHTML={getCleanHtml(getContent('cta', 'description') || t(
                 'دعنا نساعدك في بناء أساس قوي. فريقنا الهندسي والتجاري مستعد لتقديم الاستشارة والتسعيرة المناسبة لمشروعك بأعلى معايير الجودة.',
                 'Let us help you build a strong foundation. Our engineering and commercial team is ready to provide consultation and appropriate pricing for your project with the highest quality standards.'
-              )}
-            </p>
+              ))}
+            />
             <Link href="/quote">
               <Button size="lg" variant="secondary" className="h-16 px-12 text-xl font-bold bg-white text-secondary hover:bg-gray-50 shadow-xl relative z-10 transition-transform hover:scale-105">
                 {t('اطلب تسعيرة الآن', 'Request a Quote Now')}

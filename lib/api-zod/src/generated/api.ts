@@ -48,11 +48,13 @@ export const GetHomeResponse = zod.object({
 })),
   "certificates": zod.array(zod.object({
   "id": zod.number(),
+  "certificateNumber": zod.string().nullable(),
   "titleAr": zod.string(),
   "titleEn": zod.string(),
   "descriptionAr": zod.string(),
   "descriptionEn": zod.string(),
   "imageUrl": zod.string(),
+  "fileUrl": zod.string(),
   "issuedBy": zod.string(),
   "issuedDate": zod.string()
 })),
@@ -240,20 +242,76 @@ export const ListBranchesResponseItem = zod.object({
 export const ListBranchesResponse = zod.array(ListBranchesResponseItem)
 
 
+export const CreateBranchBody = zod.object({
+  "nameAr": zod.string(),
+  "nameEn": zod.string(),
+  "addressAr": zod.string(),
+  "addressEn": zod.string(),
+  "city": zod.string(),
+  "lat": zod.number(),
+  "lng": zod.number(),
+  "phone": zod.string(),
+  "workingHours": zod.string(),
+  "orderIndex": zod.number().optional()
+})
+
+export const CreateBranchResponse = zod.object({
+  "id": zod.number(),
+  "nameAr": zod.string(),
+  "nameEn": zod.string(),
+  "addressAr": zod.string(),
+  "addressEn": zod.string(),
+  "city": zod.string(),
+  "lat": zod.number(),
+  "lng": zod.number(),
+  "phone": zod.string(),
+  "workingHours": zod.string(),
+  "orderIndex": zod.number()
+})
+
+
 /**
  * @summary List certificates
  */
 export const ListCertificatesResponseItem = zod.object({
   "id": zod.number(),
+  "certificateNumber": zod.string().nullable(),
   "titleAr": zod.string(),
   "titleEn": zod.string(),
   "descriptionAr": zod.string(),
   "descriptionEn": zod.string(),
   "imageUrl": zod.string(),
+  "fileUrl": zod.string(),
   "issuedBy": zod.string(),
   "issuedDate": zod.string()
 })
 export const ListCertificatesResponse = zod.array(ListCertificatesResponseItem)
+
+
+export const CreateCertificateBody = zod.object({
+  "certificateNumber": zod.string().nullish(),
+  "titleAr": zod.string(),
+  "titleEn": zod.string(),
+  "descriptionAr": zod.string(),
+  "descriptionEn": zod.string(),
+  "imageUrl": zod.string().optional(),
+  "fileUrl": zod.string().optional(),
+  "issuedBy": zod.string(),
+  "issuedDate": zod.string()
+})
+
+export const CreateCertificateResponse = zod.object({
+  "id": zod.number(),
+  "certificateNumber": zod.string().nullable(),
+  "titleAr": zod.string(),
+  "titleEn": zod.string(),
+  "descriptionAr": zod.string(),
+  "descriptionEn": zod.string(),
+  "imageUrl": zod.string(),
+  "fileUrl": zod.string(),
+  "issuedBy": zod.string(),
+  "issuedDate": zod.string()
+})
 
 
 /**
@@ -327,6 +385,44 @@ export const GetBlogPostResponse = zod.object({
 })
 
 
+export const UpdateBlogPostParams = zod.object({
+  "slug": zod.coerce.string()
+})
+
+export const UpdateBlogPostBody = zod.object({
+  "titleAr": zod.string().optional(),
+  "titleEn": zod.string().optional(),
+  "excerptAr": zod.string().optional(),
+  "excerptEn": zod.string().optional(),
+  "contentAr": zod.string().optional(),
+  "contentEn": zod.string().optional(),
+  "slug": zod.string().optional(),
+  "coverImage": zod.string().optional(),
+  "status": zod.enum(['draft', 'published']).optional()
+})
+
+export const UpdateBlogPostResponse = zod.object({
+  "id": zod.number(),
+  "titleAr": zod.string(),
+  "titleEn": zod.string(),
+  "excerptAr": zod.string(),
+  "excerptEn": zod.string(),
+  "contentAr": zod.string(),
+  "contentEn": zod.string(),
+  "slug": zod.string(),
+  "coverImage": zod.string(),
+  "status": zod.enum(['draft', 'published']),
+  "publishedAt": zod.string()
+})
+
+
+export const DeleteBlogPostParams = zod.object({
+  "slug": zod.coerce.string()
+})
+
+export const DeleteBlogPostResponse = zod.void()
+
+
 /**
  * @summary Submit a quote request
  */
@@ -384,7 +480,45 @@ export const GetAdminSummaryResponse = zod.object({
 /**
  * @summary List quote requests
  */
-export const ListQuotesResponseItem = zod.object({
+export const listQuotesQueryPageDefault = 1;
+
+export const listQuotesQueryPageSizeDefault = 20;
+export const listQuotesQueryPageSizeMax = 100;
+
+
+
+export const ListQuotesQueryParams = zod.object({
+  "page": zod.coerce.number().min(1).default(listQuotesQueryPageDefault),
+  "pageSize": zod.coerce.number().min(1).max(listQuotesQueryPageSizeMax).default(listQuotesQueryPageSizeDefault),
+  "status": zod.coerce.string().optional(),
+  "search": zod.coerce.string().optional()
+})
+
+export const ListQuotesResponse = zod.object({
+  "page": zod.number(),
+  "pageSize": zod.number(),
+  "total": zod.number(),
+  "items": zod.array(zod.object({
+  "id": zod.number(),
+  "productId": zod.number(),
+  "productName": zod.string(),
+  "quantityEstimate": zod.string(),
+  "projectLocation": zod.string(),
+  "fullName": zod.string(),
+  "phone": zod.string(),
+  "email": zod.string(),
+  "notes": zod.string(),
+  "status": zod.enum(['new', 'contacted', 'closed']),
+  "createdAt": zod.string()
+}))
+})
+
+
+export const GetQuoteParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const GetQuoteResponse = zod.object({
   "id": zod.number(),
   "productId": zod.number(),
   "productName": zod.string(),
@@ -397,7 +531,6 @@ export const ListQuotesResponseItem = zod.object({
   "status": zod.enum(['new', 'contacted', 'closed']),
   "createdAt": zod.string()
 })
-export const ListQuotesResponse = zod.array(ListQuotesResponseItem)
 
 
 /**
@@ -424,6 +557,13 @@ export const UpdateQuoteStatusResponse = zod.object({
   "status": zod.enum(['new', 'contacted', 'closed']),
   "createdAt": zod.string()
 })
+
+
+export const DeleteQuoteParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const DeleteQuoteResponse = zod.void()
 
 
 /**
@@ -477,5 +617,439 @@ export const GetPublicSettingsResponse = zod.object({
   "instagramUrl": zod.string(),
   "linkedinUrl": zod.string()
 })
+
+
+export const LoginBody = zod.object({
+  "username": zod.string(),
+  "password": zod.string()
+})
+
+export const LoginResponse = zod.object({
+  "user": zod.object({
+  "id": zod.number(),
+  "username": zod.string().nullable(),
+  "name": zod.string(),
+  "email": zod.string(),
+  "role": zod.string(),
+  "isActive": zod.boolean(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date()
+}),
+  "expiresAt": zod.coerce.date()
+})
+
+
+export const LogoutResponse = zod.void()
+
+
+export const GetAuthMeResponse = zod.object({
+  "user": zod.object({
+  "id": zod.number(),
+  "username": zod.string().nullable(),
+  "name": zod.string(),
+  "email": zod.string(),
+  "role": zod.string(),
+  "isActive": zod.boolean(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date()
+})
+})
+
+
+export const ListAdminBranchesResponseItem = zod.object({
+  "id": zod.number(),
+  "nameAr": zod.string(),
+  "nameEn": zod.string(),
+  "addressAr": zod.string(),
+  "addressEn": zod.string(),
+  "city": zod.string(),
+  "lat": zod.number(),
+  "lng": zod.number(),
+  "phone": zod.string(),
+  "workingHours": zod.string(),
+  "orderIndex": zod.number()
+})
+export const ListAdminBranchesResponse = zod.array(ListAdminBranchesResponseItem)
+
+
+export const UpdateBranchParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const UpdateBranchBody = zod.object({
+  "nameAr": zod.string().optional(),
+  "nameEn": zod.string().optional(),
+  "addressAr": zod.string().optional(),
+  "addressEn": zod.string().optional(),
+  "city": zod.string().optional(),
+  "lat": zod.number().optional(),
+  "lng": zod.number().optional(),
+  "phone": zod.string().optional(),
+  "workingHours": zod.string().optional(),
+  "orderIndex": zod.number().optional()
+})
+
+export const UpdateBranchResponse = zod.object({
+  "id": zod.number(),
+  "nameAr": zod.string(),
+  "nameEn": zod.string(),
+  "addressAr": zod.string(),
+  "addressEn": zod.string(),
+  "city": zod.string(),
+  "lat": zod.number(),
+  "lng": zod.number(),
+  "phone": zod.string(),
+  "workingHours": zod.string(),
+  "orderIndex": zod.number()
+})
+
+
+export const DeleteBranchParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const DeleteBranchResponse = zod.void()
+
+
+export const ListAdminCertificatesResponseItem = zod.object({
+  "id": zod.number(),
+  "certificateNumber": zod.string().nullable(),
+  "titleAr": zod.string(),
+  "titleEn": zod.string(),
+  "descriptionAr": zod.string(),
+  "descriptionEn": zod.string(),
+  "imageUrl": zod.string(),
+  "fileUrl": zod.string(),
+  "issuedBy": zod.string(),
+  "issuedDate": zod.string()
+})
+export const ListAdminCertificatesResponse = zod.array(ListAdminCertificatesResponseItem)
+
+
+export const UpdateCertificateParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const UpdateCertificateBody = zod.object({
+  "certificateNumber": zod.string().nullish(),
+  "titleAr": zod.string().optional(),
+  "titleEn": zod.string().optional(),
+  "descriptionAr": zod.string().optional(),
+  "descriptionEn": zod.string().optional(),
+  "imageUrl": zod.string().optional(),
+  "fileUrl": zod.string().optional(),
+  "issuedBy": zod.string().optional(),
+  "issuedDate": zod.string().optional()
+})
+
+export const UpdateCertificateResponse = zod.object({
+  "id": zod.number(),
+  "certificateNumber": zod.string().nullable(),
+  "titleAr": zod.string(),
+  "titleEn": zod.string(),
+  "descriptionAr": zod.string(),
+  "descriptionEn": zod.string(),
+  "imageUrl": zod.string(),
+  "fileUrl": zod.string(),
+  "issuedBy": zod.string(),
+  "issuedDate": zod.string()
+})
+
+
+export const DeleteCertificateParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const DeleteCertificateResponse = zod.void()
+
+
+export const ListAdminBlogPostsResponseItem = zod.object({
+  "id": zod.number(),
+  "titleAr": zod.string(),
+  "titleEn": zod.string(),
+  "excerptAr": zod.string(),
+  "excerptEn": zod.string(),
+  "contentAr": zod.string(),
+  "contentEn": zod.string(),
+  "slug": zod.string(),
+  "coverImage": zod.string(),
+  "status": zod.enum(['draft', 'published']),
+  "publishedAt": zod.string()
+})
+export const ListAdminBlogPostsResponse = zod.array(ListAdminBlogPostsResponseItem)
+
+
+export const ListAdminUsersResponseItem = zod.object({
+  "id": zod.number(),
+  "username": zod.string().nullable(),
+  "name": zod.string(),
+  "email": zod.string(),
+  "role": zod.string(),
+  "isActive": zod.boolean(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date()
+})
+export const ListAdminUsersResponse = zod.array(ListAdminUsersResponseItem)
+
+
+export const CreateAdminUserBody = zod.object({
+  "username": zod.string(),
+  "name": zod.string().optional(),
+  "email": zod.string(),
+  "password": zod.string(),
+  "role": zod.string().optional(),
+  "isActive": zod.boolean().optional()
+})
+
+export const CreateAdminUserResponse = zod.object({
+  "id": zod.number(),
+  "username": zod.string().nullable(),
+  "name": zod.string(),
+  "email": zod.string(),
+  "role": zod.string(),
+  "isActive": zod.boolean(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date()
+})
+
+
+export const UpdateAdminUserParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const UpdateAdminUserBody = zod.object({
+  "username": zod.string().optional(),
+  "name": zod.string().optional(),
+  "email": zod.string().optional(),
+  "password": zod.string().optional(),
+  "role": zod.string().optional(),
+  "isActive": zod.boolean().optional()
+})
+
+export const UpdateAdminUserResponse = zod.object({
+  "id": zod.number(),
+  "username": zod.string().nullable(),
+  "name": zod.string(),
+  "email": zod.string(),
+  "role": zod.string(),
+  "isActive": zod.boolean(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date()
+})
+
+
+export const SetAdminUserStatusParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const SetAdminUserStatusBody = zod.object({
+  "isActive": zod.boolean()
+})
+
+export const SetAdminUserStatusResponse = zod.object({
+  "id": zod.number(),
+  "username": zod.string().nullable(),
+  "name": zod.string(),
+  "email": zod.string(),
+  "role": zod.string(),
+  "isActive": zod.boolean(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date()
+})
+
+
+export const ChangeAdminUserPasswordParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const ChangeAdminUserPasswordBody = zod.object({
+  "password": zod.string()
+})
+
+export const ChangeAdminUserPasswordResponse = zod.object({
+  "id": zod.number(),
+  "username": zod.string().nullable(),
+  "name": zod.string(),
+  "email": zod.string(),
+  "role": zod.string(),
+  "isActive": zod.boolean(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date()
+})
+
+
+export const ExportQuotesResponse = zod.unknown()
+
+
+export const GetAdminSettingsResponse = zod.record(zod.string(), zod.string())
+
+
+export const UpdateAdminSettingsBody = zod.record(zod.string(), zod.string())
+
+export const UpdateAdminSettingsResponse = zod.record(zod.string(), zod.string())
+
+
+export const CreateContactMessageBody = zod.object({
+  "fullName": zod.string(),
+  "email": zod.string(),
+  "phone": zod.string().optional(),
+  "subject": zod.string().optional(),
+  "message": zod.string()
+})
+
+export const CreateContactMessageResponse = zod.object({
+  "id": zod.number(),
+  "submitted": zod.boolean()
+})
+
+
+export const listContactMessagesQueryPageDefault = 1;
+
+export const listContactMessagesQueryPageSizeDefault = 20;
+export const listContactMessagesQueryPageSizeMax = 100;
+
+
+
+export const ListContactMessagesQueryParams = zod.object({
+  "page": zod.coerce.number().min(1).default(listContactMessagesQueryPageDefault),
+  "pageSize": zod.coerce.number().min(1).max(listContactMessagesQueryPageSizeMax).default(listContactMessagesQueryPageSizeDefault),
+  "status": zod.coerce.string().optional(),
+  "search": zod.coerce.string().optional()
+})
+
+export const ListContactMessagesResponse = zod.object({
+  "page": zod.number(),
+  "pageSize": zod.number(),
+  "total": zod.number(),
+  "items": zod.array(zod.object({
+  "id": zod.number(),
+  "fullName": zod.string(),
+  "email": zod.string(),
+  "phone": zod.string(),
+  "subject": zod.string(),
+  "message": zod.string(),
+  "status": zod.string(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date()
+}))
+})
+
+
+export const GetContactMessageParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const GetContactMessageResponse = zod.object({
+  "id": zod.number(),
+  "fullName": zod.string(),
+  "email": zod.string(),
+  "phone": zod.string(),
+  "subject": zod.string(),
+  "message": zod.string(),
+  "status": zod.string(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date()
+})
+
+
+export const UpdateContactMessageStatusParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const UpdateContactMessageStatusBody = zod.object({
+  "status": zod.string()
+})
+
+export const UpdateContactMessageStatusResponse = zod.object({
+  "id": zod.number(),
+  "fullName": zod.string(),
+  "email": zod.string(),
+  "phone": zod.string(),
+  "subject": zod.string(),
+  "message": zod.string(),
+  "status": zod.string(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date()
+})
+
+
+export const DeleteContactMessageParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const DeleteContactMessageResponse = zod.void()
+
+
+export const RequestMediaUploadBody = zod.object({
+  "name": zod.string(),
+  "size": zod.number(),
+  "contentType": zod.string()
+})
+
+export const RequestMediaUploadResponse = zod.object({
+  "uploadURL": zod.string(),
+  "objectPath": zod.string(),
+  "metadata": zod.object({
+  "name": zod.string().optional(),
+  "size": zod.number().optional(),
+  "contentType": zod.string().optional()
+})
+})
+
+
+export const ListMediaResponseItem = zod.object({
+  "id": zod.number(),
+  "objectPath": zod.string(),
+  "originalName": zod.string(),
+  "contentType": zod.string(),
+  "size": zod.number(),
+  "altText": zod.string(),
+  "createdBy": zod.number().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date()
+})
+export const ListMediaResponse = zod.array(ListMediaResponseItem)
+
+
+export const FinalizeMediaBody = zod.object({
+  "objectPath": zod.string(),
+  "originalName": zod.string(),
+  "contentType": zod.string(),
+  "size": zod.number().optional(),
+  "altText": zod.string().optional()
+})
+
+export const FinalizeMediaResponse = zod.object({
+  "id": zod.number(),
+  "objectPath": zod.string(),
+  "originalName": zod.string(),
+  "contentType": zod.string(),
+  "size": zod.number(),
+  "altText": zod.string(),
+  "createdBy": zod.number().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date()
+})
+
+
+export const DeleteMediaParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const DeleteMediaResponse = zod.void()
+
+
+export const ServeMediaParams = zod.object({
+  "path": zod.coerce.string()
+})
+
+export const ServeMediaResponse = zod.unknown()
+
+
+export const ServePublicMediaParams = zod.object({
+  "filePath": zod.coerce.string()
+})
+
+export const ServePublicMediaResponse = zod.unknown()
 
 
