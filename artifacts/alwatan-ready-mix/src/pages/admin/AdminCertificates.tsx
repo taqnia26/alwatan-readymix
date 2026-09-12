@@ -1,6 +1,13 @@
 import { useState } from 'react';
 import { useLanguage } from '@/lib/i18n';
-import { useListAdminCertificates, useCreateCertificate, useUpdateCertificate, useDeleteCertificate } from '@workspace/api-client-react';
+import {
+  useListAdminCertificates,
+  useCreateCertificate,
+  useUpdateCertificate,
+  useDeleteCertificate,
+  useRequestMediaUpload,
+  useFinalizeMedia,
+} from '@workspace/api-client-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -9,7 +16,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useQueryClient } from '@tanstack/react-query';
 import { getListAdminCertificatesQueryKey } from '@workspace/api-client-react';
 import { useToast } from '@/hooks/use-toast';
-import { Plus, Edit2, Trash2, Award, FileText } from 'lucide-react';
+import { Plus, Edit2, Trash2, Award, FileText, UploadCloud, Loader2 } from 'lucide-react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -22,8 +29,14 @@ const certificateSchema = z.object({
   certificateNumber: z.string().nullable(),
   descriptionAr: z.string().min(1, 'Required'),
   descriptionEn: z.string().min(1, 'Required'),
-  imageUrl: z.string().url('Must be a valid URL'),
-  fileUrl: z.string().url('Must be a valid URL'),
+  imageUrl: z.string().refine(
+    value => value.startsWith('/api/storage/objects/') || z.string().url().safeParse(value).success,
+    'Must be a valid URL',
+  ),
+  fileUrl: z.string().refine(
+    value => value.startsWith('/api/storage/objects/') || z.string().url().safeParse(value).success,
+    'Must be a valid URL',
+  ),
   issuedBy: z.string().min(1, 'Required'),
   issuedDate: z.string().min(1, 'Required'),
 });
@@ -36,12 +49,15 @@ export default function AdminCertificates() {
   const createCertificate = useCreateCertificate();
   const updateCertificate = useUpdateCertificate();
   const deleteCertificate = useDeleteCertificate();
+  const requestUpload = useRequestMediaUpload();
+  const finalizeMedia = useFinalizeMedia();
   
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
+  const [uploadingField, setUploadingField] = useState<'imageUrl' | 'fileUrl' | null>(null);
 
   const form = useForm<CertificateFormValues>({
     resolver: zodResolver(certificateSchema),
@@ -85,6 +101,68 @@ export default function AdminCertificates() {
           toast({ title: t('تمت الإضافة بنجاح', 'Created successfully') });
         }
       });
+    }
+  };
+
+  const uploadCertificateFile = async (
+    file: File,
+    field: 'imageUrl' | 'fileUrl',
+  ) => {
+    const isImage = field === 'imageUrl';
+    const validType = isImage ? file.type.startsWith('image/') : file.type === 'application/pdf';
+    const maxSize = isImage ? 10 * 1024 * 1024 : 25 * 1024 * 1024;
+
+    if (!validType) {
+      toast({
+        title: isImage
+          ? t('يرجى اختيار ملف صورة', 'Please select an image file')
+          : t('يرجى اختيار ملف PDF', 'Please select a PDF file'),
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    if (file.size > maxSize) {
+      toast({
+        title: t(
+          `حجم الملف يجب ألا يتجاوز ${isImage ? 10 : 25} ميجابايت`,
+          `File size must not exceed ${isImage ? 10 : 25} MB`,
+        ),
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setUploadingField(field);
+    try {
+      const { uploadURL, objectPath } = await requestUpload.mutateAsync({
+        data: { name: file.name, size: file.size, contentType: file.type },
+      });
+      const response = await fetch(uploadURL, {
+        method: 'PUT',
+        headers: { 'Content-Type': file.type },
+        body: file,
+      });
+      if (!response.ok) throw new Error('Upload failed');
+
+      await finalizeMedia.mutateAsync({
+        data: {
+          objectPath,
+          originalName: file.name,
+          contentType: file.type,
+          size: file.size,
+          altText: file.name,
+        },
+      });
+
+      const fileUrl = `/api/storage${objectPath}`;
+      form.setValue(field, fileUrl, { shouldDirty: true, shouldValidate: true });
+      toast({ title: t('تم إرفاق الملف بنجاح', 'File attached successfully') });
+    } catch (error) {
+      console.error(error);
+      toast({ title: t('فشل رفع الملف', 'File upload failed'), variant: 'destructive' });
+    } finally {
+      setUploadingField(null);
     }
   };
 
@@ -180,10 +258,54 @@ export default function AdminCertificates() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <FormField control={form.control} name="imageUrl" render={({ field }) => (
-                  <FormItem><FormLabel>{t('رابط صورة المعاينة', 'Image URL')}</FormLabel><FormControl><Input {...field} dir="ltr" placeholder="https://..." /></FormControl><FormMessage /></FormItem>
+                  <FormItem>
+                    <FormLabel>{t('صورة المعاينة', 'Preview Image')}</FormLabel>
+                    <div className="flex gap-2">
+                      <FormControl><Input {...field} dir="ltr" placeholder="https://..." /></FormControl>
+                      <Button type="button" variant="outline" className="shrink-0 relative" disabled={uploadingField !== null}>
+                        {uploadingField === 'imageUrl' ? <Loader2 className="w-4 h-4 animate-spin" /> : <UploadCloud className="w-4 h-4" />}
+                        <span className="sr-only">{t('إرفاق صورة', 'Attach image')}</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
+                          disabled={uploadingField !== null}
+                          onChange={(event) => {
+                            const file = event.target.files?.[0];
+                            if (file) void uploadCertificateFile(file, 'imageUrl');
+                            event.target.value = '';
+                          }}
+                        />
+                      </Button>
+                    </div>
+                    <p className="text-xs text-muted-foreground">{t('أرفق صورة أو أدخل رابطًا مباشرًا (حتى 10 م.ب)', 'Attach an image or enter a direct URL (up to 10 MB)')}</p>
+                    <FormMessage />
+                  </FormItem>
                 )} />
                 <FormField control={form.control} name="fileUrl" render={({ field }) => (
-                  <FormItem><FormLabel>{t('رابط ملف الـ PDF', 'PDF File URL')}</FormLabel><FormControl><Input {...field} dir="ltr" placeholder="https://..." /></FormControl><FormMessage /></FormItem>
+                  <FormItem>
+                    <FormLabel>{t('ملف الشهادة PDF', 'Certificate PDF')}</FormLabel>
+                    <div className="flex gap-2">
+                      <FormControl><Input {...field} dir="ltr" placeholder="https://..." /></FormControl>
+                      <Button type="button" variant="outline" className="shrink-0 relative" disabled={uploadingField !== null}>
+                        {uploadingField === 'fileUrl' ? <Loader2 className="w-4 h-4 animate-spin" /> : <UploadCloud className="w-4 h-4" />}
+                        <span className="sr-only">{t('إرفاق ملف PDF', 'Attach PDF')}</span>
+                        <input
+                          type="file"
+                          accept="application/pdf,.pdf"
+                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
+                          disabled={uploadingField !== null}
+                          onChange={(event) => {
+                            const file = event.target.files?.[0];
+                            if (file) void uploadCertificateFile(file, 'fileUrl');
+                            event.target.value = '';
+                          }}
+                        />
+                      </Button>
+                    </div>
+                    <p className="text-xs text-muted-foreground">{t('أرفق ملف PDF أو أدخل رابطًا مباشرًا (حتى 25 م.ب)', 'Attach a PDF or enter a direct URL (up to 25 MB)')}</p>
+                    <FormMessage />
+                  </FormItem>
                 )} />
               </div>
 
@@ -196,8 +318,8 @@ export default function AdminCertificates() {
                 )} />
               </div>
 
-              <Button type="submit" className="w-full" disabled={createCertificate.isPending || updateCertificate.isPending}>
-                {t('حفظ', 'Save')}
+              <Button type="submit" className="w-full" disabled={createCertificate.isPending || updateCertificate.isPending || uploadingField !== null}>
+                {uploadingField ? t('جاري رفع الملف...', 'Uploading file...') : t('حفظ', 'Save')}
               </Button>
             </form>
           </Form>
