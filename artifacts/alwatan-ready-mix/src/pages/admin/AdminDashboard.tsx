@@ -1,7 +1,7 @@
 import { useLanguage } from '@/lib/i18n';
 import { useGetAdminSummary } from '@workspace/api-client-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { MessageSquare, Package, MapPin, FileText, Send, Activity, ArrowUpRight } from 'lucide-react';
+import { MessageSquare, Package, MapPin, FileText, Settings, Users, Image as ImageIcon, Activity, ArrowUpRight } from 'lucide-react';
 import { format } from 'date-fns';
 import { Link } from 'wouter';
 
@@ -26,7 +26,7 @@ export default function AdminDashboard() {
   ];
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div className="space-y-8">
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
         {stats.map((stat, i) => {
@@ -100,38 +100,31 @@ export default function AdminDashboard() {
         <Card className="shadow-sm border-gray-200">
           <CardHeader className="border-b border-gray-100 bg-secondary rounded-t-lg">
             <CardTitle className="text-lg font-bold text-white flex items-center gap-2">
-              <Activity className="w-5 h-5 text-primary" />
-              {t('حالة النظام', 'System Status')}
+              <Settings className="w-5 h-5 text-primary" />
+              {t('إدارة الموقع', 'Site Management')}
             </CardTitle>
           </CardHeader>
-          <CardContent className="p-6">
-            <div className="space-y-6">
-              <div>
-                <div className="flex justify-between items-end mb-2">
-                  <span className="text-sm font-bold text-gray-600">{t('المساحة المستخدمة', 'Storage Used')}</span>
-                  <span className="text-xs font-mono text-gray-400">45%</span>
-                </div>
-                <div className="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
-                  <div className="bg-primary h-full" style={{ width: '45%' }}></div>
-                </div>
-              </div>
-              
-              <div>
-                <div className="flex justify-between items-end mb-2">
-                  <span className="text-sm font-bold text-gray-600">{t('أداء الخادم', 'Server Health')}</span>
-                  <span className="text-xs font-mono text-green-500 font-bold">Good</span>
-                </div>
-                <div className="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
-                  <div className="bg-green-500 h-full" style={{ width: '98%' }}></div>
-                </div>
-              </div>
-
-              <div className="bg-blue-50 p-4 rounded-lg border border-blue-100 mt-4">
-                <p className="text-sm text-blue-800 font-medium">
-                  {t('جميع الخدمات تعمل بشكل طبيعي. لا توجد تحديثات معلقة.', 'All services operating normally. No pending updates.')}
-                </p>
-              </div>
-            </div>
+          <CardContent className="p-4 space-y-2">
+            {[
+              { href: '/admin/media', icon: ImageIcon, ar: 'مكتبة الوسائط', en: 'Media Library' },
+              { href: '/admin/users', icon: Users, ar: 'مستخدمو الإدارة', en: 'Admin Users' },
+              { href: '/admin/settings', icon: Settings, ar: 'إعدادات الموقع', en: 'Site Settings' },
+            ].map((item) => {
+              const Icon = item.icon;
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="flex items-center justify-between rounded-lg border border-gray-100 p-3 text-secondary transition-colors hover:border-primary/30 hover:bg-primary/5"
+                >
+                  <span className="flex items-center gap-3 font-bold">
+                    <Icon className="h-5 w-5 text-primary" />
+                    {t(item.ar, item.en)}
+                  </span>
+                  <ArrowUpRight className={`h-4 w-4 text-gray-400 ${isRtl ? '-scale-x-100' : ''}`} />
+                </Link>
+              );
+            })}
           </CardContent>
         </Card>
       </div>

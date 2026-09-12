@@ -38,6 +38,29 @@ import AdminSettings from '@/pages/admin/AdminSettings';
 
 const queryClient = new QueryClient();
 
+function ProtectedAdminRoutes() {
+  return (
+    <AdminAuthGuard>
+      <AdminLayout>
+        <Switch>
+          <Route path="/admin" component={AdminDashboard} />
+          <Route path="/admin/quotes" component={AdminQuotes} />
+          <Route path="/admin/content" component={AdminContent} />
+          <Route path="/admin/products" component={AdminProducts} />
+          <Route path="/admin/articles" component={AdminArticles} />
+          <Route path="/admin/branches" component={AdminBranches} />
+          <Route path="/admin/certificates" component={AdminCertificates} />
+          <Route path="/admin/media" component={AdminMedia} />
+          <Route path="/admin/users" component={AdminUsers} />
+          <Route path="/admin/messages" component={AdminMessages} />
+          <Route path="/admin/settings" component={AdminSettings} />
+          <Route component={NotFound} />
+        </Switch>
+      </AdminLayout>
+    </AdminAuthGuard>
+  );
+}
+
 function Router() {
   return (
     <RoutedErrorBoundary>
@@ -46,25 +69,11 @@ function Router() {
         <Route path="/admin/login" component={AdminLogin} />
 
         {/* Protected Admin Routes */}
+        <Route path="/admin">
+          <ProtectedAdminRoutes />
+        </Route>
         <Route path="/admin/:rest*">
-          <AdminAuthGuard>
-            <AdminLayout>
-              <Switch>
-                <Route path="/admin" component={AdminDashboard} />
-                <Route path="/admin/quotes" component={AdminQuotes} />
-                <Route path="/admin/content" component={AdminContent} />
-                <Route path="/admin/products" component={AdminProducts} />
-                <Route path="/admin/articles" component={AdminArticles} />
-                <Route path="/admin/branches" component={AdminBranches} />
-                <Route path="/admin/certificates" component={AdminCertificates} />
-                <Route path="/admin/media" component={AdminMedia} />
-                <Route path="/admin/users" component={AdminUsers} />
-                <Route path="/admin/messages" component={AdminMessages} />
-                <Route path="/admin/settings" component={AdminSettings} />
-                <Route component={NotFound} />
-              </Switch>
-            </AdminLayout>
-          </AdminAuthGuard>
+          <ProtectedAdminRoutes />
         </Route>
 
         {/* Public Routes */}

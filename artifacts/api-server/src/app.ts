@@ -6,6 +6,7 @@ import router from "./routes";
 import { logger } from "./lib/logger";
 
 const app: Express = express();
+app.set("trust proxy", 1);
 
 app.use(
   pinoHttp({
@@ -30,11 +31,19 @@ const configuredOrigins = (process.env.ALLOWED_ORIGINS ?? "")
   .split(",")
   .map((origin) => origin.trim())
   .filter(Boolean);
+const replitOrigins = [
+  process.env.REPLIT_DEV_DOMAIN,
+  ...(process.env.REPLIT_DOMAINS ?? "").split(","),
+]
+  .map((domain) => domain?.trim())
+  .filter((domain): domain is string => Boolean(domain))
+  .map((domain) => domain.startsWith("http") ? domain : `https://${domain}`);
+const allowedOrigins = new Set([...configuredOrigins, ...replitOrigins]);
 app.use(
   cors({
     credentials: true,
     origin(origin, callback) {
-      if (!origin || configuredOrigins.includes(origin)) {
+      if (!origin || allowedOrigins.has(origin)) {
         callback(null, true);
         return;
       }

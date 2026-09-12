@@ -112,10 +112,20 @@ function allowedOrigins(req: Request): Set<string> {
     .split(",")
     .map((origin) => origin.trim())
     .filter(Boolean);
-  if (configured.length) return new Set(configured);
+  const replit = [
+    process.env.REPLIT_DEV_DOMAIN,
+    ...(process.env.REPLIT_DOMAINS ?? "").split(","),
+  ]
+    .map((domain) => domain?.trim())
+    .filter((domain): domain is string => Boolean(domain))
+    .map((domain) => domain.startsWith("http") ? domain : `https://${domain}`);
   const host = req.get("host");
   const protocol = req.protocol;
-  return host ? new Set([`${protocol}://${host}`]) : new Set();
+  return new Set([
+    ...configured,
+    ...replit,
+    ...(host ? [`${protocol}://${host}`] : []),
+  ]);
 }
 
 export function requireSameOrigin(req: Request, res: Response, next: NextFunction): void {

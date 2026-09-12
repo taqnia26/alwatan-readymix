@@ -48,9 +48,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   return (
     <div className="flex h-screen bg-gray-50 text-gray-900 overflow-hidden" dir={isRtl ? 'rtl' : 'ltr'}>
       {/* Sidebar */}
-      <aside className={`w-64 bg-secondary text-white flex flex-col shadow-xl flex-shrink-0 z-20 ${isRtl ? 'border-l' : 'border-r'} border-secondary/20`}>
-        <div className="p-6 bg-secondary flex items-center justify-center border-b border-white/10 h-20">
-          <div className="text-xl font-black text-primary bg-white px-4 py-1 rounded">ALWATAN</div>
+      <aside className={`w-20 md:w-64 bg-secondary text-white flex flex-col shadow-xl flex-shrink-0 z-20 ${isRtl ? 'border-l' : 'border-r'} border-secondary/20`}>
+        <div className="p-3 md:p-6 bg-secondary flex items-center justify-center border-b border-white/10 h-20">
+          <div className="text-sm md:text-xl font-black text-primary bg-white px-2 md:px-4 py-1 rounded">ALWATAN</div>
         </div>
         <div className="flex-1 overflow-y-auto py-4 px-4 space-y-1 custom-scrollbar">
           {menuItems.map((item) => {
@@ -60,39 +60,39 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                <Link 
                 key={item.href} 
                 href={item.href}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors font-medium ${
+                 className={`flex items-center justify-center md:justify-start gap-3 px-3 md:px-4 py-3 rounded-lg transition-colors font-medium ${
                   active ? 'bg-primary text-white' : 'text-gray-300 hover:bg-white/5 hover:text-white'
                 }`}
               >
                 <Icon className="w-5 h-5" />
-                <span>{item.label}</span>
+                 <span className="hidden md:inline">{item.label}</span>
               </Link>
             );
           })}
         </div>
         <div className="p-4 border-t border-white/10 flex flex-col gap-2">
-          <Link href="/" className="flex items-center gap-3 px-4 py-3 text-gray-300 hover:text-white transition-colors rounded-lg hover:bg-white/5">
+          <Link href="/" className="flex items-center justify-center md:justify-start gap-3 px-3 md:px-4 py-3 text-gray-300 hover:text-white transition-colors rounded-lg hover:bg-white/5">
             <LayoutDashboard className="w-5 h-5" />
-            <span>{t('العودة للموقع', 'Back to Site')}</span>
+            <span className="hidden md:inline">{t('العودة للموقع', 'Back to Site')}</span>
           </Link>
           <button 
             onClick={handleLogout}
-            className="flex items-center w-full gap-3 px-4 py-3 text-gray-300 hover:text-red-400 transition-colors rounded-lg hover:bg-red-500/10 text-start"
+            className="flex items-center justify-center md:justify-start w-full gap-3 px-3 md:px-4 py-3 text-gray-300 hover:text-red-400 transition-colors rounded-lg hover:bg-red-500/10 text-start"
           >
             <LogOut className="w-5 h-5" />
-            <span>{t('تسجيل الخروج', 'Logout')}</span>
+            <span className="hidden md:inline">{t('تسجيل الخروج', 'Logout')}</span>
           </button>
         </div>
       </aside>
 
       {/* Main Area */}
       <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        <header className="bg-white shadow-sm h-20 px-8 flex justify-between items-center z-10 flex-shrink-0 border-b">
-          <h1 className="text-2xl font-bold text-secondary">
+        <header className="bg-white shadow-sm h-20 px-4 md:px-8 flex justify-between items-center z-10 flex-shrink-0 border-b">
+          <h1 className="text-lg md:text-2xl font-bold text-secondary">
             {activeMenu?.label || t('لوحة التحكم', 'Dashboard')}
           </h1>
           <div className="flex items-center gap-4">
-            <div className="flex flex-col items-end">
+            <div className="hidden sm:flex flex-col items-end">
               <span className="font-semibold text-sm text-secondary">{me?.user?.name || 'Admin User'}</span>
               <span className="text-xs text-gray-500">{me?.user?.role || 'Administrator'}</span>
             </div>
