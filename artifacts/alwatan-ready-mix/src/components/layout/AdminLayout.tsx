@@ -52,7 +52,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div className="p-3 md:p-6 bg-secondary flex items-center justify-center border-b border-white/10 h-20">
           <div className="text-sm md:text-xl font-black text-primary bg-white px-2 md:px-4 py-1 rounded">ALWATAN</div>
         </div>
-        <div className="flex-1 overflow-y-auto py-4 px-4 space-y-1 custom-scrollbar">
+        <div className="admin-scrollbar admin-scrollbar--dark flex-1 overflow-y-auto py-4 px-4 space-y-1">
           {menuItems.map((item) => {
             const Icon = item.icon;
             const active = activeMenu?.href === item.href;
@@ -101,7 +101,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </div>
           </div>
         </header>
-        <div className="flex-1 overflow-y-auto p-4 md:p-8 bg-gray-50">
+        <div className="admin-scrollbar flex-1 overflow-y-auto p-4 md:p-8 bg-gray-50">
           <div className="max-w-7xl mx-auto">
             {children}
           </div>
