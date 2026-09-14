@@ -77,7 +77,9 @@ function Router() {
         </Route>
 
         {/* Public Routes */}
-        <Route path="/:rest*">
+        {/* Pathless fallback also matches "/", unlike "/:rest*" which only
+            matches URLs containing at least one path segment. */}
+        <Route>
           <Layout>
             <Switch>
               <Route path="/" component={Home} />

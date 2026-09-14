@@ -37,14 +37,20 @@ function toError(value: unknown): Error {
 
 function DefaultFallback({ error, resetError }: ErrorFallbackProps) {
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-gray-50 p-6">
+    <div
+      className="min-h-screen w-full flex items-center justify-center bg-gray-50 p-6"
+      dir="rtl"
+      role="alert"
+    >
       <div className="max-w-lg w-full text-center">
         <h1 className="text-xl font-semibold text-gray-900">
-          Something went wrong
+          تعذر عرض الصفحة
         </h1>
         <p className="mt-2 text-sm text-gray-600">
-          This part of the app hit an error. The rest of the app is still
-          running.
+          حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى أو إعادة تحميل الصفحة.
+        </p>
+        <p className="mt-1 text-sm text-gray-500" dir="ltr">
+          Something went wrong. Please try again or reload the page.
         </p>
         {/* Dev only: messages can carry API responses and other internals. */}
         {import.meta.env.DEV ? (
@@ -57,7 +63,7 @@ function DefaultFallback({ error, resetError }: ErrorFallbackProps) {
           onClick={resetError}
           className="mt-4 rounded bg-gray-900 px-4 py-2 text-sm text-white hover:bg-gray-700"
         >
-          Try again
+          المحاولة مرة أخرى
         </button>
       </div>
     </div>
