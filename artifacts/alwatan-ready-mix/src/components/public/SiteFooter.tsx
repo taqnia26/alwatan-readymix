@@ -6,6 +6,7 @@ import type { StudioBranding, StudioNavItem } from '@workspace/api-client-react'
 import { useLanguage } from '@/lib/i18n';
 import { pick } from '@/lib/studio';
 import logoAsset from '@assets/ChatGPT_Image_9_يوليو_2026،_04_29_03_م_1787598723614.png';
+import BrandEnergyLines from './BrandEnergyLines';
 
 export default function SiteFooter({ branding, nav, phone, email }: { branding?: StudioBranding; nav: StudioNavItem[]; phone: string; email: string }) {
   const { t, language } = useLanguage();
@@ -23,6 +24,7 @@ export default function SiteFooter({ branding, nav, phone, email }: { branding?:
     <footer className="relative overflow-hidden bg-secondary text-secondary-foreground">
       <div className="h-1 w-full flow-line" />
       <div className="pointer-events-none absolute inset-0 grid-blueprint opacity-40" />
+      <BrandEnergyLines variant="footer" />
       <div className="pointer-events-none absolute -bottom-10 start-0 select-none whitespace-nowrap text-[18vw] font-black leading-none text-white/[0.03]" aria-hidden>ALWATAN</div>
       <motion.div className="container relative mx-auto grid gap-12 px-6 py-16 md:grid-cols-12" initial={reduce ? false : 'hidden'} whileInView="show" viewport={{ once: true, margin: '-80px' }} transition={{ staggerChildren: 0.12 }}>
         <motion.div variants={col} className="md:col-span-5">

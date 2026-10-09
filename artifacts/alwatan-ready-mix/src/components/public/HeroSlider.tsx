@@ -5,6 +5,7 @@ import type { StudioSlide } from '@workspace/api-client-react';
 import { useLanguage } from '@/lib/i18n';
 import { pick } from '@/lib/studio';
 import SmartLink from './SmartLink';
+import BrandEnergyLines from './BrandEnergyLines';
 
 const INTERVAL = 6500;
 const fmt = (n: number) => String(n).padStart(2, '0');
@@ -67,13 +68,14 @@ export default function HeroSlider({ slides }: { slides: StudioSlide[] }) {
 
   return (
     <section
-      className="relative h-[78dvh] min-h-[480px] md:h-[88dvh] w-full overflow-hidden bg-secondary text-white select-none"
+      className="relative w-full overflow-hidden bg-secondary text-white select-none"
       aria-roledescription="carousel"
       aria-label={t('شرائح العرض', 'Highlights')}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       onKeyDown={(e) => { if (e.key === 'ArrowRight') (isRtl ? prev : next)(); if (e.key === 'ArrowLeft') (isRtl ? next : prev)(); }}
     >
+      <div className="relative aspect-[3/4] w-full overflow-hidden sm:aspect-video xl:max-h-[720px]">
       <AnimatePresence initial={false} custom={dir}>
         <motion.div
           key={s.id}
@@ -88,46 +90,41 @@ export default function HeroSlider({ slides }: { slides: StudioSlide[] }) {
           dragElastic={0.15}
           onDragEnd={onDragEnd}
         >
-          <motion.div
-            className="absolute inset-0"
-            initial={reduce ? false : { scale: 1.12 }}
-            animate={{ scale: 1 }}
-            transition={{ duration: reduce ? 0 : 9, ease: 'easeOut' }}
-          >
-            <picture>
+          <div className="absolute inset-0">
+            <picture className="block h-full w-full">
               {s.mobileImageUrl && <source media="(max-width: 768px)" srcSet={s.mobileImageUrl} />}
-              <img src={s.imageUrl} alt={title} draggable={false} className="h-full w-full object-cover" fetchPriority={index === 0 ? 'high' : 'auto'} />
+              <img src={s.imageUrl} alt={title} draggable={false} className="block h-full w-full object-contain object-center" fetchPriority={index === 0 ? 'high' : 'auto'} />
             </picture>
-          </motion.div>
+          </div>
         </motion.div>
       </AnimatePresence>
+      </div>
+      <BrandEnergyLines />
 
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-secondary via-secondary/40 to-secondary/10" />
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-r rtl:bg-gradient-to-l from-secondary/80 via-transparent to-transparent" />
-      <div className="pointer-events-none absolute inset-0 grid-blueprint opacity-60" />
-
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 pb-28 md:pb-32">
-        <div className="container mx-auto px-6">
+      <div className="relative z-10 border-t border-white/10 bg-secondary/80">
+        <div className="container mx-auto px-6 py-7 md:py-8">
           <AnimatePresence mode="wait">
-            <motion.div key={s.id} className="max-w-3xl" initial="hidden" animate="show" exit="out"
+            <motion.div key={s.id} className="grid items-center gap-5 md:grid-cols-[minmax(0,1fr)_auto]" initial={reduce ? false : 'hidden'} animate="show" exit="out"
               variants={{ hidden: {}, show: { transition: { staggerChildren: reduce ? 0 : 0.12, delayChildren: 0.25 } }, out: { opacity: 0, transition: { duration: 0.2 } } }}>
-              <motion.div variants={{ hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0 } }} className="mb-5 flex items-center gap-3">
+              <div className="min-w-0">
+              <motion.div variants={{ hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0 } }} className="mb-3 flex items-center gap-3">
                 <span className="h-[3px] w-12 bg-primary" />
                 <span className="text-sm font-bold tracking-widest text-accent">{fmt(index + 1)} / {fmt(count)}</span>
               </motion.div>
               {title && (
-                <motion.h2 variants={{ hidden: { opacity: 0, y: 40 }, show: { opacity: 1, y: 0 } }} transition={{ duration: 0.8, ease }} className="text-4xl font-black leading-[1.25] md:text-6xl lg:text-7xl">
+                <motion.h2 variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }} transition={{ duration: reduce ? 0 : 0.6, ease }} className="text-2xl font-black leading-snug md:text-3xl lg:text-4xl">
                   {title}
                 </motion.h2>
               )}
               {subtitle && (
-                <motion.p variants={{ hidden: { opacity: 0, y: 24 }, show: { opacity: 1, y: 0 } }} transition={{ duration: 0.7, ease }} className="mt-5 max-w-xl text-base font-medium leading-loose text-white/85 md:text-xl">
+                <motion.p variants={{ hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } }} transition={{ duration: reduce ? 0 : 0.5, ease }} className="mt-2 max-w-3xl text-sm font-medium leading-loose text-white/80 md:text-base">
                   {subtitle}
                 </motion.p>
               )}
+              </div>
               {button && s.href && (
-                <motion.div variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }} className="pointer-events-auto mt-8">
-                  <SmartLink href={s.href} testId="link-slide-cta" className="group inline-flex h-14 items-center gap-3 bg-primary px-8 text-lg font-bold text-white shadow-xl shadow-black/30 transition hover:bg-primary/90 rounded-md">
+                <motion.div variants={{ hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } }}>
+                  <SmartLink href={s.href} testId="link-slide-cta" className="group inline-flex min-h-12 items-center gap-3 rounded-md bg-primary px-6 py-3 text-base font-bold text-white shadow-xl shadow-black/20 transition hover:bg-primary/90">
                     {button}
                     <ArrowUpRight className="h-5 w-5 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 rtl:-scale-x-100 rtl:group-hover:-translate-x-0.5" />
                   </SmartLink>
@@ -139,7 +136,7 @@ export default function HeroSlider({ slides }: { slides: StudioSlide[] }) {
       </div>
 
       {/* Controls */}
-      <div className="absolute inset-x-0 bottom-0 z-10 pb-6 md:pb-9">
+      <div className="relative z-10 pb-5">
         <div className="container mx-auto flex items-center justify-between gap-4 px-6">
           <div className="flex flex-1 items-center gap-2 md:gap-3" role="tablist">
             {slides.map((sl, i) => (
