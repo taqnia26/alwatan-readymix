@@ -997,6 +997,20 @@ export const RequestMediaUploadResponse = zod.object({
 })
 
 
+/**
+ * Local driver only. Streams raw file bytes using a single-use token; no session cookie required.
+ */
+export const uploadLocalMediaQueryTokenMax = 2048;
+
+
+
+export const UploadLocalMediaQueryParams = zod.object({
+  "token": zod.coerce.string().max(uploadLocalMediaQueryTokenMax)
+})
+
+export const UploadLocalMediaResponse = zod.void()
+
+
 export const ListMediaResponseItem = zod.object({
   "id": zod.number(),
   "objectPath": zod.string(),

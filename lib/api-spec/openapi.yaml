@@ -711,10 +711,39 @@ paths:
             schema: { $ref: "#/components/schemas/MediaUploadRequest" }
       responses:
         "200":
-          description: Presigned upload URL
+          description: Short-lived upload URL (local signed token or opt-in Replit URL)
           content:
             application/json:
               schema: { $ref: "#/components/schemas/MediaUploadResponse" }
+  /storage/uploads/direct:
+    put:
+      operationId: uploadLocalMedia
+      tags: [public]
+      description: Local driver only. Streams raw file bytes using a single-use token; no session cookie required.
+      parameters:
+        - name: token
+          in: query
+          required: true
+          schema: { type: string, maxLength: 2048 }
+      requestBody:
+        required: true
+        content:
+          image/jpeg: { schema: { type: string, format: binary } }
+          image/png: { schema: { type: string, format: binary } }
+          image/webp: { schema: { type: string, format: binary } }
+          image/gif: { schema: { type: string, format: binary } }
+          application/pdf: { schema: { type: string, format: binary } }
+          video/mp4: { schema: { type: string, format: binary } }
+          video/webm: { schema: { type: string, format: binary } }
+      responses:
+        "204": { description: Bytes verified and stored }
+        "400": { description: Invalid size }
+        "403": { description: Invalid token }
+        "405": { description: Not enabled for this driver }
+        "409": { description: Token already used or object exists }
+        "410": { description: Token expired }
+        "413": { description: Upload exceeds its size cap }
+        "415": { description: Content type or file signature mismatch }
   /admin/media:
     get:
       operationId: listMedia
@@ -762,6 +791,9 @@ paths:
           schema: { type: string }
       responses:
         "200": { description: Object bytes }
+        "206": { description: Partial object bytes }
+        "416": { description: Invalid byte range }
+        "404": { description: Missing object }
   /storage/public-objects/{filePath}:
     get:
       operationId: servePublicMedia

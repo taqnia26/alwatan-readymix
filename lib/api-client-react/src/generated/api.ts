@@ -70,7 +70,8 @@ import type {
   StudioConfig,
   StudioDraftInput,
   StudioState,
-  UpdateAdminSettings200
+  UpdateAdminSettings200,
+  UploadLocalMediaParams
 } from './api.schemas';
 
 import { customFetch } from '../custom-fetch';
@@ -3633,6 +3634,82 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(getRequestMediaUploadMutationOptions(options));
     }
 
+export const getUploadLocalMediaUrl = (params: UploadLocalMediaParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/storage/uploads/direct?${stringifiedParams}` : `/api/storage/uploads/direct`
+}
+
+/**
+ * Local driver only. Streams raw file bytes using a single-use token; no session cookie required.
+ */
+export const uploadLocalMedia = async (uploadLocalMediaBody: Blob,
+    params: UploadLocalMediaParams, options?: Parameters<typeof customFetch>[1]): Promise<void> => {
+
+  return customFetch<void>(getUploadLocalMediaUrl(params),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'image/jpeg', ...options?.headers },
+    body: uploadLocalMediaBody
+  }
+);}
+
+
+
+
+
+export const getUploadLocalMediaMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof uploadLocalMedia>>, TError,{data: BodyType<Blob>;params: UploadLocalMediaParams}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof uploadLocalMedia>>, TError,{data: BodyType<Blob>;params: UploadLocalMediaParams}, TContext> => {
+
+const mutationKey = ['uploadLocalMedia'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof uploadLocalMedia>>, {data: BodyType<Blob>;params: UploadLocalMediaParams}> = (props) => {
+          const {data,params} = props ?? {};
+
+          return  uploadLocalMedia(data,params,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UploadLocalMediaMutationResult = NonNullable<Awaited<ReturnType<typeof uploadLocalMedia>>>
+    export type UploadLocalMediaMutationBody = BodyType<Blob>
+    export type UploadLocalMediaMutationError = ErrorType<void>
+
+    export const useUploadLocalMedia = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof uploadLocalMedia>>, TError,{data: BodyType<Blob>;params: UploadLocalMediaParams}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof uploadLocalMedia>>,
+        TError,
+        {data: BodyType<Blob>;params: UploadLocalMediaParams},
+        TContext
+      > => {
+      return useMutation(getUploadLocalMediaMutationOptions(options));
+    }
+
 export const getListMediaUrl = () => {
 
 
@@ -3864,7 +3941,7 @@ export const getServeMediaQueryKey = (path: string,) => {
     }
 
 
-export const getServeMediaQueryOptions = <TData = Awaited<ReturnType<typeof serveMedia>>, TError = ErrorType<unknown>>(path: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof serveMedia>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+export const getServeMediaQueryOptions = <TData = Awaited<ReturnType<typeof serveMedia>>, TError = ErrorType<void>>(path: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof serveMedia>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -3883,11 +3960,11 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type ServeMediaQueryResult = NonNullable<Awaited<ReturnType<typeof serveMedia>>>
-export type ServeMediaQueryError = ErrorType<unknown>
+export type ServeMediaQueryError = ErrorType<void>
 
 
 
-export function useServeMedia<TData = Awaited<ReturnType<typeof serveMedia>>, TError = ErrorType<unknown>>(
+export function useServeMedia<TData = Awaited<ReturnType<typeof serveMedia>>, TError = ErrorType<void>>(
  path: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof serveMedia>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
 
  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {

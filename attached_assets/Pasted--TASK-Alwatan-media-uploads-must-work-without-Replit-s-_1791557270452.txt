@@ -1,0 +1,36 @@
+# TASK — Alwatan: media uploads must work without Replit's object-storage sidecar
+
+## What's wrong
+
+`artifacts/api-server/src/lib/objectStorage.ts` talks to `http://127.0.0.1:1106`, Replit's internal sidecar, for credentials and signed upload URLs. That service does not exist outside a Repl. On our production VPS (plain Linux, Node, PostgreSQL, no Replit services) `PRIVATE_OBJECT_DIR` and `DEFAULT_OBJECT_STORAGE_BUCKET_ID` are not set either. Every upload from the studio media picker and the admin media page therefore fails, and anything served through `GET /api/storage/objects/*` fails too.
+
+The same class of problem was already fixed in two other projects by adding a local filesystem implementation behind the existing storage interface. Do the same here.
+
+## Required
+
+1. Add a local filesystem implementation behind the same interface `objectStorage` exposes today: request an upload URL, finalize, read and serve with Range support, read metadata, delete. Store files under a directory set by an environment variable (for example `MEDIA_STORAGE_DIR`), outside the build output and outside the web root.
+2. Upload mechanism. There is no signed cloud URL, so implement a short-lived signed upload token that your own API verifies on a direct upload endpoint. The token is single-use and bound to the object path, the declared content type and the size limit, and it does not depend on the admin session cookie. Keep the client contract unchanged (request-url, then PUT to the returned URL, then finalize) so the studio UI needs no change.
+3. The upload endpoint streams to a temporary file with a hard size cap enforced while streaming, never buffering a whole upload in memory. It moves the file into place only after the size and type checks pass. Check that the leading bytes match the declared type (JPEG, PNG, WebP, GIF, PDF, MP4, WebM) and reject mismatches.
+4. Keep every existing validation: allowed content types and size limits (images 10 MB, PDF 25 MB, MP4/WebM 100 MB), the object-path pattern, the content-type and size check at finalize, and the admin plus same-origin requirement on request-url, finalize and delete. SVG and every other type stay disallowed.
+5. Serving keeps its current behaviour: 200, 206 and 416 for Range requests, `X-Content-Type-Options: nosniff`, and the cache headers. The content type comes from the verified record, never from the client at serve time. Path traversal must be impossible, and an uploaded file must never be served as HTML or script.
+6. Backend selection is explicit and defaults to local: for example `MEDIA_STORAGE_DRIVER=local` by default and `replit` as opt-in, chosen where the storage service is created instead of hardcoded. With the local driver nothing may call the sidecar or require `PRIVATE_OBJECT_DIR` or `DEFAULT_OBJECT_STORAGE_BUCKET_ID`.
+7. Deletion keeps the existing "still referenced" 409 protection and also removes the local file.
+8. Existing records. Report how `/objects/...` paths already stored in `media_assets` and in content (pages, settings, drafts, published versions) are resolved by the local backend. A reference whose file does not exist must degrade to a 404, never crash the request. Also provide the steps, or a script the owner runs, that copy any objects currently in Replit's bucket into the local directory under the same object paths, so existing references keep working. Do not run anything against production.
+9. Tests: the local backend runs by default with no Replit services present. Replit-specific tests are skipped when the sidecar is absent.
+10. Short documentation: the new environment variables with their defaults, the storage directory, and a note that this directory must be included in server backups.
+
+## Do not
+
+- Do not change studio features, the page builder or the media picker beyond what the upload flow strictly needs.
+- Do not touch admin login, sessions or password logic.
+- Do not change the database schema. If you believe a schema change is needed, stop and explain why.
+- No production access, and no SQL or migration to apply anywhere.
+
+## Verify
+
+- `pnpm run typecheck` passes.
+- An upload, finalize, serve (including a Range request) and delete round trip works end to end against a local directory, with no Replit service reachable and none of the storage environment variables set.
+
+## Deliver
+
+Files changed, the new environment variables with their defaults, the signed-token mechanism you chose, how existing records resolve, the steps for copying existing objects, and the test results.

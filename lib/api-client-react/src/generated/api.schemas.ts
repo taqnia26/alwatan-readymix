@@ -752,6 +752,13 @@ status?: StatusParameter;
 search?: SearchParameter;
 };
 
+export type UploadLocalMediaParams = {
+/**
+ * @maxLength 2048
+ */
+token: string;
+};
+
 export type GetSiteInsightsParams = {
 days?: GetSiteInsightsDays;
 };

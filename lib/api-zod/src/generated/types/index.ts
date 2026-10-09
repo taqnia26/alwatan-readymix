@@ -84,3 +84,4 @@ export * from './studioSlide';
 export * from './studioState';
 export * from './studioVideo';
 export * from './updateAdminSettings200';
+export * from './uploadLocalMediaParams';

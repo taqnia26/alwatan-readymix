@@ -47,3 +47,8 @@ Thumbs.db
 # Replit
 .cache/
 .local/
+
+# Local media bytes and their signing key must never be committed.
+**/var/media/
+**/.upload-signing-key
+.test-build/
