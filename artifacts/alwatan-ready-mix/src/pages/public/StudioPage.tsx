@@ -1,3 +1,4 @@
+import BrandEnergyLines from '@/components/public/BrandEnergyLines';
 import { useEffect } from 'react';
 import { useParams } from 'wouter';
 import { AlertTriangle } from 'lucide-react';
@@ -33,6 +34,7 @@ export default function StudioPage() {
     <div>
       <section className="relative overflow-hidden bg-secondary py-16 text-white md:py-24">
         <div className="absolute inset-0 grid-blueprint" />
+        <BrandEnergyLines />
         <div className="absolute inset-x-0 top-0 h-1 flow-line" />
         <div className="container relative mx-auto px-6">
           <h1 className="max-w-4xl text-4xl font-black leading-tight md:text-6xl">{title}</h1>

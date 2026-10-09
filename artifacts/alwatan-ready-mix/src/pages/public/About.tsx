@@ -1,3 +1,4 @@
+import BrandEnergyLines from '@/components/public/BrandEnergyLines';
 import { useLanguage } from '@/lib/i18n';
 import { useGetPageContent } from '@workspace/api-client-react';
 import DOMPurify from 'dompurify';
@@ -26,6 +27,7 @@ export default function About() {
       {/* Hero Header */}
       <div className="bg-secondary text-white py-24 mb-16 relative overflow-hidden">
         <div className="absolute inset-0 opacity-10 bg-[url('/construction-1.png')] bg-cover bg-center mix-blend-overlay"></div>
+        <BrandEnergyLines />
         <div className="container mx-auto px-4 relative z-10 text-center">
           <h1 className="text-4xl md:text-6xl font-black mb-4 tracking-tight">
             {t('عن شركة الوطن', 'About AlWatan')}

@@ -1,3 +1,4 @@
+import BrandEnergyLines from '@/components/public/BrandEnergyLines';
 import { useEffect, useState } from 'react';
 import { Download, ExternalLink, Eye, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -21,6 +22,7 @@ export default function CompanyProfile() {
     <div className="bg-background">
       <section className="relative overflow-hidden bg-secondary py-20 text-secondary-foreground md:py-28">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,hsl(var(--primary)/0.2),transparent_42%)]" />
+        <BrandEnergyLines />
         <div className="container relative mx-auto px-6 text-center">
           <span className="mb-5 inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-4 py-2 text-sm font-bold text-primary">
             <FileText className="h-4 w-4" />

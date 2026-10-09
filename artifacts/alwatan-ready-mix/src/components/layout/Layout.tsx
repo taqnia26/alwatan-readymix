@@ -11,6 +11,7 @@ import SiteFooter from '@/components/public/SiteFooter';
 import SmartLink from '@/components/public/SmartLink';
 import SiteActivityTracker from '@/components/SiteActivityTracker';
 import { trackSiteActivity } from '@/lib/site-activity';
+import BrandEnergyLines from '@/components/public/BrandEnergyLines';
 
 export default function Layout({ children }: { children: ReactNode }) {
   const { t, language, setLanguage } = useLanguage();
@@ -87,7 +88,12 @@ export default function Layout({ children }: { children: ReactNode }) {
         </AnimatePresence>
       </header>
 
-      <main className="flex-1">{children}</main>
+      <main className="relative flex-1">
+        {children}
+        {location !== '/' && location !== '/about' && location !== '/company-profile' && !location.startsWith('/p/') && (
+          <BrandEnergyLines key={location} variant="page" />
+        )}
+      </main>
       <SiteFooter branding={b} nav={nav} phone={phone} email={email} />
 
       <a href={waUrl} target="_blank" rel="noreferrer" onClick={() => trackSiteActivity('whatsapp_click')} aria-label={t('تواصل معنا عبر واتساب', 'Contact us on WhatsApp')} data-testid="link-whatsapp"

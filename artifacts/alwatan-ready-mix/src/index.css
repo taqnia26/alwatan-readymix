@@ -259,6 +259,16 @@
   animation-play-state: var(--energy-play-state, paused);
 }
 .brand-energy-lines--footer { opacity: .9; }
+.brand-energy-lines--page {
+  inset: 0 0 auto;
+  height: 620px;
+  max-height: 100%;
+  z-index: 1;
+  opacity: .55;
+}
+.brand-energy-lines--page .brand-energy-track { stroke: #238751; stroke-opacity: .2; }
+.brand-energy-lines--page .brand-energy-beam { stroke: #21995a; }
+.brand-energy-lines--page .brand-energy-sweep { display: none; }
 
 @media (prefers-reduced-motion: reduce) {
   .brand-energy-beam, .brand-energy-sweep { animation: none; }
