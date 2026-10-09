@@ -5,6 +5,295 @@
  * AlWatan Ready-Mix Company public website and admin CMS API
  * OpenAPI spec version: 0.1.0
  */
+export interface StudioBranding {
+  /** @maxLength 200 */
+  nameAr: string;
+  /** @maxLength 200 */
+  nameEn: string;
+  /** @maxLength 2000 */
+  logoUrl: string;
+  /** @maxLength 3000 */
+  footerAr: string;
+  /** @maxLength 3000 */
+  footerEn: string;
+  /** @maxLength 50 */
+  phone: string;
+  /** @maxLength 200 */
+  email: string;
+  /** @maxLength 50 */
+  whatsapp: string;
+  /** @maxLength 2000 */
+  profileUrl: string;
+  /** @maxLength 2000 */
+  facebook: string;
+  /** @maxLength 2000 */
+  instagram: string;
+  /** @maxLength 2000 */
+  linkedin: string;
+  /** @maxLength 200 */
+  seoTitleAr: string;
+  /** @maxLength 200 */
+  seoTitleEn: string;
+  /** @maxLength 500 */
+  seoDescriptionAr: string;
+  /** @maxLength 500 */
+  seoDescriptionEn: string;
+}
+
+export interface StudioNavItem {
+  /** @maxLength 100 */
+  id: string;
+  /** @maxLength 100 */
+  labelAr: string;
+  /** @maxLength 100 */
+  labelEn: string;
+  /** @maxLength 2000 */
+  href: string;
+  visible: boolean;
+}
+
+export interface StudioSlide {
+  /** @maxLength 100 */
+  id: string;
+  /** @maxLength 2000 */
+  imageUrl: string;
+  /** @maxLength 2000 */
+  mobileImageUrl: string;
+  /** @maxLength 200 */
+  titleAr: string;
+  /** @maxLength 200 */
+  titleEn: string;
+  /** @maxLength 1000 */
+  subtitleAr: string;
+  /** @maxLength 1000 */
+  subtitleEn: string;
+  /** @maxLength 100 */
+  buttonAr: string;
+  /** @maxLength 100 */
+  buttonEn: string;
+  /** @maxLength 2000 */
+  href: string;
+  enabled: boolean;
+}
+
+export interface StudioVideo {
+  /** @maxLength 100 */
+  id: string;
+  /** @maxLength 200 */
+  titleAr: string;
+  /** @maxLength 200 */
+  titleEn: string;
+  /** @maxLength 1000 */
+  descriptionAr: string;
+  /** @maxLength 1000 */
+  descriptionEn: string;
+  /** @maxLength 2000 */
+  src: string;
+  /** @maxLength 2000 */
+  poster: string;
+  enabled: boolean;
+}
+
+export type StudioHomeSectionKey = typeof StudioHomeSectionKey[keyof typeof StudioHomeSectionKey];
+
+
+export const StudioHomeSectionKey = {
+  intro: 'intro',
+  products: 'products',
+  videos: 'videos',
+  branches: 'branches',
+  certificates: 'certificates',
+  blog: 'blog',
+  cta: 'cta',
+  custom: 'custom',
+} as const;
+
+export interface StudioHomeSection {
+  /** @maxLength 100 */
+  id: string;
+  key: StudioHomeSectionKey;
+  /** @maxLength 200 */
+  titleAr: string;
+  /** @maxLength 200 */
+  titleEn: string;
+  /** @maxLength 10000 */
+  bodyAr: string;
+  /** @maxLength 10000 */
+  bodyEn: string;
+  /** @maxLength 2000 */
+  imageUrl: string;
+  /** @maxLength 2000 */
+  href: string;
+  visible: boolean;
+}
+
+export type StudioPageSectionKind = typeof StudioPageSectionKind[keyof typeof StudioPageSectionKind];
+
+
+export const StudioPageSectionKind = {
+  text: 'text',
+  image: 'image',
+  video: 'video',
+  cta: 'cta',
+} as const;
+
+export interface StudioPageSection {
+  /** @maxLength 100 */
+  id: string;
+  kind: StudioPageSectionKind;
+  /** @maxLength 200 */
+  headingAr: string;
+  /** @maxLength 200 */
+  headingEn: string;
+  /** @maxLength 20000 */
+  bodyAr: string;
+  /** @maxLength 20000 */
+  bodyEn: string;
+  /** @maxLength 2000 */
+  mediaUrl: string;
+  /** @maxLength 100 */
+  buttonAr: string;
+  /** @maxLength 100 */
+  buttonEn: string;
+  /** @maxLength 2000 */
+  href: string;
+  visible: boolean;
+}
+
+export interface StudioPage {
+  /** @maxLength 100 */
+  id: string;
+  /**
+     * @minLength 1
+     * @maxLength 120
+     * @pattern ^[a-z0-9]+(?:-[a-z0-9]+)*$
+     */
+  slug: string;
+  /** @maxLength 200 */
+  titleAr: string;
+  /** @maxLength 200 */
+  titleEn: string;
+  /** @maxLength 500 */
+  descriptionAr: string;
+  /** @maxLength 500 */
+  descriptionEn: string;
+  published: boolean;
+  /** @maxItems 60 */
+  sections: StudioPageSection[];
+}
+
+export interface StudioBanner {
+  /** @maxLength 100 */
+  id: string;
+  /** @maxLength 500 */
+  textAr: string;
+  /** @maxLength 500 */
+  textEn: string;
+  /** @maxLength 2000 */
+  href: string;
+  enabled: boolean;
+}
+
+export interface StudioCampaign {
+  /** @maxLength 100 */
+  id: string;
+  /**
+     * @minLength 1
+     * @maxLength 100
+     */
+  name: string;
+  /** @maxLength 100 */
+  source: string;
+  /** @maxLength 100 */
+  medium: string;
+  /** @maxLength 2000 */
+  target: string;
+}
+
+export interface StudioConfig {
+  branding: StudioBranding;
+  /** @maxItems 20 */
+  navigation: StudioNavItem[];
+  /** @maxItems 20 */
+  slides: StudioSlide[];
+  /** @maxItems 20 */
+  videos: StudioVideo[];
+  /** @maxItems 30 */
+  homeSections: StudioHomeSection[];
+  /** @maxItems 60 */
+  pages: StudioPage[];
+  /** @maxItems 10 */
+  banners: StudioBanner[];
+  /** @maxItems 100 */
+  campaigns: StudioCampaign[];
+}
+
+export interface StudioDraftInput {
+  config: StudioConfig;
+}
+
+export interface StudioState {
+  draft: StudioConfig;
+  published: StudioConfig;
+  /** @nullable */
+  updatedAt: string | null;
+  /** @nullable */
+  publishedAt: string | null;
+}
+
+export type SiteActivityInputEvent = typeof SiteActivityInputEvent[keyof typeof SiteActivityInputEvent];
+
+
+export const SiteActivityInputEvent = {
+  page_view: 'page_view',
+  whatsapp_click: 'whatsapp_click',
+  quote_click: 'quote_click',
+  profile_download: 'profile_download',
+  contact_submit: 'contact_submit',
+  quote_submit: 'quote_submit',
+} as const;
+
+export interface SiteActivityInput {
+  /**
+     * @minLength 16
+     * @maxLength 80
+     */
+  sessionId: string;
+  event: SiteActivityInputEvent;
+  /** @maxLength 300 */
+  path: string;
+  /** @maxLength 100 */
+  source: string;
+  /** @maxLength 100 */
+  campaign: string;
+}
+
+export interface InsightsDay {
+  date: string;
+  views: number;
+  quotes: number;
+  messages: number;
+}
+
+export interface InsightsCount {
+  name: string;
+  count: number;
+}
+
+export interface SiteInsights {
+  days: number;
+  views: number;
+  sessions: number;
+  whatsappClicks: number;
+  profileDownloads: number;
+  quotes: number;
+  messages: number;
+  timeline: InsightsDay[];
+  quoteStatuses: InsightsCount[];
+  topPages: InsightsCount[];
+  campaigns: InsightsCount[];
+}
+
 export interface HealthStatus {
   status: string;
 }
@@ -462,4 +751,17 @@ pageSize?: PageSizeParameter;
 status?: StatusParameter;
 search?: SearchParameter;
 };
+
+export type GetSiteInsightsParams = {
+days?: GetSiteInsightsDays;
+};
+
+export type GetSiteInsightsDays = typeof GetSiteInsightsDays[keyof typeof GetSiteInsightsDays];
+
+
+export const GetSiteInsightsDays = {
+  NUMBER_7: 7,
+  NUMBER_30: 30,
+  NUMBER_90: 90,
+} as const;
 

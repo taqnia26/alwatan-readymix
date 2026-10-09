@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import MediaInput from '@/components/admin/MediaInput';
 import { useLanguage } from '@/lib/i18n';
 import { useListProducts, useCreateProduct, useUpdateProduct, useDeleteProduct } from '@workspace/api-client-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -23,7 +24,7 @@ const productSchema = z.object({
   descriptionEn: z.string().min(1, 'Required'),
   specsAr: z.string(),
   specsEn: z.string(),
-  imageUrl: z.string().url('Must be a valid URL'),
+  imageUrl: z.string().refine((v) => v.startsWith('/') || /^https?:\/\//.test(v), 'Must be a valid URL'),
   compressiveStrength: z.string().min(1, 'Required'),
 });
 
@@ -177,7 +178,7 @@ export default function AdminProducts() {
               </div>
 
               <FormField control={form.control} name="imageUrl" render={({ field }) => (
-                <FormItem><FormLabel>{t('رابط الصورة', 'Image URL')}</FormLabel><FormControl><Input {...field} dir="ltr" /></FormControl><FormMessage /></FormItem>
+                <FormItem><FormLabel>{t('رابط الصورة', 'Image URL')}</FormLabel><FormControl><MediaInput value={field.value} onChange={field.onChange} kind="image" /></FormControl><FormMessage /></FormItem>
               )} />
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

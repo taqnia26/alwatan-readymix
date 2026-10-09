@@ -199,16 +199,16 @@ router.delete("/admin/quotes/:id", ...write, async (req, res): Promise<void> => 
 
 router.get("/admin/settings", ...admin, async (_req, res): Promise<void> => {
   const rows = await db.select().from(siteSettingsTable);
-  res.json(Object.fromEntries(rows.map((row) => [row.key, row.value])));
+  res.json(Object.fromEntries(rows.filter(row => !row.key.startsWith("studio_")).map((row) => [row.key, row.value])));
 });
 router.patch("/admin/settings", ...write, async (req, res): Promise<void> => {
   const values = req.body && typeof req.body === "object" ? req.body : {};
   for (const [key, value] of Object.entries(values)) {
-    if (typeof value !== "string") continue;
+    if (typeof value !== "string" || key.startsWith("studio_")) continue;
     await db.insert(siteSettingsTable).values({ key, value }).onConflictDoUpdate({ target: siteSettingsTable.key, set: { value } });
   }
   const rows = await db.select().from(siteSettingsTable);
-  res.json(Object.fromEntries(rows.map((row) => [row.key, row.value])));
+  res.json(Object.fromEntries(rows.filter(row => !row.key.startsWith("studio_")).map((row) => [row.key, row.value])));
 });
 
 router.post("/contact", async (req, res): Promise<void> => {

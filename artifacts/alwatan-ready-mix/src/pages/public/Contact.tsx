@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useLanguage } from '@/lib/i18n';
+import { trackSiteActivity } from '@/lib/site-activity';
 import { useCreateContactMessage, useGetPublicSettings } from '@workspace/api-client-react';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -29,6 +30,7 @@ export default function Contact() {
       { data: formData },
       {
         onSuccess: () => {
+          trackSiteActivity('contact_submit');
           setSuccess(true);
           setFormData({ fullName: '', email: '', phone: '', subject: '', message: '' });
           setTimeout(() => setSuccess(false), 5000);

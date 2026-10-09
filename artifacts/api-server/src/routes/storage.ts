@@ -1,19 +1,25 @@
 import { Router, type IRouter } from "express";
-import { and, eq, or } from "drizzle-orm";
-import { blogPostsTable, certificatesTable, db, mediaAssetsTable, productsTable } from "@workspace/db";
+import { eq } from "drizzle-orm";
+import { blogPostsTable, certificatesTable, db, mediaAssetsTable, productsTable, pageContentTable, siteSettingsTable } from "@workspace/db";
 import { requireAdmin, requireSameOrigin } from "../lib/auth";
 import { objectStorage } from "../lib/objectStorage";
 
 const router: IRouter = Router();
 const write = [requireAdmin, requireSameOrigin] as const;
 const stringValue = (value: unknown) => typeof value === "string" ? value : "";
+const uploadLimit = (type: string): number => {
+  if (["image/jpeg", "image/png", "image/webp", "image/gif"].includes(type)) return 10 * 1024 * 1024;
+  if (type === "application/pdf") return 25 * 1024 * 1024;
+  if (["video/mp4", "video/webm"].includes(type)) return 100 * 1024 * 1024;
+  return 0;
+};
 
 router.post("/storage/uploads/request-url", ...write, async (req, res): Promise<void> => {
   const name = stringValue(req.body?.name).trim();
   const contentType = stringValue(req.body?.contentType).trim();
   const size = Number(req.body?.size);
-  if (!name || !contentType || !Number.isSafeInteger(size) || size < 0) {
-    res.status(400).json({ error: "name, size and contentType are required" }); return;
+  if (!name || name.length > 255 || !uploadLimit(contentType) || !Number.isSafeInteger(size) || size <= 0 || size > uploadLimit(contentType)) {
+    res.status(400).json({ error: "صيغة أو حجم الملف غير مسموح: صور 10MB، PDF 25MB، MP4/WebM 100MB" }); return;
   }
   try {
     const signed = await objectStorage.uploadUrl();
@@ -33,19 +39,22 @@ router.post("/admin/media/finalize", ...write, async (req, res): Promise<void> =
   const objectPath = stringValue(req.body?.objectPath);
   const originalName = stringValue(req.body?.originalName || req.body?.name);
   const contentType = stringValue(req.body?.contentType);
-  const size = Number(req.body?.size) || 0;
-  if (!objectPath.startsWith("/objects/") || !originalName || !contentType) {
+  if (!/^\/objects\/uploads\/[a-zA-Z0-9-]+$/.test(objectPath) || !originalName || originalName.length > 255 || !uploadLimit(contentType)) {
     res.status(400).json({ error: "objectPath, originalName and contentType are required" }); return;
   }
   try {
     const file = await objectStorage.file(objectPath);
     const [metadata] = await file.getMetadata();
+    const actualSize = Number(metadata.size);
+    if (metadata.contentType !== contentType || !Number.isSafeInteger(actualSize) || actualSize <= 0 || actualSize > uploadLimit(contentType)) {
+      res.status(400).json({ error: "Uploaded file type or size does not match the allowed limits" }); return;
+    }
     const [asset] = await db.insert(mediaAssetsTable).values({
-      objectPath, originalName, contentType, size: size || Number(metadata.size || 0),
+      objectPath, originalName, contentType, size: actualSize,
       altText: stringValue(req.body?.altText), createdBy: req.adminUser?.id,
     }).onConflictDoUpdate({
       target: mediaAssetsTable.objectPath,
-      set: { originalName, contentType, size: size || Number(metadata.size || 0), altText: stringValue(req.body?.altText), updatedAt: new Date() },
+      set: { originalName, contentType, size: actualSize, altText: stringValue(req.body?.altText), updatedAt: new Date() },
     }).returning();
     res.status(201).json(asset);
   } catch (error) {
@@ -59,10 +68,21 @@ router.delete("/admin/media/:id", ...write, async (req, res): Promise<void> => {
   if (!Number.isInteger(id) || id < 1) { res.status(400).json({ error: "Invalid media id" }); return; }
   const [asset] = await db.select().from(mediaAssetsTable).where(eq(mediaAssetsTable.id, id));
   if (!asset) { res.status(404).json({ error: "Media asset not found" }); return; }
-  const references = await db.select({ id: productsTable.id }).from(productsTable).where(eq(productsTable.imageUrl, asset.objectPath))
-    .unionAll(db.select({ id: blogPostsTable.id }).from(blogPostsTable).where(eq(blogPostsTable.coverImage, asset.objectPath)))
-    .unionAll(db.select({ id: certificatesTable.id }).from(certificatesTable).where(or(eq(certificatesTable.imageUrl, asset.objectPath), eq(certificatesTable.fileUrl, asset.objectPath))));
-  if (references.length) { res.status(409).json({ error: "Media asset is still referenced by content" }); return; }
+  const [products, posts, certificates, content, settings] = await Promise.all([
+    db.select({ value: productsTable.imageUrl }).from(productsTable),
+    db.select({ value: blogPostsTable.coverImage }).from(blogPostsTable),
+    db.select({ image: certificatesTable.imageUrl, file: certificatesTable.fileUrl }).from(certificatesTable),
+    db.select({ ar: pageContentTable.valueAr, en: pageContentTable.valueEn }).from(pageContentTable),
+    db.select({ value: siteSettingsTable.value }).from(siteSettingsTable),
+  ]);
+  const allValues = [
+    ...products.map(row => row.value), ...posts.map(row => row.value),
+    ...certificates.flatMap(row => [row.image, row.file]),
+    ...content.flatMap(row => [row.ar, row.en]), ...settings.map(row => row.value),
+  ];
+  if (allValues.some(value => value.includes(asset.objectPath))) {
+    res.status(409).json({ error: "هذا الملف مستخدم في محتوى أو مسودة أو نسخة منشورة. أزل ارتباطه أولًا." }); return;
+  }
   await objectStorage.delete(asset.objectPath);
   await db.delete(mediaAssetsTable).where(eq(mediaAssetsTable.id, id));
   res.status(204).end();
@@ -72,10 +92,13 @@ router.get("/storage/objects/*path", async (req, res): Promise<void> => {
   const raw = req.params.path;
   const objectPath = `/objects/${Array.isArray(raw) ? raw.join("/") : raw}`;
   try {
-    const response = await objectStorage.response(objectPath);
+    const response = await objectStorage.response(objectPath, req.get("range"));
+    res.status(response.status);
     response.headers.forEach((value, key) => res.setHeader(key, value));
     if (response.body) {
       const stream = await import("node:stream").then(({ Readable }) => Readable.fromWeb(response.body as ReadableStream));
+      stream.on("error", error => { req.log.error({ err: error }, "Media stream failed"); res.destroy(); });
+      res.on("close", () => stream.destroy());
       stream.pipe(res);
     } else res.end();
   } catch (error) {

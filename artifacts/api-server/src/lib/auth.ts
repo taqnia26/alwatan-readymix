@@ -107,7 +107,7 @@ export async function requireAdmin(req: Request, res: Response, next: NextFuncti
   }
 }
 
-function allowedOrigins(req: Request): Set<string> {
+export function allowedOrigins(req: Request): Set<string> {
   const configured = (process.env.ALLOWED_ORIGINS ?? "")
     .split(",")
     .map((origin) => origin.trim())
@@ -124,6 +124,7 @@ function allowedOrigins(req: Request): Set<string> {
   return new Set([
     ...configured,
     ...replit,
+    ...(process.env.NODE_ENV !== "production" ? ["http://localhost:80", "http://127.0.0.1:80", "http://localhost", "http://127.0.0.1"] : []),
     ...(host ? [`${protocol}://${host}`] : []),
   ]);
 }

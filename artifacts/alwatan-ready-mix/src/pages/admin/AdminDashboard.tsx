@@ -1,132 +1,131 @@
-import { useLanguage } from '@/lib/i18n';
-import { useGetAdminSummary } from '@workspace/api-client-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { MessageSquare, Package, MapPin, FileText, Settings, Users, Image as ImageIcon, Activity, ArrowUpRight } from 'lucide-react';
-import { format } from 'date-fns';
+import { useState, type ReactNode } from 'react';
 import { Link } from 'wouter';
+import { AlertTriangle, Eye, Users, MessageCircle, FileDown, Inbox, Mail, Package, MapPin, BookOpen } from 'lucide-react';
+import { Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, Line, LineChart, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis, Legend } from 'recharts';
+import { useGetAdminSummary, useGetSiteInsights } from '@workspace/api-client-react';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button';
+import { useLanguage } from '@/lib/i18n';
+import { Card } from '@/components/admin/studio-ui';
+
+const nf = new Intl.NumberFormat('en-US');
+type Days = 7 | 30 | 90;
+
+function Kpi({ icon: Icon, label, value, tone }: { icon: typeof Eye; label: string; value: number; tone: string }) {
+  return (
+    <div className="rounded-xl border bg-card p-4 shadow-sm">
+      <div className={`mb-3 flex h-9 w-9 items-center justify-center rounded-lg ${tone}`}><Icon className="h-4 w-4" /></div>
+      <div className="text-2xl font-black tabular-nums text-secondary" data-testid={`kpi-${label}`}>{nf.format(value)}</div>
+      <div className="text-xs font-semibold text-muted-foreground">{label}</div>
+    </div>
+  );
+}
+function Empty({ children }: { children: ReactNode }) { return <div className="flex h-full min-h-[200px] items-center justify-center rounded-lg border border-dashed text-center text-sm text-muted-foreground px-6">{children}</div>; }
 
 export default function AdminDashboard() {
-  const { t, isRtl } = useLanguage();
-  const { data: summary, isLoading } = useGetAdminSummary();
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-[50vh]">
-        <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-      </div>
-    );
-  }
-
-  const stats = [
-    { title: t('طلبات تسعير جديدة', 'New Quotes'), value: summary?.newQuotes || 0, icon: MessageSquare, color: 'bg-blue-50 text-blue-600', link: '/admin/quotes' },
-    { title: t('إجمالي الطلبات', 'Total Quotes'), value: summary?.totalQuotes || 0, icon: Activity, color: 'bg-green-50 text-green-600', link: '/admin/quotes' },
-    { title: t('المنتجات', 'Products'), value: summary?.products || 0, icon: Package, color: 'bg-orange-50 text-orange-600', link: '/admin/products' },
-    { title: t('الفروع', 'Branches'), value: summary?.branches || 0, icon: MapPin, color: 'bg-purple-50 text-purple-600', link: '/admin/branches' },
-    { title: t('المقالات المنشورة', 'Published Posts'), value: summary?.publishedPosts || 0, icon: FileText, color: 'bg-indigo-50 text-indigo-600', link: '/admin/articles' },
-  ];
+  const { t, language } = useLanguage();
+  const [days, setDays] = useState<Days>(30);
+  const summary = useGetAdminSummary();
+  const ins = useGetSiteInsights({ days });
+  const d = ins.data;
+  const colors = ['hsl(145 50% 32%)', 'hsl(220 45% 15%)', 'hsl(42 100% 50%)'];
+  const statusLabel = (n: string) => ({ new: t('جديد', 'New'), contacted: t('تم التواصل', 'Contacted'), closed: t('مغلق', 'Closed') } as Record<string, string>)[n] ?? n;
+  const statuses = (d?.quoteStatuses ?? []).slice(0, 3);
+  const timeline = (d?.timeline ?? []).map((x) => ({ ...x, label: x.date.slice(5) }));
+  const hasViews = (d?.views ?? 0) > 0;
+  const hasInq = timeline.some((x) => x.quotes + x.messages > 0);
+  const tip = { contentStyle: { borderRadius: 8, border: '1px solid hsl(220 20% 90%)', fontFamily: 'Cairo' } };
 
   return (
-    <div className="space-y-8">
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-        {stats.map((stat, i) => {
-          const Icon = stat.icon;
-          return (
-            <Link key={i} href={stat.link}>
-              <Card className="hover:border-primary/50 transition-colors cursor-pointer border-gray-200 shadow-sm group">
-                <CardHeader className="flex flex-row items-center justify-between pb-2">
-                  <CardTitle className="text-sm font-bold text-gray-500 group-hover:text-secondary transition-colors">
-                    {stat.title}
-                  </CardTitle>
-                  <div className={`p-2 rounded-lg ${stat.color}`}>
-                    <Icon className="w-5 h-5" />
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-4xl font-black text-secondary">{stat.value}</div>
-                </CardContent>
-              </Card>
-            </Link>
-          );
-        })}
+    <div className="space-y-6">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 className="text-xl font-extrabold text-secondary">{t('نظرة عامة على الأداء', 'Performance overview')}</h2>
+          <p className="text-sm text-muted-foreground">{t('بيانات الزيارات من نظام التتبع الداخلي للموقع.', 'Visit data comes from the site\'s first-party activity tracking.')}</p>
+        </div>
+        <div className="flex rounded-lg border bg-card p-0.5" role="group" aria-label="interval">
+          {([7, 30, 90] as Days[]).map((v) => (
+            <button key={v} onClick={() => setDays(v)} data-testid={`button-days-${v}`} className={`rounded-md px-4 py-1.5 text-sm font-bold transition ${days === v ? 'bg-primary text-white shadow' : 'text-muted-foreground hover:text-secondary'}`}>{v} {t('يوم', 'd')}</button>
+          ))}
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <Card className="lg:col-span-2 shadow-sm border-gray-200">
-          <CardHeader className="border-b border-gray-100 flex flex-row items-center justify-between">
-            <CardTitle className="text-lg font-bold text-secondary">
-              {t('أحدث طلبات التسعير', 'Recent Quotes')}
-            </CardTitle>
-            <Link href="/admin/quotes" className="text-sm text-primary font-bold flex items-center gap-1 hover:underline">
-              {t('عرض الكل', 'View All')}
-              <ArrowUpRight className={`w-4 h-4 ${isRtl ? '-scale-x-100' : ''}`} />
-            </Link>
-          </CardHeader>
-          <CardContent className="p-0">
-            <div className="divide-y divide-gray-100">
-              {summary?.recentQuotes?.map(quote => (
-                <div key={quote.id} className="flex justify-between items-center p-4 hover:bg-gray-50 transition-colors">
-                  <div>
-                    <h4 className="font-bold text-secondary">{quote.fullName}</h4>
-                    <p className="text-sm text-gray-500 flex items-center gap-2 mt-1">
-                      <span className="font-mono bg-gray-100 px-1.5 py-0.5 rounded text-xs">{quote.quantityEstimate}</span>
-                      <span>{quote.productName}</span>
-                    </p>
-                  </div>
-                  <div className="text-sm flex flex-col items-end gap-1">
-                    <span className={`px-2.5 py-1 rounded-md text-xs font-bold ${
-                      quote.status === 'new' ? 'bg-blue-100 text-blue-700' : 
-                      quote.status === 'contacted' ? 'bg-yellow-100 text-yellow-700' : 
-                      'bg-green-100 text-green-700'
-                    }`}>
-                      {quote.status.toUpperCase()}
-                    </span>
-                    <span className="text-xs text-gray-400">
-                      {format(new Date(quote.createdAt), 'MMM d, yyyy')}
-                    </span>
-                  </div>
-                </div>
-              ))}
-              {summary?.recentQuotes?.length === 0 && (
-                <div className="p-8 text-center text-gray-500 flex flex-col items-center gap-3">
-                  <MessageSquare className="w-8 h-8 text-gray-300" />
-                  <p>{t('لا يوجد طلبات حديثة', 'No recent quotes')}</p>
-                </div>
-              )}
+      {ins.error ? (
+        <Card className="flex items-center justify-between gap-4 border-destructive/30 bg-destructive/5">
+          <div className="flex items-center gap-3 text-destructive"><AlertTriangle className="h-5 w-5" /><span className="font-bold">{t('تعذر تحميل بيانات الزيارات', 'Could not load insights')}</span></div>
+          <Button variant="outline" onClick={() => ins.refetch()}>{t('إعادة المحاولة', 'Retry')}</Button>
+        </Card>
+      ) : ins.isLoading ? (
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">{Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-28" />)}</div>
+      ) : d && (
+        <>
+          <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
+            <Kpi icon={Eye} label={t('مشاهدات', 'Views')} value={d.views} tone="bg-primary/10 text-primary" />
+            <Kpi icon={Users} label={t('جلسات', 'Sessions')} value={d.sessions} tone="bg-secondary/10 text-secondary" />
+            <Kpi icon={MessageCircle} label={t('نقرات واتساب', 'WhatsApp clicks')} value={d.whatsappClicks} tone="bg-emerald-100 text-emerald-700" />
+            <Kpi icon={FileDown} label={t('تحميل الملف', 'Profile downloads')} value={d.profileDownloads} tone="bg-amber-100 text-amber-700" />
+            <Kpi icon={Inbox} label={t('طلبات تسعير', 'Quotes')} value={d.quotes} tone="bg-sky-100 text-sky-700" />
+            <Kpi icon={Mail} label={t('رسائل', 'Messages')} value={d.messages} tone="bg-violet-100 text-violet-700" />
+          </div>
+          {!hasViews && <div className="rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-900" data-testid="empty-insights">{t('لا توجد زيارات مسجلة في هذه الفترة بعد. ستظهر الرسوم عند تسجيل أول زيارة.', 'No visits recorded in this period yet. Charts populate as visits are tracked.')}</div>}
+          <div className="grid gap-4 lg:grid-cols-3">
+            <Card className="lg:col-span-2">
+              <h3 className="mb-3 font-extrabold text-secondary">{t('المشاهدات اليومية', 'Daily views')}</h3>
+              <div className="h-64">{hasViews ? (
+                <ResponsiveContainer><AreaChart data={timeline}><defs><linearGradient id="gv" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="hsl(145 50% 32%)" stopOpacity={0.35} /><stop offset="100%" stopColor="hsl(145 50% 32%)" stopOpacity={0} /></linearGradient></defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(220 20% 90%)" vertical={false} /><XAxis dataKey="label" tick={{ fontSize: 11 }} /><YAxis allowDecimals={false} tick={{ fontSize: 11 }} width={32} /><Tooltip {...tip} />
+                  <Area type="monotone" dataKey="views" name={t('مشاهدات', 'Views')} stroke="hsl(145 50% 32%)" strokeWidth={2.5} fill="url(#gv)" /></AreaChart></ResponsiveContainer>
+              ) : <Empty>{t('لا بيانات مشاهدات', 'No view data')}</Empty>}</div>
+            </Card>
+            <Card>
+              <h3 className="mb-3 font-extrabold text-secondary">{t('حالة طلبات التسعير', 'Quote status')}</h3>
+              <div className="h-64">{statuses.some((s) => s.count > 0) ? (
+                <ResponsiveContainer><PieChart><Pie data={statuses.map((s) => ({ ...s, name: statusLabel(s.name) }))} dataKey="count" nameKey="name" innerRadius={55} outerRadius={85} paddingAngle={3}>{statuses.map((_, i) => <Cell key={i} fill={colors[i]} />)}</Pie><Tooltip {...tip} /><Legend /></PieChart></ResponsiveContainer>
+              ) : <Empty>{t('لا طلبات في هذه الفترة', 'No quotes in this period')}</Empty>}</div>
+            </Card>
+            <Card className="lg:col-span-2">
+              <h3 className="mb-3 font-extrabold text-secondary">{t('الاستفسارات', 'Inquiries')}</h3>
+              <div className="h-60">{hasInq ? (
+                <ResponsiveContainer><LineChart data={timeline}><CartesianGrid strokeDasharray="3 3" stroke="hsl(220 20% 90%)" vertical={false} /><XAxis dataKey="label" tick={{ fontSize: 11 }} /><YAxis allowDecimals={false} tick={{ fontSize: 11 }} width={32} /><Tooltip {...tip} /><Legend />
+                  <Line type="monotone" dataKey="quotes" name={t('طلبات تسعير', 'Quotes')} stroke="hsl(145 50% 32%)" strokeWidth={2.5} dot={false} />
+                  <Line type="monotone" dataKey="messages" name={t('رسائل', 'Messages')} stroke="hsl(42 100% 45%)" strokeWidth={2.5} dot={false} /></LineChart></ResponsiveContainer>
+              ) : <Empty>{t('لا استفسارات في هذه الفترة', 'No inquiries in this period')}</Empty>}</div>
+            </Card>
+            <Card>
+              <h3 className="mb-3 font-extrabold text-secondary">{t('أكثر الصفحات زيارة', 'Top pages')}</h3>
+              <div className="h-60">{d.topPages.length ? (
+                <ResponsiveContainer><BarChart data={d.topPages.slice(0, 6)} layout="vertical" margin={{ left: 8 }}><XAxis type="number" hide /><YAxis type="category" dataKey="name" width={96} tick={{ fontSize: 11 }} orientation={language === 'ar' ? 'right' : 'left'} /><Tooltip {...tip} /><Bar dataKey="count" name={t('مشاهدات', 'Views')} fill="hsl(145 50% 32%)" radius={4} /></BarChart></ResponsiveContainer>
+              ) : <Empty>{t('لا بيانات', 'No data')}</Empty>}</div>
+            </Card>
+          </div>
+        </>
+      )}
+
+      <div>
+        <h3 className="mb-3 font-extrabold text-secondary">{t('ملخص النظام', 'System summary')}</h3>
+        {summary.error ? (
+          <Card className="flex items-center justify-between"><span className="font-bold text-destructive">{t('تعذر تحميل الملخص', 'Could not load summary')}</span><Button variant="outline" onClick={() => summary.refetch()}>{t('إعادة المحاولة', 'Retry')}</Button></Card>
+        ) : summary.isLoading ? <Skeleton className="h-28" /> : summary.data && (
+          <div className="grid gap-4 lg:grid-cols-3">
+            <div className="grid grid-cols-2 gap-3 lg:col-span-1">
+              <Kpi icon={Inbox} label={t('طلبات جديدة', 'New quotes')} value={summary.data.newQuotes} tone="bg-primary/10 text-primary" />
+              <Kpi icon={Inbox} label={t('إجمالي الطلبات', 'Total quotes')} value={summary.data.totalQuotes} tone="bg-secondary/10 text-secondary" />
+              <Kpi icon={Package} label={t('المنتجات', 'Products')} value={summary.data.products} tone="bg-amber-100 text-amber-700" />
+              <Kpi icon={BookOpen} label={t('مقالات منشورة', 'Published posts')} value={summary.data.publishedPosts} tone="bg-sky-100 text-sky-700" />
+              <Kpi icon={MapPin} label={t('الفروع', 'Branches')} value={summary.data.branches} tone="bg-violet-100 text-violet-700" />
             </div>
-          </CardContent>
-        </Card>
-        
-        <Card className="shadow-sm border-gray-200">
-          <CardHeader className="border-b border-gray-100 bg-secondary rounded-t-lg">
-            <CardTitle className="text-lg font-bold text-white flex items-center gap-2">
-              <Settings className="w-5 h-5 text-primary" />
-              {t('إدارة الموقع', 'Site Management')}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-4 space-y-2">
-            {[
-              { href: '/admin/media', icon: ImageIcon, ar: 'مكتبة الوسائط', en: 'Media Library' },
-              { href: '/admin/users', icon: Users, ar: 'مستخدمو الإدارة', en: 'Admin Users' },
-              { href: '/admin/settings', icon: Settings, ar: 'إعدادات الموقع', en: 'Site Settings' },
-            ].map((item) => {
-              const Icon = item.icon;
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="flex items-center justify-between rounded-lg border border-gray-100 p-3 text-secondary transition-colors hover:border-primary/30 hover:bg-primary/5"
-                >
-                  <span className="flex items-center gap-3 font-bold">
-                    <Icon className="h-5 w-5 text-primary" />
-                    {t(item.ar, item.en)}
-                  </span>
-                  <ArrowUpRight className={`h-4 w-4 text-gray-400 ${isRtl ? '-scale-x-100' : ''}`} />
-                </Link>
-              );
-            })}
-          </CardContent>
-        </Card>
+            <Card className="lg:col-span-2">
+              <div className="mb-3 flex items-center justify-between"><h3 className="font-extrabold text-secondary">{t('أحدث الطلبات', 'Recent quotes')}</h3><Link href="/admin/quotes" className="text-sm font-bold text-primary hover:underline">{t('عرض الكل', 'View all')}</Link></div>
+              {summary.data.recentQuotes.length === 0 ? <Empty>{t('لا طلبات بعد', 'No quotes yet')}</Empty> : (
+                <ul className="divide-y">{summary.data.recentQuotes.slice(0, 6).map((q) => (
+                  <li key={q.id} className="flex items-center justify-between gap-3 py-2.5 text-sm">
+                    <div className="min-w-0"><div className="truncate font-bold text-secondary">{q.fullName}</div><div className="truncate text-xs text-muted-foreground">{q.productName} - {q.projectLocation}</div></div>
+                    <span className="shrink-0 rounded-full bg-muted px-2.5 py-0.5 text-xs font-bold">{statusLabel(q.status)}</span>
+                  </li>))}</ul>
+              )}
+            </Card>
+          </div>
+        )}
       </div>
     </div>
   );

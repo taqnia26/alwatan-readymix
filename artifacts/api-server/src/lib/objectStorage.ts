@@ -17,8 +17,9 @@ const storage = new Storage({
 
 function privatePath(): { bucket: string; prefix: string } {
   const raw = process.env.PRIVATE_OBJECT_DIR ?? "";
-  const parts = raw.replace(/^\/+/, "").split("/");
-  const bucket = process.env.DEFAULT_OBJECT_STORAGE_BUCKET_ID || parts.shift() || "";
+  const parts = raw.replace(/^\/+/, "").split("/").filter(Boolean);
+  const pathBucket = parts.shift();
+  const bucket = pathBucket || process.env.DEFAULT_OBJECT_STORAGE_BUCKET_ID || "";
   if (!bucket) throw new Error("PRIVATE_OBJECT_DIR or DEFAULT_OBJECT_STORAGE_BUCKET_ID is required");
   return { bucket, prefix: (parts.join("/") || "private").replace(/\/+$/, "") };
 }
@@ -58,9 +59,9 @@ export class ObjectStorageService {
       signal: AbortSignal.timeout(30_000),
     });
     if (!response.ok) throw new Error(`Object storage signing failed (${response.status})`);
-    const body = await response.json() as { url?: string };
-    if (!body.url) throw new Error("Object storage returned no upload URL");
-    return { uploadURL: body.url, objectPath };
+    const body = await response.json() as { signed_url?: string };
+    if (!body.signed_url) throw new Error("Object storage returned no signed upload URL");
+    return { uploadURL: body.signed_url, objectPath };
   }
 
   async file(objectPath: string): Promise<File> {
@@ -70,15 +71,33 @@ export class ObjectStorageService {
     return file;
   }
 
-  async response(objectPath: string): Promise<Response> {
+  async response(objectPath: string, range?: string): Promise<Response> {
     const file = await this.file(objectPath);
     const [metadata] = await file.getMetadata();
-    const stream = Readable.toWeb(file.createReadStream()) as ReadableStream;
+    const size = Number(metadata.size);
+    let start = 0, end = size - 1;
+    if (range) {
+      const match = /^bytes=(\d*)-(\d*)$/.exec(range);
+      if (!match || (!match[1] && !match[2])) {
+        return new Response(null, { status: 416, headers: { "Content-Range": `bytes */${size}` } });
+      }
+      if (match[1]) {
+        start = Number(match[1]);
+        end = match[2] ? Math.min(Number(match[2]), size - 1) : size - 1;
+      } else start = Math.max(0, size - Number(match[2]));
+      if (start > end || start >= size || !Number.isSafeInteger(start) || !Number.isSafeInteger(end)) {
+        return new Response(null, { status: 416, headers: { "Content-Range": `bytes */${size}` } });
+      }
+    }
+    const stream = Readable.toWeb(file.createReadStream(range ? { start, end, validation: false } : undefined)) as ReadableStream;
     return new Response(stream, {
+      status: range ? 206 : 200,
       headers: {
         "Content-Type": String(metadata.contentType || "application/octet-stream"),
         "Cache-Control": "public, max-age=3600",
-        ...(metadata.size ? { "Content-Length": String(metadata.size) } : {}),
+        "X-Content-Type-Options": "nosniff",
+        "Accept-Ranges": "bytes",
+        ...(range ? { "Content-Range": `bytes ${start}-${end}/${size}`, "Content-Length": String(end - start + 1) } : metadata.size ? { "Content-Length": String(metadata.size) } : {}),
       },
     });
   }
@@ -91,6 +110,7 @@ export class ObjectStorageService {
       headers: {
         "Content-Type": String(metadata.contentType || "application/octet-stream"),
         "Cache-Control": "public, max-age=3600",
+        "X-Content-Type-Options": "nosniff",
       },
     });
   }

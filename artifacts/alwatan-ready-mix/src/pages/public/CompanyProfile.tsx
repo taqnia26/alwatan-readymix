@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Download, ExternalLink, Eye, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/lib/i18n';
+import { trackSiteActivity } from '@/lib/site-activity';
 
 const PROFILE_URL = '/alwatan-company-profile.pdf';
 
@@ -80,7 +81,7 @@ export default function CompanyProfile() {
                     {t('فتح في نافذة جديدة', 'Open in New Tab')}
                   </Button>
                 </a>
-                <a href={PROFILE_URL} download>
+                <a href={PROFILE_URL} download onClick={() => trackSiteActivity('profile_download')}>
                   <Button size="lg" variant="ghost" className="h-13 w-full gap-2 px-7 font-bold">
                     <Download className="h-5 w-5" />
                     {t('تحميل الملف', 'Download PDF')}

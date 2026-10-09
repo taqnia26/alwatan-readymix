@@ -1,4 +1,4 @@
-import { type ReactNode } from 'react';
+import { lazy, Suspense, type ReactNode } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { Toaster } from '@/components/ui/toaster';
@@ -8,8 +8,6 @@ import { LanguageProvider } from '@/lib/i18n';
 import NotFound from '@/pages/not-found';
 
 import Layout from '@/components/layout/Layout';
-import AdminLayout from '@/components/layout/AdminLayout';
-import AdminAuthGuard from '@/components/layout/AdminAuthGuard';
 
 import Home from '@/pages/public/Home';
 import About from '@/pages/public/About';
@@ -23,47 +21,16 @@ import Contact from '@/pages/public/Contact';
 import Quote from '@/pages/public/Quote';
 import CompanyProfile from '@/pages/public/CompanyProfile';
 
-import AdminLogin from '@/pages/admin/AdminLogin';
-import AdminDashboard from '@/pages/admin/AdminDashboard';
-import AdminQuotes from '@/pages/admin/AdminQuotes';
-import AdminContent from '@/pages/admin/AdminContent';
-import AdminProducts from '@/pages/admin/AdminProducts';
-import AdminArticles from '@/pages/admin/AdminArticles';
-import AdminBranches from '@/pages/admin/AdminBranches';
-import AdminCertificates from '@/pages/admin/AdminCertificates';
-import AdminMedia from '@/pages/admin/AdminMedia';
-import AdminUsers from '@/pages/admin/AdminUsers';
-import AdminMessages from '@/pages/admin/AdminMessages';
-import AdminSettings from '@/pages/admin/AdminSettings';
+const AdminLogin = lazy(() => import('@/pages/admin/AdminLogin'));
+const ProtectedAdminRoutes = lazy(() => import('@/components/layout/ProtectedAdminRoutes'));
+import StudioPage from '@/pages/public/StudioPage';
 
 const queryClient = new QueryClient();
-
-function ProtectedAdminRoutes() {
-  return (
-    <AdminAuthGuard>
-      <AdminLayout>
-        <Switch>
-          <Route path="/admin" component={AdminDashboard} />
-          <Route path="/admin/quotes" component={AdminQuotes} />
-          <Route path="/admin/content" component={AdminContent} />
-          <Route path="/admin/products" component={AdminProducts} />
-          <Route path="/admin/articles" component={AdminArticles} />
-          <Route path="/admin/branches" component={AdminBranches} />
-          <Route path="/admin/certificates" component={AdminCertificates} />
-          <Route path="/admin/media" component={AdminMedia} />
-          <Route path="/admin/users" component={AdminUsers} />
-          <Route path="/admin/messages" component={AdminMessages} />
-          <Route path="/admin/settings" component={AdminSettings} />
-          <Route component={NotFound} />
-        </Switch>
-      </AdminLayout>
-    </AdminAuthGuard>
-  );
-}
 
 function Router() {
   return (
     <RoutedErrorBoundary>
+      <Suspense fallback={<div role="status" className="flex min-h-[60vh] items-center justify-center gap-3 text-primary"><span className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />جارٍ التحميل / Loading</div>}>
       <Switch>
         {/* Admin Login Route */}
         <Route path="/admin/login" component={AdminLogin} />
@@ -93,11 +60,13 @@ function Router() {
               <Route path="/contact" component={Contact} />
               <Route path="/company-profile" component={CompanyProfile} />
               <Route path="/quote" component={Quote} />
+              <Route path="/p/:slug" component={StudioPage} />
               <Route component={NotFound} />
             </Switch>
           </Layout>
         </Route>
       </Switch>
+      </Suspense>
     </RoutedErrorBoundary>
   );
 }

@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 import pinoHttp from "pino-http";
 import router from "./routes";
 import { logger } from "./lib/logger";
+import { allowedOrigins } from "./lib/auth";
 
 const app: Express = express();
 app.set("trust proxy", 1);
@@ -27,32 +28,14 @@ app.use(
     },
   }),
 );
-const configuredOrigins = (process.env.ALLOWED_ORIGINS ?? "")
-  .split(",")
-  .map((origin) => origin.trim())
-  .filter(Boolean);
-const replitOrigins = [
-  process.env.REPLIT_DEV_DOMAIN,
-  ...(process.env.REPLIT_DOMAINS ?? "").split(","),
-]
-  .map((domain) => domain?.trim())
-  .filter((domain): domain is string => Boolean(domain))
-  .map((domain) => domain.startsWith("http") ? domain : `https://${domain}`);
-const allowedOrigins = new Set([...configuredOrigins, ...replitOrigins]);
 app.use(
-  cors({
-    credentials: true,
-    origin(origin, callback) {
-      if (!origin || allowedOrigins.has(origin)) {
-        callback(null, true);
-        return;
-      }
-      callback(new Error("Origin is not allowed"));
-    },
+  cors<express.Request>((req, callback) => {
+    const origin = req.get("origin");
+    callback(null, { credentials: true, origin: !origin || allowedOrigins(req).has(origin) });
   }),
 );
 app.use(cookieParser());
-app.use(express.json());
+app.use(express.json({ limit: "2mb" }));
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/api", router);

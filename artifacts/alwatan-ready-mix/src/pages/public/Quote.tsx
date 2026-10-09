@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useLanguage } from '@/lib/i18n';
+import { trackSiteActivity } from '@/lib/site-activity';
 import { useCreateQuote, useListProducts, useGetPublicSettings } from '@workspace/api-client-react';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -30,7 +31,7 @@ export default function Quote() {
     createQuote.mutate(
       { data: { ...formData, productId: Number(formData.productId) } },
       {
-        onSuccess: () => setSuccess(true),
+        onSuccess: () => { trackSiteActivity('quote_submit'); setSuccess(true); },
       }
     );
   };

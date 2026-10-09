@@ -136,14 +136,16 @@ function mapContent(content: typeof pageContentTable.$inferSelect) {
 async function getPublicSettings() {
   const rows = await db.select().from(siteSettingsTable);
   const settings = Object.fromEntries(rows.map((row) => [row.key, row.value]));
+  const { readStudio } = await import("../lib/site-studio");
+  const { branding } = (await readStudio()).published;
 
   return {
-    whatsapp: settings.whatsapp ?? "",
+    whatsapp: branding.whatsapp,
     quoteEmail: settings.quoteEmail ?? "",
-    phone: settings.phone ?? "",
-    email: settings.email ?? "",
-    instagramUrl: settings.instagramUrl ?? "",
-    linkedinUrl: settings.linkedinUrl ?? "",
+    phone: branding.phone,
+    email: branding.email,
+    instagramUrl: branding.instagram,
+    linkedinUrl: branding.linkedin,
   };
 }
 

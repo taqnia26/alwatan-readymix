@@ -773,6 +773,79 @@ paths:
           schema: { type: string }
       responses:
         "200": { description: Public object bytes }
+  /public/studio:
+    get:
+      operationId: getPublicStudio
+      tags: [public]
+      responses:
+        "200":
+          description: Published website configuration
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/StudioConfig" }
+  /admin/studio:
+    get:
+      operationId: getAdminStudio
+      tags: [admin]
+      security: [{ cookieAuth: [] }]
+      responses:
+        "200":
+          description: Draft and published website configuration
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/StudioState" }
+    put:
+      operationId: saveStudioDraft
+      tags: [admin]
+      security: [{ cookieAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/StudioDraftInput" }
+      responses:
+        "200":
+          description: Draft saved
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/StudioState" }
+  /admin/studio/publish:
+    post:
+      operationId: publishStudio
+      tags: [admin]
+      security: [{ cookieAuth: [] }]
+      responses:
+        "200":
+          description: Draft published
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/StudioState" }
+  /public/activity:
+    post:
+      operationId: recordSiteActivity
+      tags: [public]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/SiteActivityInput" }
+      responses:
+        "204": { description: Recorded }
+  /admin/insights:
+    get:
+      operationId: getSiteInsights
+      tags: [admin]
+      security: [{ cookieAuth: [] }]
+      parameters:
+        - name: days
+          in: query
+          schema: { type: integer, format: int32, enum: [7, 30, 90], default: 30 }
+      responses:
+        "200":
+          description: First-party website activity and sales inquiries
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SiteInsights" }
 components:
   securitySchemes:
     cookieAuth:
@@ -828,6 +901,215 @@ components:
           schema:
             $ref: "#/components/schemas/Error"
   schemas:
+    StudioConfig:
+      type: object
+      required: [branding, navigation, slides, videos, homeSections, pages, banners, campaigns]
+      properties:
+        branding: { $ref: "#/components/schemas/StudioBranding" }
+        navigation:
+          type: array
+          maxItems: 20
+          items: { $ref: "#/components/schemas/StudioNavItem" }
+        slides:
+          type: array
+          maxItems: 20
+          items: { $ref: "#/components/schemas/StudioSlide" }
+        videos:
+          type: array
+          maxItems: 20
+          items: { $ref: "#/components/schemas/StudioVideo" }
+        homeSections:
+          type: array
+          maxItems: 30
+          items: { $ref: "#/components/schemas/StudioHomeSection" }
+        pages:
+          type: array
+          maxItems: 60
+          items: { $ref: "#/components/schemas/StudioPage" }
+        banners:
+          type: array
+          maxItems: 10
+          items: { $ref: "#/components/schemas/StudioBanner" }
+        campaigns:
+          type: array
+          maxItems: 100
+          items: { $ref: "#/components/schemas/StudioCampaign" }
+    StudioDraftInput:
+      type: object
+      required: [config]
+      properties:
+        config: { $ref: "#/components/schemas/StudioConfig" }
+    StudioState:
+      type: object
+      required: [draft, published, updatedAt, publishedAt]
+      properties:
+        draft: { $ref: "#/components/schemas/StudioConfig" }
+        published: { $ref: "#/components/schemas/StudioConfig" }
+        updatedAt: { type: ["string", "null"] }
+        publishedAt: { type: ["string", "null"] }
+    StudioBranding:
+      type: object
+      required: [nameAr, nameEn, logoUrl, footerAr, footerEn, phone, email, whatsapp, profileUrl, facebook, instagram, linkedin, seoTitleAr, seoTitleEn, seoDescriptionAr, seoDescriptionEn]
+      properties:
+        nameAr: { type: string, maxLength: 200 }
+        nameEn: { type: string, maxLength: 200 }
+        logoUrl: { type: string, maxLength: 2000 }
+        footerAr: { type: string, maxLength: 3000 }
+        footerEn: { type: string, maxLength: 3000 }
+        phone: { type: string, maxLength: 50 }
+        email: { type: string, maxLength: 200 }
+        whatsapp: { type: string, maxLength: 50 }
+        profileUrl: { type: string, maxLength: 2000 }
+        facebook: { type: string, maxLength: 2000 }
+        instagram: { type: string, maxLength: 2000 }
+        linkedin: { type: string, maxLength: 2000 }
+        seoTitleAr: { type: string, maxLength: 200 }
+        seoTitleEn: { type: string, maxLength: 200 }
+        seoDescriptionAr: { type: string, maxLength: 500 }
+        seoDescriptionEn: { type: string, maxLength: 500 }
+    StudioNavItem:
+      type: object
+      required: [id, labelAr, labelEn, href, visible]
+      properties:
+        id: { type: string, maxLength: 100 }
+        labelAr: { type: string, maxLength: 100 }
+        labelEn: { type: string, maxLength: 100 }
+        href: { type: string, maxLength: 2000 }
+        visible: { type: boolean }
+    StudioSlide:
+      type: object
+      required: [id, imageUrl, mobileImageUrl, titleAr, titleEn, subtitleAr, subtitleEn, buttonAr, buttonEn, href, enabled]
+      properties:
+        id: { type: string, maxLength: 100 }
+        imageUrl: { type: string, maxLength: 2000 }
+        mobileImageUrl: { type: string, maxLength: 2000 }
+        titleAr: { type: string, maxLength: 200 }
+        titleEn: { type: string, maxLength: 200 }
+        subtitleAr: { type: string, maxLength: 1000 }
+        subtitleEn: { type: string, maxLength: 1000 }
+        buttonAr: { type: string, maxLength: 100 }
+        buttonEn: { type: string, maxLength: 100 }
+        href: { type: string, maxLength: 2000 }
+        enabled: { type: boolean }
+    StudioVideo:
+      type: object
+      required: [id, titleAr, titleEn, descriptionAr, descriptionEn, src, poster, enabled]
+      properties:
+        id: { type: string, maxLength: 100 }
+        titleAr: { type: string, maxLength: 200 }
+        titleEn: { type: string, maxLength: 200 }
+        descriptionAr: { type: string, maxLength: 1000 }
+        descriptionEn: { type: string, maxLength: 1000 }
+        src: { type: string, maxLength: 2000 }
+        poster: { type: string, maxLength: 2000 }
+        enabled: { type: boolean }
+    StudioHomeSection:
+      type: object
+      required: [id, key, titleAr, titleEn, bodyAr, bodyEn, imageUrl, href, visible]
+      properties:
+        id: { type: string, maxLength: 100 }
+        key: { type: string, enum: [intro, products, videos, branches, certificates, blog, cta, custom] }
+        titleAr: { type: string, maxLength: 200 }
+        titleEn: { type: string, maxLength: 200 }
+        bodyAr: { type: string, maxLength: 10000 }
+        bodyEn: { type: string, maxLength: 10000 }
+        imageUrl: { type: string, maxLength: 2000 }
+        href: { type: string, maxLength: 2000 }
+        visible: { type: boolean }
+    StudioPage:
+      type: object
+      required: [id, slug, titleAr, titleEn, descriptionAr, descriptionEn, published, sections]
+      properties:
+        id: { type: string, maxLength: 100 }
+        slug: { type: string, minLength: 1, maxLength: 120, pattern: "^[a-z0-9]+(?:-[a-z0-9]+)*$" }
+        titleAr: { type: string, maxLength: 200 }
+        titleEn: { type: string, maxLength: 200 }
+        descriptionAr: { type: string, maxLength: 500 }
+        descriptionEn: { type: string, maxLength: 500 }
+        published: { type: boolean }
+        sections:
+          type: array
+          maxItems: 60
+          items: { $ref: "#/components/schemas/StudioPageSection" }
+    StudioPageSection:
+      type: object
+      required: [id, kind, headingAr, headingEn, bodyAr, bodyEn, mediaUrl, buttonAr, buttonEn, href, visible]
+      properties:
+        id: { type: string, maxLength: 100 }
+        kind: { type: string, enum: [text, image, video, cta] }
+        headingAr: { type: string, maxLength: 200 }
+        headingEn: { type: string, maxLength: 200 }
+        bodyAr: { type: string, maxLength: 20000 }
+        bodyEn: { type: string, maxLength: 20000 }
+        mediaUrl: { type: string, maxLength: 2000 }
+        buttonAr: { type: string, maxLength: 100 }
+        buttonEn: { type: string, maxLength: 100 }
+        href: { type: string, maxLength: 2000 }
+        visible: { type: boolean }
+    StudioBanner:
+      type: object
+      required: [id, textAr, textEn, href, enabled]
+      properties:
+        id: { type: string, maxLength: 100 }
+        textAr: { type: string, maxLength: 500 }
+        textEn: { type: string, maxLength: 500 }
+        href: { type: string, maxLength: 2000 }
+        enabled: { type: boolean }
+    StudioCampaign:
+      type: object
+      required: [id, name, source, medium, target]
+      properties:
+        id: { type: string, maxLength: 100 }
+        name: { type: string, minLength: 1, maxLength: 100 }
+        source: { type: string, maxLength: 100 }
+        medium: { type: string, maxLength: 100 }
+        target: { type: string, maxLength: 2000 }
+    SiteActivityInput:
+      type: object
+      required: [sessionId, event, path, source, campaign]
+      properties:
+        sessionId: { type: string, minLength: 16, maxLength: 80 }
+        event: { type: string, enum: [page_view, whatsapp_click, quote_click, profile_download, contact_submit, quote_submit] }
+        path: { type: string, maxLength: 300 }
+        source: { type: string, maxLength: 100 }
+        campaign: { type: string, maxLength: 100 }
+    SiteInsights:
+      type: object
+      required: [days, views, sessions, whatsappClicks, profileDownloads, quotes, messages, timeline, quoteStatuses, topPages, campaigns]
+      properties:
+        days: { type: integer, format: int32 }
+        views: { type: integer, format: int32 }
+        sessions: { type: integer, format: int32 }
+        whatsappClicks: { type: integer, format: int32 }
+        profileDownloads: { type: integer, format: int32 }
+        quotes: { type: integer, format: int32 }
+        messages: { type: integer, format: int32 }
+        timeline:
+          type: array
+          items: { $ref: "#/components/schemas/InsightsDay" }
+        quoteStatuses:
+          type: array
+          items: { $ref: "#/components/schemas/InsightsCount" }
+        topPages:
+          type: array
+          items: { $ref: "#/components/schemas/InsightsCount" }
+        campaigns:
+          type: array
+          items: { $ref: "#/components/schemas/InsightsCount" }
+    InsightsDay:
+      type: object
+      required: [date, views, quotes, messages]
+      properties:
+        date: { type: string }
+        views: { type: integer, format: int32 }
+        quotes: { type: integer, format: int32 }
+        messages: { type: integer, format: int32 }
+    InsightsCount:
+      type: object
+      required: [name, count]
+      properties:
+        name: { type: string }
+        count: { type: integer, format: int32 }
     HealthStatus:
       type: object
       properties:

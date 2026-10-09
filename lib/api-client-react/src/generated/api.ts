@@ -41,6 +41,7 @@ import type {
   ContactStatusUpdate,
   ContactSubmission,
   GetAdminSettings200,
+  GetSiteInsightsParams,
   HealthStatus,
   HomePayload,
   ListContactMessagesParams,
@@ -63,7 +64,12 @@ import type {
   QuoteInput,
   QuoteRequest,
   QuoteStatusUpdate,
+  SiteActivityInput,
+  SiteInsights,
   SiteSettingsUpdate,
+  StudioConfig,
+  StudioDraftInput,
+  StudioState,
   UpdateAdminSettings200
 } from './api.schemas';
 
@@ -3958,6 +3964,421 @@ export function useServePublicMedia<TData = Awaited<ReturnType<typeof servePubli
  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
 
   const queryOptions = getServePublicMediaQueryOptions(filePath,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getGetPublicStudioUrl = () => {
+
+
+
+
+  return `/api/public/studio`
+}
+
+export const getPublicStudio = async ( options?: Parameters<typeof customFetch>[1]): Promise<StudioConfig> => {
+
+  return customFetch<StudioConfig>(getGetPublicStudioUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetPublicStudioQueryKey = () => {
+    return [
+    `/api/public/studio`
+    ] as const;
+    }
+
+
+export const getGetPublicStudioQueryOptions = <TData = Awaited<ReturnType<typeof getPublicStudio>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getPublicStudio>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetPublicStudioQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getPublicStudio>>> = ({ signal }) => getPublicStudio({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getPublicStudio>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetPublicStudioQueryResult = NonNullable<Awaited<ReturnType<typeof getPublicStudio>>>
+export type GetPublicStudioQueryError = ErrorType<unknown>
+
+
+
+export function useGetPublicStudio<TData = Awaited<ReturnType<typeof getPublicStudio>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getPublicStudio>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetPublicStudioQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getGetAdminStudioUrl = () => {
+
+
+
+
+  return `/api/admin/studio`
+}
+
+export const getAdminStudio = async ( options?: Parameters<typeof customFetch>[1]): Promise<StudioState> => {
+
+  return customFetch<StudioState>(getGetAdminStudioUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetAdminStudioQueryKey = () => {
+    return [
+    `/api/admin/studio`
+    ] as const;
+    }
+
+
+export const getGetAdminStudioQueryOptions = <TData = Awaited<ReturnType<typeof getAdminStudio>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getAdminStudio>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetAdminStudioQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAdminStudio>>> = ({ signal }) => getAdminStudio({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAdminStudio>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetAdminStudioQueryResult = NonNullable<Awaited<ReturnType<typeof getAdminStudio>>>
+export type GetAdminStudioQueryError = ErrorType<unknown>
+
+
+
+export function useGetAdminStudio<TData = Awaited<ReturnType<typeof getAdminStudio>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getAdminStudio>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetAdminStudioQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getSaveStudioDraftUrl = () => {
+
+
+
+
+  return `/api/admin/studio`
+}
+
+export const saveStudioDraft = async (studioDraftInput: StudioDraftInput, options?: Parameters<typeof customFetch>[1]): Promise<StudioState> => {
+
+  return customFetch<StudioState>(getSaveStudioDraftUrl(),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(studioDraftInput)
+  }
+);}
+
+
+
+
+
+export const getSaveStudioDraftMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof saveStudioDraft>>, TError,{data: BodyType<StudioDraftInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof saveStudioDraft>>, TError,{data: BodyType<StudioDraftInput>}, TContext> => {
+
+const mutationKey = ['saveStudioDraft'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof saveStudioDraft>>, {data: BodyType<StudioDraftInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  saveStudioDraft(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SaveStudioDraftMutationResult = NonNullable<Awaited<ReturnType<typeof saveStudioDraft>>>
+    export type SaveStudioDraftMutationBody = BodyType<StudioDraftInput>
+    export type SaveStudioDraftMutationError = ErrorType<unknown>
+
+    export const useSaveStudioDraft = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof saveStudioDraft>>, TError,{data: BodyType<StudioDraftInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof saveStudioDraft>>,
+        TError,
+        {data: BodyType<StudioDraftInput>},
+        TContext
+      > => {
+      return useMutation(getSaveStudioDraftMutationOptions(options));
+    }
+
+export const getPublishStudioUrl = () => {
+
+
+
+
+  return `/api/admin/studio/publish`
+}
+
+export const publishStudio = async ( options?: Parameters<typeof customFetch>[1]): Promise<StudioState> => {
+
+  return customFetch<StudioState>(getPublishStudioUrl(),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getPublishStudioMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof publishStudio>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof publishStudio>>, TError,void, TContext> => {
+
+const mutationKey = ['publishStudio'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof publishStudio>>, void> = () => {
+
+
+          return  publishStudio(requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PublishStudioMutationResult = NonNullable<Awaited<ReturnType<typeof publishStudio>>>
+
+    export type PublishStudioMutationError = ErrorType<unknown>
+
+    export const usePublishStudio = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof publishStudio>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof publishStudio>>,
+        TError,
+        void,
+        TContext
+      > => {
+      return useMutation(getPublishStudioMutationOptions(options));
+    }
+
+export const getRecordSiteActivityUrl = () => {
+
+
+
+
+  return `/api/public/activity`
+}
+
+export const recordSiteActivity = async (siteActivityInput: SiteActivityInput, options?: Parameters<typeof customFetch>[1]): Promise<void> => {
+
+  return customFetch<void>(getRecordSiteActivityUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(siteActivityInput)
+  }
+);}
+
+
+
+
+
+export const getRecordSiteActivityMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof recordSiteActivity>>, TError,{data: BodyType<SiteActivityInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof recordSiteActivity>>, TError,{data: BodyType<SiteActivityInput>}, TContext> => {
+
+const mutationKey = ['recordSiteActivity'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof recordSiteActivity>>, {data: BodyType<SiteActivityInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  recordSiteActivity(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type RecordSiteActivityMutationResult = NonNullable<Awaited<ReturnType<typeof recordSiteActivity>>>
+    export type RecordSiteActivityMutationBody = BodyType<SiteActivityInput>
+    export type RecordSiteActivityMutationError = ErrorType<unknown>
+
+    export const useRecordSiteActivity = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof recordSiteActivity>>, TError,{data: BodyType<SiteActivityInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof recordSiteActivity>>,
+        TError,
+        {data: BodyType<SiteActivityInput>},
+        TContext
+      > => {
+      return useMutation(getRecordSiteActivityMutationOptions(options));
+    }
+
+export const getGetSiteInsightsUrl = (params?: GetSiteInsightsParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/admin/insights?${stringifiedParams}` : `/api/admin/insights`
+}
+
+export const getSiteInsights = async (params?: GetSiteInsightsParams, options?: Parameters<typeof customFetch>[1]): Promise<SiteInsights> => {
+
+  return customFetch<SiteInsights>(getGetSiteInsightsUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetSiteInsightsQueryKey = (params?: GetSiteInsightsParams,) => {
+    return [
+    `/api/admin/insights`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getGetSiteInsightsQueryOptions = <TData = Awaited<ReturnType<typeof getSiteInsights>>, TError = ErrorType<unknown>>(params?: GetSiteInsightsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getSiteInsights>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetSiteInsightsQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getSiteInsights>>> = ({ signal }) => getSiteInsights(params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getSiteInsights>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetSiteInsightsQueryResult = NonNullable<Awaited<ReturnType<typeof getSiteInsights>>>
+export type GetSiteInsightsQueryError = ErrorType<unknown>
+
+
+
+export function useGetSiteInsights<TData = Awaited<ReturnType<typeof getSiteInsights>>, TError = ErrorType<unknown>>(
+ params?: GetSiteInsightsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getSiteInsights>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetSiteInsightsQueryOptions(params,options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 

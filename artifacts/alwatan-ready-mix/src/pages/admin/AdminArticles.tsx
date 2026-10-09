@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import MediaInput from '@/components/admin/MediaInput';
 import { useLanguage } from '@/lib/i18n';
 import { useListAdminBlogPosts, useCreateBlogPost, useUpdateBlogPost, useDeleteBlogPost } from '@workspace/api-client-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -25,7 +26,7 @@ const articleSchema = z.object({
   excerptEn: z.string().min(1, 'Required'),
   contentAr: z.string().min(1, 'Required'),
   contentEn: z.string().min(1, 'Required'),
-  coverImage: z.string().url('Must be a valid URL'),
+  coverImage: z.string().refine((v) => v.startsWith('/') || /^https?:\/\//.test(v), 'Must be a valid URL'),
   status: z.enum(['draft', 'published']),
 });
 
@@ -197,7 +198,7 @@ export default function AdminArticles() {
               </div>
 
               <FormField control={form.control} name="coverImage" render={({ field }) => (
-                <FormItem><FormLabel>{t('صورة الغلاف', 'Cover Image')}</FormLabel><FormControl><Input {...field} dir="ltr" /></FormControl><FormMessage /></FormItem>
+                <FormItem><FormLabel>{t('صورة الغلاف', 'Cover Image')}</FormLabel><FormControl><MediaInput value={field.value} onChange={field.onChange} kind="image" /></FormControl><FormMessage /></FormItem>
               )} />
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

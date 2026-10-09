@@ -1053,3 +1053,2101 @@ export const ServePublicMediaParams = zod.object({
 export const ServePublicMediaResponse = zod.unknown()
 
 
+export const getPublicStudioResponseBrandingNameArMax = 200;
+
+export const getPublicStudioResponseBrandingNameEnMax = 200;
+
+export const getPublicStudioResponseBrandingLogoUrlMax = 2000;
+
+export const getPublicStudioResponseBrandingFooterArMax = 3000;
+
+export const getPublicStudioResponseBrandingFooterEnMax = 3000;
+
+export const getPublicStudioResponseBrandingPhoneMax = 50;
+
+export const getPublicStudioResponseBrandingEmailMax = 200;
+
+export const getPublicStudioResponseBrandingWhatsappMax = 50;
+
+export const getPublicStudioResponseBrandingProfileUrlMax = 2000;
+
+export const getPublicStudioResponseBrandingFacebookMax = 2000;
+
+export const getPublicStudioResponseBrandingInstagramMax = 2000;
+
+export const getPublicStudioResponseBrandingLinkedinMax = 2000;
+
+export const getPublicStudioResponseBrandingSeoTitleArMax = 200;
+
+export const getPublicStudioResponseBrandingSeoTitleEnMax = 200;
+
+export const getPublicStudioResponseBrandingSeoDescriptionArMax = 500;
+
+export const getPublicStudioResponseBrandingSeoDescriptionEnMax = 500;
+
+export const getPublicStudioResponseNavigationItemIdMax = 100;
+
+export const getPublicStudioResponseNavigationItemLabelArMax = 100;
+
+export const getPublicStudioResponseNavigationItemLabelEnMax = 100;
+
+export const getPublicStudioResponseNavigationItemHrefMax = 2000;
+
+export const getPublicStudioResponseNavigationMax = 20;
+
+export const getPublicStudioResponseSlidesItemIdMax = 100;
+
+export const getPublicStudioResponseSlidesItemImageUrlMax = 2000;
+
+export const getPublicStudioResponseSlidesItemMobileImageUrlMax = 2000;
+
+export const getPublicStudioResponseSlidesItemTitleArMax = 200;
+
+export const getPublicStudioResponseSlidesItemTitleEnMax = 200;
+
+export const getPublicStudioResponseSlidesItemSubtitleArMax = 1000;
+
+export const getPublicStudioResponseSlidesItemSubtitleEnMax = 1000;
+
+export const getPublicStudioResponseSlidesItemButtonArMax = 100;
+
+export const getPublicStudioResponseSlidesItemButtonEnMax = 100;
+
+export const getPublicStudioResponseSlidesItemHrefMax = 2000;
+
+export const getPublicStudioResponseSlidesMax = 20;
+
+export const getPublicStudioResponseVideosItemIdMax = 100;
+
+export const getPublicStudioResponseVideosItemTitleArMax = 200;
+
+export const getPublicStudioResponseVideosItemTitleEnMax = 200;
+
+export const getPublicStudioResponseVideosItemDescriptionArMax = 1000;
+
+export const getPublicStudioResponseVideosItemDescriptionEnMax = 1000;
+
+export const getPublicStudioResponseVideosItemSrcMax = 2000;
+
+export const getPublicStudioResponseVideosItemPosterMax = 2000;
+
+export const getPublicStudioResponseVideosMax = 20;
+
+export const getPublicStudioResponseHomeSectionsItemIdMax = 100;
+
+export const getPublicStudioResponseHomeSectionsItemTitleArMax = 200;
+
+export const getPublicStudioResponseHomeSectionsItemTitleEnMax = 200;
+
+export const getPublicStudioResponseHomeSectionsItemBodyArMax = 10000;
+
+export const getPublicStudioResponseHomeSectionsItemBodyEnMax = 10000;
+
+export const getPublicStudioResponseHomeSectionsItemImageUrlMax = 2000;
+
+export const getPublicStudioResponseHomeSectionsItemHrefMax = 2000;
+
+export const getPublicStudioResponseHomeSectionsMax = 30;
+
+export const getPublicStudioResponsePagesItemIdMax = 100;
+
+export const getPublicStudioResponsePagesItemSlugMax = 120;
+
+
+export const getPublicStudioResponsePagesItemSlugRegExp = new RegExp('^[a-z0-9]+(?:-[a-z0-9]+)*$');
+export const getPublicStudioResponsePagesItemTitleArMax = 200;
+
+export const getPublicStudioResponsePagesItemTitleEnMax = 200;
+
+export const getPublicStudioResponsePagesItemDescriptionArMax = 500;
+
+export const getPublicStudioResponsePagesItemDescriptionEnMax = 500;
+
+export const getPublicStudioResponsePagesItemSectionsItemIdMax = 100;
+
+export const getPublicStudioResponsePagesItemSectionsItemHeadingArMax = 200;
+
+export const getPublicStudioResponsePagesItemSectionsItemHeadingEnMax = 200;
+
+export const getPublicStudioResponsePagesItemSectionsItemBodyArMax = 20000;
+
+export const getPublicStudioResponsePagesItemSectionsItemBodyEnMax = 20000;
+
+export const getPublicStudioResponsePagesItemSectionsItemMediaUrlMax = 2000;
+
+export const getPublicStudioResponsePagesItemSectionsItemButtonArMax = 100;
+
+export const getPublicStudioResponsePagesItemSectionsItemButtonEnMax = 100;
+
+export const getPublicStudioResponsePagesItemSectionsItemHrefMax = 2000;
+
+export const getPublicStudioResponsePagesItemSectionsMax = 60;
+
+export const getPublicStudioResponsePagesMax = 60;
+
+export const getPublicStudioResponseBannersItemIdMax = 100;
+
+export const getPublicStudioResponseBannersItemTextArMax = 500;
+
+export const getPublicStudioResponseBannersItemTextEnMax = 500;
+
+export const getPublicStudioResponseBannersItemHrefMax = 2000;
+
+export const getPublicStudioResponseBannersMax = 10;
+
+export const getPublicStudioResponseCampaignsItemIdMax = 100;
+
+export const getPublicStudioResponseCampaignsItemNameMax = 100;
+
+export const getPublicStudioResponseCampaignsItemSourceMax = 100;
+
+export const getPublicStudioResponseCampaignsItemMediumMax = 100;
+
+export const getPublicStudioResponseCampaignsItemTargetMax = 2000;
+
+export const getPublicStudioResponseCampaignsMax = 100;
+
+
+
+export const GetPublicStudioResponse = zod.object({
+  "branding": zod.object({
+  "nameAr": zod.string().max(getPublicStudioResponseBrandingNameArMax),
+  "nameEn": zod.string().max(getPublicStudioResponseBrandingNameEnMax),
+  "logoUrl": zod.string().max(getPublicStudioResponseBrandingLogoUrlMax),
+  "footerAr": zod.string().max(getPublicStudioResponseBrandingFooterArMax),
+  "footerEn": zod.string().max(getPublicStudioResponseBrandingFooterEnMax),
+  "phone": zod.string().max(getPublicStudioResponseBrandingPhoneMax),
+  "email": zod.string().max(getPublicStudioResponseBrandingEmailMax),
+  "whatsapp": zod.string().max(getPublicStudioResponseBrandingWhatsappMax),
+  "profileUrl": zod.string().max(getPublicStudioResponseBrandingProfileUrlMax),
+  "facebook": zod.string().max(getPublicStudioResponseBrandingFacebookMax),
+  "instagram": zod.string().max(getPublicStudioResponseBrandingInstagramMax),
+  "linkedin": zod.string().max(getPublicStudioResponseBrandingLinkedinMax),
+  "seoTitleAr": zod.string().max(getPublicStudioResponseBrandingSeoTitleArMax),
+  "seoTitleEn": zod.string().max(getPublicStudioResponseBrandingSeoTitleEnMax),
+  "seoDescriptionAr": zod.string().max(getPublicStudioResponseBrandingSeoDescriptionArMax),
+  "seoDescriptionEn": zod.string().max(getPublicStudioResponseBrandingSeoDescriptionEnMax)
+}),
+  "navigation": zod.array(zod.object({
+  "id": zod.string().max(getPublicStudioResponseNavigationItemIdMax),
+  "labelAr": zod.string().max(getPublicStudioResponseNavigationItemLabelArMax),
+  "labelEn": zod.string().max(getPublicStudioResponseNavigationItemLabelEnMax),
+  "href": zod.string().max(getPublicStudioResponseNavigationItemHrefMax),
+  "visible": zod.boolean()
+})).max(getPublicStudioResponseNavigationMax),
+  "slides": zod.array(zod.object({
+  "id": zod.string().max(getPublicStudioResponseSlidesItemIdMax),
+  "imageUrl": zod.string().max(getPublicStudioResponseSlidesItemImageUrlMax),
+  "mobileImageUrl": zod.string().max(getPublicStudioResponseSlidesItemMobileImageUrlMax),
+  "titleAr": zod.string().max(getPublicStudioResponseSlidesItemTitleArMax),
+  "titleEn": zod.string().max(getPublicStudioResponseSlidesItemTitleEnMax),
+  "subtitleAr": zod.string().max(getPublicStudioResponseSlidesItemSubtitleArMax),
+  "subtitleEn": zod.string().max(getPublicStudioResponseSlidesItemSubtitleEnMax),
+  "buttonAr": zod.string().max(getPublicStudioResponseSlidesItemButtonArMax),
+  "buttonEn": zod.string().max(getPublicStudioResponseSlidesItemButtonEnMax),
+  "href": zod.string().max(getPublicStudioResponseSlidesItemHrefMax),
+  "enabled": zod.boolean()
+})).max(getPublicStudioResponseSlidesMax),
+  "videos": zod.array(zod.object({
+  "id": zod.string().max(getPublicStudioResponseVideosItemIdMax),
+  "titleAr": zod.string().max(getPublicStudioResponseVideosItemTitleArMax),
+  "titleEn": zod.string().max(getPublicStudioResponseVideosItemTitleEnMax),
+  "descriptionAr": zod.string().max(getPublicStudioResponseVideosItemDescriptionArMax),
+  "descriptionEn": zod.string().max(getPublicStudioResponseVideosItemDescriptionEnMax),
+  "src": zod.string().max(getPublicStudioResponseVideosItemSrcMax),
+  "poster": zod.string().max(getPublicStudioResponseVideosItemPosterMax),
+  "enabled": zod.boolean()
+})).max(getPublicStudioResponseVideosMax),
+  "homeSections": zod.array(zod.object({
+  "id": zod.string().max(getPublicStudioResponseHomeSectionsItemIdMax),
+  "key": zod.enum(['intro', 'products', 'videos', 'branches', 'certificates', 'blog', 'cta', 'custom']),
+  "titleAr": zod.string().max(getPublicStudioResponseHomeSectionsItemTitleArMax),
+  "titleEn": zod.string().max(getPublicStudioResponseHomeSectionsItemTitleEnMax),
+  "bodyAr": zod.string().max(getPublicStudioResponseHomeSectionsItemBodyArMax),
+  "bodyEn": zod.string().max(getPublicStudioResponseHomeSectionsItemBodyEnMax),
+  "imageUrl": zod.string().max(getPublicStudioResponseHomeSectionsItemImageUrlMax),
+  "href": zod.string().max(getPublicStudioResponseHomeSectionsItemHrefMax),
+  "visible": zod.boolean()
+})).max(getPublicStudioResponseHomeSectionsMax),
+  "pages": zod.array(zod.object({
+  "id": zod.string().max(getPublicStudioResponsePagesItemIdMax),
+  "slug": zod.string().min(1).max(getPublicStudioResponsePagesItemSlugMax).regex(getPublicStudioResponsePagesItemSlugRegExp),
+  "titleAr": zod.string().max(getPublicStudioResponsePagesItemTitleArMax),
+  "titleEn": zod.string().max(getPublicStudioResponsePagesItemTitleEnMax),
+  "descriptionAr": zod.string().max(getPublicStudioResponsePagesItemDescriptionArMax),
+  "descriptionEn": zod.string().max(getPublicStudioResponsePagesItemDescriptionEnMax),
+  "published": zod.boolean(),
+  "sections": zod.array(zod.object({
+  "id": zod.string().max(getPublicStudioResponsePagesItemSectionsItemIdMax),
+  "kind": zod.enum(['text', 'image', 'video', 'cta']),
+  "headingAr": zod.string().max(getPublicStudioResponsePagesItemSectionsItemHeadingArMax),
+  "headingEn": zod.string().max(getPublicStudioResponsePagesItemSectionsItemHeadingEnMax),
+  "bodyAr": zod.string().max(getPublicStudioResponsePagesItemSectionsItemBodyArMax),
+  "bodyEn": zod.string().max(getPublicStudioResponsePagesItemSectionsItemBodyEnMax),
+  "mediaUrl": zod.string().max(getPublicStudioResponsePagesItemSectionsItemMediaUrlMax),
+  "buttonAr": zod.string().max(getPublicStudioResponsePagesItemSectionsItemButtonArMax),
+  "buttonEn": zod.string().max(getPublicStudioResponsePagesItemSectionsItemButtonEnMax),
+  "href": zod.string().max(getPublicStudioResponsePagesItemSectionsItemHrefMax),
+  "visible": zod.boolean()
+})).max(getPublicStudioResponsePagesItemSectionsMax)
+})).max(getPublicStudioResponsePagesMax),
+  "banners": zod.array(zod.object({
+  "id": zod.string().max(getPublicStudioResponseBannersItemIdMax),
+  "textAr": zod.string().max(getPublicStudioResponseBannersItemTextArMax),
+  "textEn": zod.string().max(getPublicStudioResponseBannersItemTextEnMax),
+  "href": zod.string().max(getPublicStudioResponseBannersItemHrefMax),
+  "enabled": zod.boolean()
+})).max(getPublicStudioResponseBannersMax),
+  "campaigns": zod.array(zod.object({
+  "id": zod.string().max(getPublicStudioResponseCampaignsItemIdMax),
+  "name": zod.string().min(1).max(getPublicStudioResponseCampaignsItemNameMax),
+  "source": zod.string().max(getPublicStudioResponseCampaignsItemSourceMax),
+  "medium": zod.string().max(getPublicStudioResponseCampaignsItemMediumMax),
+  "target": zod.string().max(getPublicStudioResponseCampaignsItemTargetMax)
+})).max(getPublicStudioResponseCampaignsMax)
+})
+
+
+export const getAdminStudioResponseDraftBrandingNameArMax = 200;
+
+export const getAdminStudioResponseDraftBrandingNameEnMax = 200;
+
+export const getAdminStudioResponseDraftBrandingLogoUrlMax = 2000;
+
+export const getAdminStudioResponseDraftBrandingFooterArMax = 3000;
+
+export const getAdminStudioResponseDraftBrandingFooterEnMax = 3000;
+
+export const getAdminStudioResponseDraftBrandingPhoneMax = 50;
+
+export const getAdminStudioResponseDraftBrandingEmailMax = 200;
+
+export const getAdminStudioResponseDraftBrandingWhatsappMax = 50;
+
+export const getAdminStudioResponseDraftBrandingProfileUrlMax = 2000;
+
+export const getAdminStudioResponseDraftBrandingFacebookMax = 2000;
+
+export const getAdminStudioResponseDraftBrandingInstagramMax = 2000;
+
+export const getAdminStudioResponseDraftBrandingLinkedinMax = 2000;
+
+export const getAdminStudioResponseDraftBrandingSeoTitleArMax = 200;
+
+export const getAdminStudioResponseDraftBrandingSeoTitleEnMax = 200;
+
+export const getAdminStudioResponseDraftBrandingSeoDescriptionArMax = 500;
+
+export const getAdminStudioResponseDraftBrandingSeoDescriptionEnMax = 500;
+
+export const getAdminStudioResponseDraftNavigationItemIdMax = 100;
+
+export const getAdminStudioResponseDraftNavigationItemLabelArMax = 100;
+
+export const getAdminStudioResponseDraftNavigationItemLabelEnMax = 100;
+
+export const getAdminStudioResponseDraftNavigationItemHrefMax = 2000;
+
+export const getAdminStudioResponseDraftNavigationMax = 20;
+
+export const getAdminStudioResponseDraftSlidesItemIdMax = 100;
+
+export const getAdminStudioResponseDraftSlidesItemImageUrlMax = 2000;
+
+export const getAdminStudioResponseDraftSlidesItemMobileImageUrlMax = 2000;
+
+export const getAdminStudioResponseDraftSlidesItemTitleArMax = 200;
+
+export const getAdminStudioResponseDraftSlidesItemTitleEnMax = 200;
+
+export const getAdminStudioResponseDraftSlidesItemSubtitleArMax = 1000;
+
+export const getAdminStudioResponseDraftSlidesItemSubtitleEnMax = 1000;
+
+export const getAdminStudioResponseDraftSlidesItemButtonArMax = 100;
+
+export const getAdminStudioResponseDraftSlidesItemButtonEnMax = 100;
+
+export const getAdminStudioResponseDraftSlidesItemHrefMax = 2000;
+
+export const getAdminStudioResponseDraftSlidesMax = 20;
+
+export const getAdminStudioResponseDraftVideosItemIdMax = 100;
+
+export const getAdminStudioResponseDraftVideosItemTitleArMax = 200;
+
+export const getAdminStudioResponseDraftVideosItemTitleEnMax = 200;
+
+export const getAdminStudioResponseDraftVideosItemDescriptionArMax = 1000;
+
+export const getAdminStudioResponseDraftVideosItemDescriptionEnMax = 1000;
+
+export const getAdminStudioResponseDraftVideosItemSrcMax = 2000;
+
+export const getAdminStudioResponseDraftVideosItemPosterMax = 2000;
+
+export const getAdminStudioResponseDraftVideosMax = 20;
+
+export const getAdminStudioResponseDraftHomeSectionsItemIdMax = 100;
+
+export const getAdminStudioResponseDraftHomeSectionsItemTitleArMax = 200;
+
+export const getAdminStudioResponseDraftHomeSectionsItemTitleEnMax = 200;
+
+export const getAdminStudioResponseDraftHomeSectionsItemBodyArMax = 10000;
+
+export const getAdminStudioResponseDraftHomeSectionsItemBodyEnMax = 10000;
+
+export const getAdminStudioResponseDraftHomeSectionsItemImageUrlMax = 2000;
+
+export const getAdminStudioResponseDraftHomeSectionsItemHrefMax = 2000;
+
+export const getAdminStudioResponseDraftHomeSectionsMax = 30;
+
+export const getAdminStudioResponseDraftPagesItemIdMax = 100;
+
+export const getAdminStudioResponseDraftPagesItemSlugMax = 120;
+
+
+export const getAdminStudioResponseDraftPagesItemSlugRegExp = new RegExp('^[a-z0-9]+(?:-[a-z0-9]+)*$');
+export const getAdminStudioResponseDraftPagesItemTitleArMax = 200;
+
+export const getAdminStudioResponseDraftPagesItemTitleEnMax = 200;
+
+export const getAdminStudioResponseDraftPagesItemDescriptionArMax = 500;
+
+export const getAdminStudioResponseDraftPagesItemDescriptionEnMax = 500;
+
+export const getAdminStudioResponseDraftPagesItemSectionsItemIdMax = 100;
+
+export const getAdminStudioResponseDraftPagesItemSectionsItemHeadingArMax = 200;
+
+export const getAdminStudioResponseDraftPagesItemSectionsItemHeadingEnMax = 200;
+
+export const getAdminStudioResponseDraftPagesItemSectionsItemBodyArMax = 20000;
+
+export const getAdminStudioResponseDraftPagesItemSectionsItemBodyEnMax = 20000;
+
+export const getAdminStudioResponseDraftPagesItemSectionsItemMediaUrlMax = 2000;
+
+export const getAdminStudioResponseDraftPagesItemSectionsItemButtonArMax = 100;
+
+export const getAdminStudioResponseDraftPagesItemSectionsItemButtonEnMax = 100;
+
+export const getAdminStudioResponseDraftPagesItemSectionsItemHrefMax = 2000;
+
+export const getAdminStudioResponseDraftPagesItemSectionsMax = 60;
+
+export const getAdminStudioResponseDraftPagesMax = 60;
+
+export const getAdminStudioResponseDraftBannersItemIdMax = 100;
+
+export const getAdminStudioResponseDraftBannersItemTextArMax = 500;
+
+export const getAdminStudioResponseDraftBannersItemTextEnMax = 500;
+
+export const getAdminStudioResponseDraftBannersItemHrefMax = 2000;
+
+export const getAdminStudioResponseDraftBannersMax = 10;
+
+export const getAdminStudioResponseDraftCampaignsItemIdMax = 100;
+
+export const getAdminStudioResponseDraftCampaignsItemNameMax = 100;
+
+export const getAdminStudioResponseDraftCampaignsItemSourceMax = 100;
+
+export const getAdminStudioResponseDraftCampaignsItemMediumMax = 100;
+
+export const getAdminStudioResponseDraftCampaignsItemTargetMax = 2000;
+
+export const getAdminStudioResponseDraftCampaignsMax = 100;
+
+export const getAdminStudioResponsePublishedBrandingNameArMax = 200;
+
+export const getAdminStudioResponsePublishedBrandingNameEnMax = 200;
+
+export const getAdminStudioResponsePublishedBrandingLogoUrlMax = 2000;
+
+export const getAdminStudioResponsePublishedBrandingFooterArMax = 3000;
+
+export const getAdminStudioResponsePublishedBrandingFooterEnMax = 3000;
+
+export const getAdminStudioResponsePublishedBrandingPhoneMax = 50;
+
+export const getAdminStudioResponsePublishedBrandingEmailMax = 200;
+
+export const getAdminStudioResponsePublishedBrandingWhatsappMax = 50;
+
+export const getAdminStudioResponsePublishedBrandingProfileUrlMax = 2000;
+
+export const getAdminStudioResponsePublishedBrandingFacebookMax = 2000;
+
+export const getAdminStudioResponsePublishedBrandingInstagramMax = 2000;
+
+export const getAdminStudioResponsePublishedBrandingLinkedinMax = 2000;
+
+export const getAdminStudioResponsePublishedBrandingSeoTitleArMax = 200;
+
+export const getAdminStudioResponsePublishedBrandingSeoTitleEnMax = 200;
+
+export const getAdminStudioResponsePublishedBrandingSeoDescriptionArMax = 500;
+
+export const getAdminStudioResponsePublishedBrandingSeoDescriptionEnMax = 500;
+
+export const getAdminStudioResponsePublishedNavigationItemIdMax = 100;
+
+export const getAdminStudioResponsePublishedNavigationItemLabelArMax = 100;
+
+export const getAdminStudioResponsePublishedNavigationItemLabelEnMax = 100;
+
+export const getAdminStudioResponsePublishedNavigationItemHrefMax = 2000;
+
+export const getAdminStudioResponsePublishedNavigationMax = 20;
+
+export const getAdminStudioResponsePublishedSlidesItemIdMax = 100;
+
+export const getAdminStudioResponsePublishedSlidesItemImageUrlMax = 2000;
+
+export const getAdminStudioResponsePublishedSlidesItemMobileImageUrlMax = 2000;
+
+export const getAdminStudioResponsePublishedSlidesItemTitleArMax = 200;
+
+export const getAdminStudioResponsePublishedSlidesItemTitleEnMax = 200;
+
+export const getAdminStudioResponsePublishedSlidesItemSubtitleArMax = 1000;
+
+export const getAdminStudioResponsePublishedSlidesItemSubtitleEnMax = 1000;
+
+export const getAdminStudioResponsePublishedSlidesItemButtonArMax = 100;
+
+export const getAdminStudioResponsePublishedSlidesItemButtonEnMax = 100;
+
+export const getAdminStudioResponsePublishedSlidesItemHrefMax = 2000;
+
+export const getAdminStudioResponsePublishedSlidesMax = 20;
+
+export const getAdminStudioResponsePublishedVideosItemIdMax = 100;
+
+export const getAdminStudioResponsePublishedVideosItemTitleArMax = 200;
+
+export const getAdminStudioResponsePublishedVideosItemTitleEnMax = 200;
+
+export const getAdminStudioResponsePublishedVideosItemDescriptionArMax = 1000;
+
+export const getAdminStudioResponsePublishedVideosItemDescriptionEnMax = 1000;
+
+export const getAdminStudioResponsePublishedVideosItemSrcMax = 2000;
+
+export const getAdminStudioResponsePublishedVideosItemPosterMax = 2000;
+
+export const getAdminStudioResponsePublishedVideosMax = 20;
+
+export const getAdminStudioResponsePublishedHomeSectionsItemIdMax = 100;
+
+export const getAdminStudioResponsePublishedHomeSectionsItemTitleArMax = 200;
+
+export const getAdminStudioResponsePublishedHomeSectionsItemTitleEnMax = 200;
+
+export const getAdminStudioResponsePublishedHomeSectionsItemBodyArMax = 10000;
+
+export const getAdminStudioResponsePublishedHomeSectionsItemBodyEnMax = 10000;
+
+export const getAdminStudioResponsePublishedHomeSectionsItemImageUrlMax = 2000;
+
+export const getAdminStudioResponsePublishedHomeSectionsItemHrefMax = 2000;
+
+export const getAdminStudioResponsePublishedHomeSectionsMax = 30;
+
+export const getAdminStudioResponsePublishedPagesItemIdMax = 100;
+
+export const getAdminStudioResponsePublishedPagesItemSlugMax = 120;
+
+
+export const getAdminStudioResponsePublishedPagesItemSlugRegExp = new RegExp('^[a-z0-9]+(?:-[a-z0-9]+)*$');
+export const getAdminStudioResponsePublishedPagesItemTitleArMax = 200;
+
+export const getAdminStudioResponsePublishedPagesItemTitleEnMax = 200;
+
+export const getAdminStudioResponsePublishedPagesItemDescriptionArMax = 500;
+
+export const getAdminStudioResponsePublishedPagesItemDescriptionEnMax = 500;
+
+export const getAdminStudioResponsePublishedPagesItemSectionsItemIdMax = 100;
+
+export const getAdminStudioResponsePublishedPagesItemSectionsItemHeadingArMax = 200;
+
+export const getAdminStudioResponsePublishedPagesItemSectionsItemHeadingEnMax = 200;
+
+export const getAdminStudioResponsePublishedPagesItemSectionsItemBodyArMax = 20000;
+
+export const getAdminStudioResponsePublishedPagesItemSectionsItemBodyEnMax = 20000;
+
+export const getAdminStudioResponsePublishedPagesItemSectionsItemMediaUrlMax = 2000;
+
+export const getAdminStudioResponsePublishedPagesItemSectionsItemButtonArMax = 100;
+
+export const getAdminStudioResponsePublishedPagesItemSectionsItemButtonEnMax = 100;
+
+export const getAdminStudioResponsePublishedPagesItemSectionsItemHrefMax = 2000;
+
+export const getAdminStudioResponsePublishedPagesItemSectionsMax = 60;
+
+export const getAdminStudioResponsePublishedPagesMax = 60;
+
+export const getAdminStudioResponsePublishedBannersItemIdMax = 100;
+
+export const getAdminStudioResponsePublishedBannersItemTextArMax = 500;
+
+export const getAdminStudioResponsePublishedBannersItemTextEnMax = 500;
+
+export const getAdminStudioResponsePublishedBannersItemHrefMax = 2000;
+
+export const getAdminStudioResponsePublishedBannersMax = 10;
+
+export const getAdminStudioResponsePublishedCampaignsItemIdMax = 100;
+
+export const getAdminStudioResponsePublishedCampaignsItemNameMax = 100;
+
+export const getAdminStudioResponsePublishedCampaignsItemSourceMax = 100;
+
+export const getAdminStudioResponsePublishedCampaignsItemMediumMax = 100;
+
+export const getAdminStudioResponsePublishedCampaignsItemTargetMax = 2000;
+
+export const getAdminStudioResponsePublishedCampaignsMax = 100;
+
+
+
+export const GetAdminStudioResponse = zod.object({
+  "draft": zod.object({
+  "branding": zod.object({
+  "nameAr": zod.string().max(getAdminStudioResponseDraftBrandingNameArMax),
+  "nameEn": zod.string().max(getAdminStudioResponseDraftBrandingNameEnMax),
+  "logoUrl": zod.string().max(getAdminStudioResponseDraftBrandingLogoUrlMax),
+  "footerAr": zod.string().max(getAdminStudioResponseDraftBrandingFooterArMax),
+  "footerEn": zod.string().max(getAdminStudioResponseDraftBrandingFooterEnMax),
+  "phone": zod.string().max(getAdminStudioResponseDraftBrandingPhoneMax),
+  "email": zod.string().max(getAdminStudioResponseDraftBrandingEmailMax),
+  "whatsapp": zod.string().max(getAdminStudioResponseDraftBrandingWhatsappMax),
+  "profileUrl": zod.string().max(getAdminStudioResponseDraftBrandingProfileUrlMax),
+  "facebook": zod.string().max(getAdminStudioResponseDraftBrandingFacebookMax),
+  "instagram": zod.string().max(getAdminStudioResponseDraftBrandingInstagramMax),
+  "linkedin": zod.string().max(getAdminStudioResponseDraftBrandingLinkedinMax),
+  "seoTitleAr": zod.string().max(getAdminStudioResponseDraftBrandingSeoTitleArMax),
+  "seoTitleEn": zod.string().max(getAdminStudioResponseDraftBrandingSeoTitleEnMax),
+  "seoDescriptionAr": zod.string().max(getAdminStudioResponseDraftBrandingSeoDescriptionArMax),
+  "seoDescriptionEn": zod.string().max(getAdminStudioResponseDraftBrandingSeoDescriptionEnMax)
+}),
+  "navigation": zod.array(zod.object({
+  "id": zod.string().max(getAdminStudioResponseDraftNavigationItemIdMax),
+  "labelAr": zod.string().max(getAdminStudioResponseDraftNavigationItemLabelArMax),
+  "labelEn": zod.string().max(getAdminStudioResponseDraftNavigationItemLabelEnMax),
+  "href": zod.string().max(getAdminStudioResponseDraftNavigationItemHrefMax),
+  "visible": zod.boolean()
+})).max(getAdminStudioResponseDraftNavigationMax),
+  "slides": zod.array(zod.object({
+  "id": zod.string().max(getAdminStudioResponseDraftSlidesItemIdMax),
+  "imageUrl": zod.string().max(getAdminStudioResponseDraftSlidesItemImageUrlMax),
+  "mobileImageUrl": zod.string().max(getAdminStudioResponseDraftSlidesItemMobileImageUrlMax),
+  "titleAr": zod.string().max(getAdminStudioResponseDraftSlidesItemTitleArMax),
+  "titleEn": zod.string().max(getAdminStudioResponseDraftSlidesItemTitleEnMax),
+  "subtitleAr": zod.string().max(getAdminStudioResponseDraftSlidesItemSubtitleArMax),
+  "subtitleEn": zod.string().max(getAdminStudioResponseDraftSlidesItemSubtitleEnMax),
+  "buttonAr": zod.string().max(getAdminStudioResponseDraftSlidesItemButtonArMax),
+  "buttonEn": zod.string().max(getAdminStudioResponseDraftSlidesItemButtonEnMax),
+  "href": zod.string().max(getAdminStudioResponseDraftSlidesItemHrefMax),
+  "enabled": zod.boolean()
+})).max(getAdminStudioResponseDraftSlidesMax),
+  "videos": zod.array(zod.object({
+  "id": zod.string().max(getAdminStudioResponseDraftVideosItemIdMax),
+  "titleAr": zod.string().max(getAdminStudioResponseDraftVideosItemTitleArMax),
+  "titleEn": zod.string().max(getAdminStudioResponseDraftVideosItemTitleEnMax),
+  "descriptionAr": zod.string().max(getAdminStudioResponseDraftVideosItemDescriptionArMax),
+  "descriptionEn": zod.string().max(getAdminStudioResponseDraftVideosItemDescriptionEnMax),
+  "src": zod.string().max(getAdminStudioResponseDraftVideosItemSrcMax),
+  "poster": zod.string().max(getAdminStudioResponseDraftVideosItemPosterMax),
+  "enabled": zod.boolean()
+})).max(getAdminStudioResponseDraftVideosMax),
+  "homeSections": zod.array(zod.object({
+  "id": zod.string().max(getAdminStudioResponseDraftHomeSectionsItemIdMax),
+  "key": zod.enum(['intro', 'products', 'videos', 'branches', 'certificates', 'blog', 'cta', 'custom']),
+  "titleAr": zod.string().max(getAdminStudioResponseDraftHomeSectionsItemTitleArMax),
+  "titleEn": zod.string().max(getAdminStudioResponseDraftHomeSectionsItemTitleEnMax),
+  "bodyAr": zod.string().max(getAdminStudioResponseDraftHomeSectionsItemBodyArMax),
+  "bodyEn": zod.string().max(getAdminStudioResponseDraftHomeSectionsItemBodyEnMax),
+  "imageUrl": zod.string().max(getAdminStudioResponseDraftHomeSectionsItemImageUrlMax),
+  "href": zod.string().max(getAdminStudioResponseDraftHomeSectionsItemHrefMax),
+  "visible": zod.boolean()
+})).max(getAdminStudioResponseDraftHomeSectionsMax),
+  "pages": zod.array(zod.object({
+  "id": zod.string().max(getAdminStudioResponseDraftPagesItemIdMax),
+  "slug": zod.string().min(1).max(getAdminStudioResponseDraftPagesItemSlugMax).regex(getAdminStudioResponseDraftPagesItemSlugRegExp),
+  "titleAr": zod.string().max(getAdminStudioResponseDraftPagesItemTitleArMax),
+  "titleEn": zod.string().max(getAdminStudioResponseDraftPagesItemTitleEnMax),
+  "descriptionAr": zod.string().max(getAdminStudioResponseDraftPagesItemDescriptionArMax),
+  "descriptionEn": zod.string().max(getAdminStudioResponseDraftPagesItemDescriptionEnMax),
+  "published": zod.boolean(),
+  "sections": zod.array(zod.object({
+  "id": zod.string().max(getAdminStudioResponseDraftPagesItemSectionsItemIdMax),
+  "kind": zod.enum(['text', 'image', 'video', 'cta']),
+  "headingAr": zod.string().max(getAdminStudioResponseDraftPagesItemSectionsItemHeadingArMax),
+  "headingEn": zod.string().max(getAdminStudioResponseDraftPagesItemSectionsItemHeadingEnMax),
+  "bodyAr": zod.string().max(getAdminStudioResponseDraftPagesItemSectionsItemBodyArMax),
+  "bodyEn": zod.string().max(getAdminStudioResponseDraftPagesItemSectionsItemBodyEnMax),
+  "mediaUrl": zod.string().max(getAdminStudioResponseDraftPagesItemSectionsItemMediaUrlMax),
+  "buttonAr": zod.string().max(getAdminStudioResponseDraftPagesItemSectionsItemButtonArMax),
+  "buttonEn": zod.string().max(getAdminStudioResponseDraftPagesItemSectionsItemButtonEnMax),
+  "href": zod.string().max(getAdminStudioResponseDraftPagesItemSectionsItemHrefMax),
+  "visible": zod.boolean()
+})).max(getAdminStudioResponseDraftPagesItemSectionsMax)
+})).max(getAdminStudioResponseDraftPagesMax),
+  "banners": zod.array(zod.object({
+  "id": zod.string().max(getAdminStudioResponseDraftBannersItemIdMax),
+  "textAr": zod.string().max(getAdminStudioResponseDraftBannersItemTextArMax),
+  "textEn": zod.string().max(getAdminStudioResponseDraftBannersItemTextEnMax),
+  "href": zod.string().max(getAdminStudioResponseDraftBannersItemHrefMax),
+  "enabled": zod.boolean()
+})).max(getAdminStudioResponseDraftBannersMax),
+  "campaigns": zod.array(zod.object({
+  "id": zod.string().max(getAdminStudioResponseDraftCampaignsItemIdMax),
+  "name": zod.string().min(1).max(getAdminStudioResponseDraftCampaignsItemNameMax),
+  "source": zod.string().max(getAdminStudioResponseDraftCampaignsItemSourceMax),
+  "medium": zod.string().max(getAdminStudioResponseDraftCampaignsItemMediumMax),
+  "target": zod.string().max(getAdminStudioResponseDraftCampaignsItemTargetMax)
+})).max(getAdminStudioResponseDraftCampaignsMax)
+}),
+  "published": zod.object({
+  "branding": zod.object({
+  "nameAr": zod.string().max(getAdminStudioResponsePublishedBrandingNameArMax),
+  "nameEn": zod.string().max(getAdminStudioResponsePublishedBrandingNameEnMax),
+  "logoUrl": zod.string().max(getAdminStudioResponsePublishedBrandingLogoUrlMax),
+  "footerAr": zod.string().max(getAdminStudioResponsePublishedBrandingFooterArMax),
+  "footerEn": zod.string().max(getAdminStudioResponsePublishedBrandingFooterEnMax),
+  "phone": zod.string().max(getAdminStudioResponsePublishedBrandingPhoneMax),
+  "email": zod.string().max(getAdminStudioResponsePublishedBrandingEmailMax),
+  "whatsapp": zod.string().max(getAdminStudioResponsePublishedBrandingWhatsappMax),
+  "profileUrl": zod.string().max(getAdminStudioResponsePublishedBrandingProfileUrlMax),
+  "facebook": zod.string().max(getAdminStudioResponsePublishedBrandingFacebookMax),
+  "instagram": zod.string().max(getAdminStudioResponsePublishedBrandingInstagramMax),
+  "linkedin": zod.string().max(getAdminStudioResponsePublishedBrandingLinkedinMax),
+  "seoTitleAr": zod.string().max(getAdminStudioResponsePublishedBrandingSeoTitleArMax),
+  "seoTitleEn": zod.string().max(getAdminStudioResponsePublishedBrandingSeoTitleEnMax),
+  "seoDescriptionAr": zod.string().max(getAdminStudioResponsePublishedBrandingSeoDescriptionArMax),
+  "seoDescriptionEn": zod.string().max(getAdminStudioResponsePublishedBrandingSeoDescriptionEnMax)
+}),
+  "navigation": zod.array(zod.object({
+  "id": zod.string().max(getAdminStudioResponsePublishedNavigationItemIdMax),
+  "labelAr": zod.string().max(getAdminStudioResponsePublishedNavigationItemLabelArMax),
+  "labelEn": zod.string().max(getAdminStudioResponsePublishedNavigationItemLabelEnMax),
+  "href": zod.string().max(getAdminStudioResponsePublishedNavigationItemHrefMax),
+  "visible": zod.boolean()
+})).max(getAdminStudioResponsePublishedNavigationMax),
+  "slides": zod.array(zod.object({
+  "id": zod.string().max(getAdminStudioResponsePublishedSlidesItemIdMax),
+  "imageUrl": zod.string().max(getAdminStudioResponsePublishedSlidesItemImageUrlMax),
+  "mobileImageUrl": zod.string().max(getAdminStudioResponsePublishedSlidesItemMobileImageUrlMax),
+  "titleAr": zod.string().max(getAdminStudioResponsePublishedSlidesItemTitleArMax),
+  "titleEn": zod.string().max(getAdminStudioResponsePublishedSlidesItemTitleEnMax),
+  "subtitleAr": zod.string().max(getAdminStudioResponsePublishedSlidesItemSubtitleArMax),
+  "subtitleEn": zod.string().max(getAdminStudioResponsePublishedSlidesItemSubtitleEnMax),
+  "buttonAr": zod.string().max(getAdminStudioResponsePublishedSlidesItemButtonArMax),
+  "buttonEn": zod.string().max(getAdminStudioResponsePublishedSlidesItemButtonEnMax),
+  "href": zod.string().max(getAdminStudioResponsePublishedSlidesItemHrefMax),
+  "enabled": zod.boolean()
+})).max(getAdminStudioResponsePublishedSlidesMax),
+  "videos": zod.array(zod.object({
+  "id": zod.string().max(getAdminStudioResponsePublishedVideosItemIdMax),
+  "titleAr": zod.string().max(getAdminStudioResponsePublishedVideosItemTitleArMax),
+  "titleEn": zod.string().max(getAdminStudioResponsePublishedVideosItemTitleEnMax),
+  "descriptionAr": zod.string().max(getAdminStudioResponsePublishedVideosItemDescriptionArMax),
+  "descriptionEn": zod.string().max(getAdminStudioResponsePublishedVideosItemDescriptionEnMax),
+  "src": zod.string().max(getAdminStudioResponsePublishedVideosItemSrcMax),
+  "poster": zod.string().max(getAdminStudioResponsePublishedVideosItemPosterMax),
+  "enabled": zod.boolean()
+})).max(getAdminStudioResponsePublishedVideosMax),
+  "homeSections": zod.array(zod.object({
+  "id": zod.string().max(getAdminStudioResponsePublishedHomeSectionsItemIdMax),
+  "key": zod.enum(['intro', 'products', 'videos', 'branches', 'certificates', 'blog', 'cta', 'custom']),
+  "titleAr": zod.string().max(getAdminStudioResponsePublishedHomeSectionsItemTitleArMax),
+  "titleEn": zod.string().max(getAdminStudioResponsePublishedHomeSectionsItemTitleEnMax),
+  "bodyAr": zod.string().max(getAdminStudioResponsePublishedHomeSectionsItemBodyArMax),
+  "bodyEn": zod.string().max(getAdminStudioResponsePublishedHomeSectionsItemBodyEnMax),
+  "imageUrl": zod.string().max(getAdminStudioResponsePublishedHomeSectionsItemImageUrlMax),
+  "href": zod.string().max(getAdminStudioResponsePublishedHomeSectionsItemHrefMax),
+  "visible": zod.boolean()
+})).max(getAdminStudioResponsePublishedHomeSectionsMax),
+  "pages": zod.array(zod.object({
+  "id": zod.string().max(getAdminStudioResponsePublishedPagesItemIdMax),
+  "slug": zod.string().min(1).max(getAdminStudioResponsePublishedPagesItemSlugMax).regex(getAdminStudioResponsePublishedPagesItemSlugRegExp),
+  "titleAr": zod.string().max(getAdminStudioResponsePublishedPagesItemTitleArMax),
+  "titleEn": zod.string().max(getAdminStudioResponsePublishedPagesItemTitleEnMax),
+  "descriptionAr": zod.string().max(getAdminStudioResponsePublishedPagesItemDescriptionArMax),
+  "descriptionEn": zod.string().max(getAdminStudioResponsePublishedPagesItemDescriptionEnMax),
+  "published": zod.boolean(),
+  "sections": zod.array(zod.object({
+  "id": zod.string().max(getAdminStudioResponsePublishedPagesItemSectionsItemIdMax),
+  "kind": zod.enum(['text', 'image', 'video', 'cta']),
+  "headingAr": zod.string().max(getAdminStudioResponsePublishedPagesItemSectionsItemHeadingArMax),
+  "headingEn": zod.string().max(getAdminStudioResponsePublishedPagesItemSectionsItemHeadingEnMax),
+  "bodyAr": zod.string().max(getAdminStudioResponsePublishedPagesItemSectionsItemBodyArMax),
+  "bodyEn": zod.string().max(getAdminStudioResponsePublishedPagesItemSectionsItemBodyEnMax),
+  "mediaUrl": zod.string().max(getAdminStudioResponsePublishedPagesItemSectionsItemMediaUrlMax),
+  "buttonAr": zod.string().max(getAdminStudioResponsePublishedPagesItemSectionsItemButtonArMax),
+  "buttonEn": zod.string().max(getAdminStudioResponsePublishedPagesItemSectionsItemButtonEnMax),
+  "href": zod.string().max(getAdminStudioResponsePublishedPagesItemSectionsItemHrefMax),
+  "visible": zod.boolean()
+})).max(getAdminStudioResponsePublishedPagesItemSectionsMax)
+})).max(getAdminStudioResponsePublishedPagesMax),
+  "banners": zod.array(zod.object({
+  "id": zod.string().max(getAdminStudioResponsePublishedBannersItemIdMax),
+  "textAr": zod.string().max(getAdminStudioResponsePublishedBannersItemTextArMax),
+  "textEn": zod.string().max(getAdminStudioResponsePublishedBannersItemTextEnMax),
+  "href": zod.string().max(getAdminStudioResponsePublishedBannersItemHrefMax),
+  "enabled": zod.boolean()
+})).max(getAdminStudioResponsePublishedBannersMax),
+  "campaigns": zod.array(zod.object({
+  "id": zod.string().max(getAdminStudioResponsePublishedCampaignsItemIdMax),
+  "name": zod.string().min(1).max(getAdminStudioResponsePublishedCampaignsItemNameMax),
+  "source": zod.string().max(getAdminStudioResponsePublishedCampaignsItemSourceMax),
+  "medium": zod.string().max(getAdminStudioResponsePublishedCampaignsItemMediumMax),
+  "target": zod.string().max(getAdminStudioResponsePublishedCampaignsItemTargetMax)
+})).max(getAdminStudioResponsePublishedCampaignsMax)
+}),
+  "updatedAt": zod.string().nullable(),
+  "publishedAt": zod.string().nullable()
+})
+
+
+export const saveStudioDraftBodyConfigBrandingNameArMax = 200;
+
+export const saveStudioDraftBodyConfigBrandingNameEnMax = 200;
+
+export const saveStudioDraftBodyConfigBrandingLogoUrlMax = 2000;
+
+export const saveStudioDraftBodyConfigBrandingFooterArMax = 3000;
+
+export const saveStudioDraftBodyConfigBrandingFooterEnMax = 3000;
+
+export const saveStudioDraftBodyConfigBrandingPhoneMax = 50;
+
+export const saveStudioDraftBodyConfigBrandingEmailMax = 200;
+
+export const saveStudioDraftBodyConfigBrandingWhatsappMax = 50;
+
+export const saveStudioDraftBodyConfigBrandingProfileUrlMax = 2000;
+
+export const saveStudioDraftBodyConfigBrandingFacebookMax = 2000;
+
+export const saveStudioDraftBodyConfigBrandingInstagramMax = 2000;
+
+export const saveStudioDraftBodyConfigBrandingLinkedinMax = 2000;
+
+export const saveStudioDraftBodyConfigBrandingSeoTitleArMax = 200;
+
+export const saveStudioDraftBodyConfigBrandingSeoTitleEnMax = 200;
+
+export const saveStudioDraftBodyConfigBrandingSeoDescriptionArMax = 500;
+
+export const saveStudioDraftBodyConfigBrandingSeoDescriptionEnMax = 500;
+
+export const saveStudioDraftBodyConfigNavigationItemIdMax = 100;
+
+export const saveStudioDraftBodyConfigNavigationItemLabelArMax = 100;
+
+export const saveStudioDraftBodyConfigNavigationItemLabelEnMax = 100;
+
+export const saveStudioDraftBodyConfigNavigationItemHrefMax = 2000;
+
+export const saveStudioDraftBodyConfigNavigationMax = 20;
+
+export const saveStudioDraftBodyConfigSlidesItemIdMax = 100;
+
+export const saveStudioDraftBodyConfigSlidesItemImageUrlMax = 2000;
+
+export const saveStudioDraftBodyConfigSlidesItemMobileImageUrlMax = 2000;
+
+export const saveStudioDraftBodyConfigSlidesItemTitleArMax = 200;
+
+export const saveStudioDraftBodyConfigSlidesItemTitleEnMax = 200;
+
+export const saveStudioDraftBodyConfigSlidesItemSubtitleArMax = 1000;
+
+export const saveStudioDraftBodyConfigSlidesItemSubtitleEnMax = 1000;
+
+export const saveStudioDraftBodyConfigSlidesItemButtonArMax = 100;
+
+export const saveStudioDraftBodyConfigSlidesItemButtonEnMax = 100;
+
+export const saveStudioDraftBodyConfigSlidesItemHrefMax = 2000;
+
+export const saveStudioDraftBodyConfigSlidesMax = 20;
+
+export const saveStudioDraftBodyConfigVideosItemIdMax = 100;
+
+export const saveStudioDraftBodyConfigVideosItemTitleArMax = 200;
+
+export const saveStudioDraftBodyConfigVideosItemTitleEnMax = 200;
+
+export const saveStudioDraftBodyConfigVideosItemDescriptionArMax = 1000;
+
+export const saveStudioDraftBodyConfigVideosItemDescriptionEnMax = 1000;
+
+export const saveStudioDraftBodyConfigVideosItemSrcMax = 2000;
+
+export const saveStudioDraftBodyConfigVideosItemPosterMax = 2000;
+
+export const saveStudioDraftBodyConfigVideosMax = 20;
+
+export const saveStudioDraftBodyConfigHomeSectionsItemIdMax = 100;
+
+export const saveStudioDraftBodyConfigHomeSectionsItemTitleArMax = 200;
+
+export const saveStudioDraftBodyConfigHomeSectionsItemTitleEnMax = 200;
+
+export const saveStudioDraftBodyConfigHomeSectionsItemBodyArMax = 10000;
+
+export const saveStudioDraftBodyConfigHomeSectionsItemBodyEnMax = 10000;
+
+export const saveStudioDraftBodyConfigHomeSectionsItemImageUrlMax = 2000;
+
+export const saveStudioDraftBodyConfigHomeSectionsItemHrefMax = 2000;
+
+export const saveStudioDraftBodyConfigHomeSectionsMax = 30;
+
+export const saveStudioDraftBodyConfigPagesItemIdMax = 100;
+
+export const saveStudioDraftBodyConfigPagesItemSlugMax = 120;
+
+
+export const saveStudioDraftBodyConfigPagesItemSlugRegExp = new RegExp('^[a-z0-9]+(?:-[a-z0-9]+)*$');
+export const saveStudioDraftBodyConfigPagesItemTitleArMax = 200;
+
+export const saveStudioDraftBodyConfigPagesItemTitleEnMax = 200;
+
+export const saveStudioDraftBodyConfigPagesItemDescriptionArMax = 500;
+
+export const saveStudioDraftBodyConfigPagesItemDescriptionEnMax = 500;
+
+export const saveStudioDraftBodyConfigPagesItemSectionsItemIdMax = 100;
+
+export const saveStudioDraftBodyConfigPagesItemSectionsItemHeadingArMax = 200;
+
+export const saveStudioDraftBodyConfigPagesItemSectionsItemHeadingEnMax = 200;
+
+export const saveStudioDraftBodyConfigPagesItemSectionsItemBodyArMax = 20000;
+
+export const saveStudioDraftBodyConfigPagesItemSectionsItemBodyEnMax = 20000;
+
+export const saveStudioDraftBodyConfigPagesItemSectionsItemMediaUrlMax = 2000;
+
+export const saveStudioDraftBodyConfigPagesItemSectionsItemButtonArMax = 100;
+
+export const saveStudioDraftBodyConfigPagesItemSectionsItemButtonEnMax = 100;
+
+export const saveStudioDraftBodyConfigPagesItemSectionsItemHrefMax = 2000;
+
+export const saveStudioDraftBodyConfigPagesItemSectionsMax = 60;
+
+export const saveStudioDraftBodyConfigPagesMax = 60;
+
+export const saveStudioDraftBodyConfigBannersItemIdMax = 100;
+
+export const saveStudioDraftBodyConfigBannersItemTextArMax = 500;
+
+export const saveStudioDraftBodyConfigBannersItemTextEnMax = 500;
+
+export const saveStudioDraftBodyConfigBannersItemHrefMax = 2000;
+
+export const saveStudioDraftBodyConfigBannersMax = 10;
+
+export const saveStudioDraftBodyConfigCampaignsItemIdMax = 100;
+
+export const saveStudioDraftBodyConfigCampaignsItemNameMax = 100;
+
+export const saveStudioDraftBodyConfigCampaignsItemSourceMax = 100;
+
+export const saveStudioDraftBodyConfigCampaignsItemMediumMax = 100;
+
+export const saveStudioDraftBodyConfigCampaignsItemTargetMax = 2000;
+
+export const saveStudioDraftBodyConfigCampaignsMax = 100;
+
+
+
+export const SaveStudioDraftBody = zod.object({
+  "config": zod.object({
+  "branding": zod.object({
+  "nameAr": zod.string().max(saveStudioDraftBodyConfigBrandingNameArMax),
+  "nameEn": zod.string().max(saveStudioDraftBodyConfigBrandingNameEnMax),
+  "logoUrl": zod.string().max(saveStudioDraftBodyConfigBrandingLogoUrlMax),
+  "footerAr": zod.string().max(saveStudioDraftBodyConfigBrandingFooterArMax),
+  "footerEn": zod.string().max(saveStudioDraftBodyConfigBrandingFooterEnMax),
+  "phone": zod.string().max(saveStudioDraftBodyConfigBrandingPhoneMax),
+  "email": zod.string().max(saveStudioDraftBodyConfigBrandingEmailMax),
+  "whatsapp": zod.string().max(saveStudioDraftBodyConfigBrandingWhatsappMax),
+  "profileUrl": zod.string().max(saveStudioDraftBodyConfigBrandingProfileUrlMax),
+  "facebook": zod.string().max(saveStudioDraftBodyConfigBrandingFacebookMax),
+  "instagram": zod.string().max(saveStudioDraftBodyConfigBrandingInstagramMax),
+  "linkedin": zod.string().max(saveStudioDraftBodyConfigBrandingLinkedinMax),
+  "seoTitleAr": zod.string().max(saveStudioDraftBodyConfigBrandingSeoTitleArMax),
+  "seoTitleEn": zod.string().max(saveStudioDraftBodyConfigBrandingSeoTitleEnMax),
+  "seoDescriptionAr": zod.string().max(saveStudioDraftBodyConfigBrandingSeoDescriptionArMax),
+  "seoDescriptionEn": zod.string().max(saveStudioDraftBodyConfigBrandingSeoDescriptionEnMax)
+}),
+  "navigation": zod.array(zod.object({
+  "id": zod.string().max(saveStudioDraftBodyConfigNavigationItemIdMax),
+  "labelAr": zod.string().max(saveStudioDraftBodyConfigNavigationItemLabelArMax),
+  "labelEn": zod.string().max(saveStudioDraftBodyConfigNavigationItemLabelEnMax),
+  "href": zod.string().max(saveStudioDraftBodyConfigNavigationItemHrefMax),
+  "visible": zod.boolean()
+})).max(saveStudioDraftBodyConfigNavigationMax),
+  "slides": zod.array(zod.object({
+  "id": zod.string().max(saveStudioDraftBodyConfigSlidesItemIdMax),
+  "imageUrl": zod.string().max(saveStudioDraftBodyConfigSlidesItemImageUrlMax),
+  "mobileImageUrl": zod.string().max(saveStudioDraftBodyConfigSlidesItemMobileImageUrlMax),
+  "titleAr": zod.string().max(saveStudioDraftBodyConfigSlidesItemTitleArMax),
+  "titleEn": zod.string().max(saveStudioDraftBodyConfigSlidesItemTitleEnMax),
+  "subtitleAr": zod.string().max(saveStudioDraftBodyConfigSlidesItemSubtitleArMax),
+  "subtitleEn": zod.string().max(saveStudioDraftBodyConfigSlidesItemSubtitleEnMax),
+  "buttonAr": zod.string().max(saveStudioDraftBodyConfigSlidesItemButtonArMax),
+  "buttonEn": zod.string().max(saveStudioDraftBodyConfigSlidesItemButtonEnMax),
+  "href": zod.string().max(saveStudioDraftBodyConfigSlidesItemHrefMax),
+  "enabled": zod.boolean()
+})).max(saveStudioDraftBodyConfigSlidesMax),
+  "videos": zod.array(zod.object({
+  "id": zod.string().max(saveStudioDraftBodyConfigVideosItemIdMax),
+  "titleAr": zod.string().max(saveStudioDraftBodyConfigVideosItemTitleArMax),
+  "titleEn": zod.string().max(saveStudioDraftBodyConfigVideosItemTitleEnMax),
+  "descriptionAr": zod.string().max(saveStudioDraftBodyConfigVideosItemDescriptionArMax),
+  "descriptionEn": zod.string().max(saveStudioDraftBodyConfigVideosItemDescriptionEnMax),
+  "src": zod.string().max(saveStudioDraftBodyConfigVideosItemSrcMax),
+  "poster": zod.string().max(saveStudioDraftBodyConfigVideosItemPosterMax),
+  "enabled": zod.boolean()
+})).max(saveStudioDraftBodyConfigVideosMax),
+  "homeSections": zod.array(zod.object({
+  "id": zod.string().max(saveStudioDraftBodyConfigHomeSectionsItemIdMax),
+  "key": zod.enum(['intro', 'products', 'videos', 'branches', 'certificates', 'blog', 'cta', 'custom']),
+  "titleAr": zod.string().max(saveStudioDraftBodyConfigHomeSectionsItemTitleArMax),
+  "titleEn": zod.string().max(saveStudioDraftBodyConfigHomeSectionsItemTitleEnMax),
+  "bodyAr": zod.string().max(saveStudioDraftBodyConfigHomeSectionsItemBodyArMax),
+  "bodyEn": zod.string().max(saveStudioDraftBodyConfigHomeSectionsItemBodyEnMax),
+  "imageUrl": zod.string().max(saveStudioDraftBodyConfigHomeSectionsItemImageUrlMax),
+  "href": zod.string().max(saveStudioDraftBodyConfigHomeSectionsItemHrefMax),
+  "visible": zod.boolean()
+})).max(saveStudioDraftBodyConfigHomeSectionsMax),
+  "pages": zod.array(zod.object({
+  "id": zod.string().max(saveStudioDraftBodyConfigPagesItemIdMax),
+  "slug": zod.string().min(1).max(saveStudioDraftBodyConfigPagesItemSlugMax).regex(saveStudioDraftBodyConfigPagesItemSlugRegExp),
+  "titleAr": zod.string().max(saveStudioDraftBodyConfigPagesItemTitleArMax),
+  "titleEn": zod.string().max(saveStudioDraftBodyConfigPagesItemTitleEnMax),
+  "descriptionAr": zod.string().max(saveStudioDraftBodyConfigPagesItemDescriptionArMax),
+  "descriptionEn": zod.string().max(saveStudioDraftBodyConfigPagesItemDescriptionEnMax),
+  "published": zod.boolean(),
+  "sections": zod.array(zod.object({
+  "id": zod.string().max(saveStudioDraftBodyConfigPagesItemSectionsItemIdMax),
+  "kind": zod.enum(['text', 'image', 'video', 'cta']),
+  "headingAr": zod.string().max(saveStudioDraftBodyConfigPagesItemSectionsItemHeadingArMax),
+  "headingEn": zod.string().max(saveStudioDraftBodyConfigPagesItemSectionsItemHeadingEnMax),
+  "bodyAr": zod.string().max(saveStudioDraftBodyConfigPagesItemSectionsItemBodyArMax),
+  "bodyEn": zod.string().max(saveStudioDraftBodyConfigPagesItemSectionsItemBodyEnMax),
+  "mediaUrl": zod.string().max(saveStudioDraftBodyConfigPagesItemSectionsItemMediaUrlMax),
+  "buttonAr": zod.string().max(saveStudioDraftBodyConfigPagesItemSectionsItemButtonArMax),
+  "buttonEn": zod.string().max(saveStudioDraftBodyConfigPagesItemSectionsItemButtonEnMax),
+  "href": zod.string().max(saveStudioDraftBodyConfigPagesItemSectionsItemHrefMax),
+  "visible": zod.boolean()
+})).max(saveStudioDraftBodyConfigPagesItemSectionsMax)
+})).max(saveStudioDraftBodyConfigPagesMax),
+  "banners": zod.array(zod.object({
+  "id": zod.string().max(saveStudioDraftBodyConfigBannersItemIdMax),
+  "textAr": zod.string().max(saveStudioDraftBodyConfigBannersItemTextArMax),
+  "textEn": zod.string().max(saveStudioDraftBodyConfigBannersItemTextEnMax),
+  "href": zod.string().max(saveStudioDraftBodyConfigBannersItemHrefMax),
+  "enabled": zod.boolean()
+})).max(saveStudioDraftBodyConfigBannersMax),
+  "campaigns": zod.array(zod.object({
+  "id": zod.string().max(saveStudioDraftBodyConfigCampaignsItemIdMax),
+  "name": zod.string().min(1).max(saveStudioDraftBodyConfigCampaignsItemNameMax),
+  "source": zod.string().max(saveStudioDraftBodyConfigCampaignsItemSourceMax),
+  "medium": zod.string().max(saveStudioDraftBodyConfigCampaignsItemMediumMax),
+  "target": zod.string().max(saveStudioDraftBodyConfigCampaignsItemTargetMax)
+})).max(saveStudioDraftBodyConfigCampaignsMax)
+})
+})
+
+export const saveStudioDraftResponseDraftBrandingNameArMax = 200;
+
+export const saveStudioDraftResponseDraftBrandingNameEnMax = 200;
+
+export const saveStudioDraftResponseDraftBrandingLogoUrlMax = 2000;
+
+export const saveStudioDraftResponseDraftBrandingFooterArMax = 3000;
+
+export const saveStudioDraftResponseDraftBrandingFooterEnMax = 3000;
+
+export const saveStudioDraftResponseDraftBrandingPhoneMax = 50;
+
+export const saveStudioDraftResponseDraftBrandingEmailMax = 200;
+
+export const saveStudioDraftResponseDraftBrandingWhatsappMax = 50;
+
+export const saveStudioDraftResponseDraftBrandingProfileUrlMax = 2000;
+
+export const saveStudioDraftResponseDraftBrandingFacebookMax = 2000;
+
+export const saveStudioDraftResponseDraftBrandingInstagramMax = 2000;
+
+export const saveStudioDraftResponseDraftBrandingLinkedinMax = 2000;
+
+export const saveStudioDraftResponseDraftBrandingSeoTitleArMax = 200;
+
+export const saveStudioDraftResponseDraftBrandingSeoTitleEnMax = 200;
+
+export const saveStudioDraftResponseDraftBrandingSeoDescriptionArMax = 500;
+
+export const saveStudioDraftResponseDraftBrandingSeoDescriptionEnMax = 500;
+
+export const saveStudioDraftResponseDraftNavigationItemIdMax = 100;
+
+export const saveStudioDraftResponseDraftNavigationItemLabelArMax = 100;
+
+export const saveStudioDraftResponseDraftNavigationItemLabelEnMax = 100;
+
+export const saveStudioDraftResponseDraftNavigationItemHrefMax = 2000;
+
+export const saveStudioDraftResponseDraftNavigationMax = 20;
+
+export const saveStudioDraftResponseDraftSlidesItemIdMax = 100;
+
+export const saveStudioDraftResponseDraftSlidesItemImageUrlMax = 2000;
+
+export const saveStudioDraftResponseDraftSlidesItemMobileImageUrlMax = 2000;
+
+export const saveStudioDraftResponseDraftSlidesItemTitleArMax = 200;
+
+export const saveStudioDraftResponseDraftSlidesItemTitleEnMax = 200;
+
+export const saveStudioDraftResponseDraftSlidesItemSubtitleArMax = 1000;
+
+export const saveStudioDraftResponseDraftSlidesItemSubtitleEnMax = 1000;
+
+export const saveStudioDraftResponseDraftSlidesItemButtonArMax = 100;
+
+export const saveStudioDraftResponseDraftSlidesItemButtonEnMax = 100;
+
+export const saveStudioDraftResponseDraftSlidesItemHrefMax = 2000;
+
+export const saveStudioDraftResponseDraftSlidesMax = 20;
+
+export const saveStudioDraftResponseDraftVideosItemIdMax = 100;
+
+export const saveStudioDraftResponseDraftVideosItemTitleArMax = 200;
+
+export const saveStudioDraftResponseDraftVideosItemTitleEnMax = 200;
+
+export const saveStudioDraftResponseDraftVideosItemDescriptionArMax = 1000;
+
+export const saveStudioDraftResponseDraftVideosItemDescriptionEnMax = 1000;
+
+export const saveStudioDraftResponseDraftVideosItemSrcMax = 2000;
+
+export const saveStudioDraftResponseDraftVideosItemPosterMax = 2000;
+
+export const saveStudioDraftResponseDraftVideosMax = 20;
+
+export const saveStudioDraftResponseDraftHomeSectionsItemIdMax = 100;
+
+export const saveStudioDraftResponseDraftHomeSectionsItemTitleArMax = 200;
+
+export const saveStudioDraftResponseDraftHomeSectionsItemTitleEnMax = 200;
+
+export const saveStudioDraftResponseDraftHomeSectionsItemBodyArMax = 10000;
+
+export const saveStudioDraftResponseDraftHomeSectionsItemBodyEnMax = 10000;
+
+export const saveStudioDraftResponseDraftHomeSectionsItemImageUrlMax = 2000;
+
+export const saveStudioDraftResponseDraftHomeSectionsItemHrefMax = 2000;
+
+export const saveStudioDraftResponseDraftHomeSectionsMax = 30;
+
+export const saveStudioDraftResponseDraftPagesItemIdMax = 100;
+
+export const saveStudioDraftResponseDraftPagesItemSlugMax = 120;
+
+
+export const saveStudioDraftResponseDraftPagesItemSlugRegExp = new RegExp('^[a-z0-9]+(?:-[a-z0-9]+)*$');
+export const saveStudioDraftResponseDraftPagesItemTitleArMax = 200;
+
+export const saveStudioDraftResponseDraftPagesItemTitleEnMax = 200;
+
+export const saveStudioDraftResponseDraftPagesItemDescriptionArMax = 500;
+
+export const saveStudioDraftResponseDraftPagesItemDescriptionEnMax = 500;
+
+export const saveStudioDraftResponseDraftPagesItemSectionsItemIdMax = 100;
+
+export const saveStudioDraftResponseDraftPagesItemSectionsItemHeadingArMax = 200;
+
+export const saveStudioDraftResponseDraftPagesItemSectionsItemHeadingEnMax = 200;
+
+export const saveStudioDraftResponseDraftPagesItemSectionsItemBodyArMax = 20000;
+
+export const saveStudioDraftResponseDraftPagesItemSectionsItemBodyEnMax = 20000;
+
+export const saveStudioDraftResponseDraftPagesItemSectionsItemMediaUrlMax = 2000;
+
+export const saveStudioDraftResponseDraftPagesItemSectionsItemButtonArMax = 100;
+
+export const saveStudioDraftResponseDraftPagesItemSectionsItemButtonEnMax = 100;
+
+export const saveStudioDraftResponseDraftPagesItemSectionsItemHrefMax = 2000;
+
+export const saveStudioDraftResponseDraftPagesItemSectionsMax = 60;
+
+export const saveStudioDraftResponseDraftPagesMax = 60;
+
+export const saveStudioDraftResponseDraftBannersItemIdMax = 100;
+
+export const saveStudioDraftResponseDraftBannersItemTextArMax = 500;
+
+export const saveStudioDraftResponseDraftBannersItemTextEnMax = 500;
+
+export const saveStudioDraftResponseDraftBannersItemHrefMax = 2000;
+
+export const saveStudioDraftResponseDraftBannersMax = 10;
+
+export const saveStudioDraftResponseDraftCampaignsItemIdMax = 100;
+
+export const saveStudioDraftResponseDraftCampaignsItemNameMax = 100;
+
+export const saveStudioDraftResponseDraftCampaignsItemSourceMax = 100;
+
+export const saveStudioDraftResponseDraftCampaignsItemMediumMax = 100;
+
+export const saveStudioDraftResponseDraftCampaignsItemTargetMax = 2000;
+
+export const saveStudioDraftResponseDraftCampaignsMax = 100;
+
+export const saveStudioDraftResponsePublishedBrandingNameArMax = 200;
+
+export const saveStudioDraftResponsePublishedBrandingNameEnMax = 200;
+
+export const saveStudioDraftResponsePublishedBrandingLogoUrlMax = 2000;
+
+export const saveStudioDraftResponsePublishedBrandingFooterArMax = 3000;
+
+export const saveStudioDraftResponsePublishedBrandingFooterEnMax = 3000;
+
+export const saveStudioDraftResponsePublishedBrandingPhoneMax = 50;
+
+export const saveStudioDraftResponsePublishedBrandingEmailMax = 200;
+
+export const saveStudioDraftResponsePublishedBrandingWhatsappMax = 50;
+
+export const saveStudioDraftResponsePublishedBrandingProfileUrlMax = 2000;
+
+export const saveStudioDraftResponsePublishedBrandingFacebookMax = 2000;
+
+export const saveStudioDraftResponsePublishedBrandingInstagramMax = 2000;
+
+export const saveStudioDraftResponsePublishedBrandingLinkedinMax = 2000;
+
+export const saveStudioDraftResponsePublishedBrandingSeoTitleArMax = 200;
+
+export const saveStudioDraftResponsePublishedBrandingSeoTitleEnMax = 200;
+
+export const saveStudioDraftResponsePublishedBrandingSeoDescriptionArMax = 500;
+
+export const saveStudioDraftResponsePublishedBrandingSeoDescriptionEnMax = 500;
+
+export const saveStudioDraftResponsePublishedNavigationItemIdMax = 100;
+
+export const saveStudioDraftResponsePublishedNavigationItemLabelArMax = 100;
+
+export const saveStudioDraftResponsePublishedNavigationItemLabelEnMax = 100;
+
+export const saveStudioDraftResponsePublishedNavigationItemHrefMax = 2000;
+
+export const saveStudioDraftResponsePublishedNavigationMax = 20;
+
+export const saveStudioDraftResponsePublishedSlidesItemIdMax = 100;
+
+export const saveStudioDraftResponsePublishedSlidesItemImageUrlMax = 2000;
+
+export const saveStudioDraftResponsePublishedSlidesItemMobileImageUrlMax = 2000;
+
+export const saveStudioDraftResponsePublishedSlidesItemTitleArMax = 200;
+
+export const saveStudioDraftResponsePublishedSlidesItemTitleEnMax = 200;
+
+export const saveStudioDraftResponsePublishedSlidesItemSubtitleArMax = 1000;
+
+export const saveStudioDraftResponsePublishedSlidesItemSubtitleEnMax = 1000;
+
+export const saveStudioDraftResponsePublishedSlidesItemButtonArMax = 100;
+
+export const saveStudioDraftResponsePublishedSlidesItemButtonEnMax = 100;
+
+export const saveStudioDraftResponsePublishedSlidesItemHrefMax = 2000;
+
+export const saveStudioDraftResponsePublishedSlidesMax = 20;
+
+export const saveStudioDraftResponsePublishedVideosItemIdMax = 100;
+
+export const saveStudioDraftResponsePublishedVideosItemTitleArMax = 200;
+
+export const saveStudioDraftResponsePublishedVideosItemTitleEnMax = 200;
+
+export const saveStudioDraftResponsePublishedVideosItemDescriptionArMax = 1000;
+
+export const saveStudioDraftResponsePublishedVideosItemDescriptionEnMax = 1000;
+
+export const saveStudioDraftResponsePublishedVideosItemSrcMax = 2000;
+
+export const saveStudioDraftResponsePublishedVideosItemPosterMax = 2000;
+
+export const saveStudioDraftResponsePublishedVideosMax = 20;
+
+export const saveStudioDraftResponsePublishedHomeSectionsItemIdMax = 100;
+
+export const saveStudioDraftResponsePublishedHomeSectionsItemTitleArMax = 200;
+
+export const saveStudioDraftResponsePublishedHomeSectionsItemTitleEnMax = 200;
+
+export const saveStudioDraftResponsePublishedHomeSectionsItemBodyArMax = 10000;
+
+export const saveStudioDraftResponsePublishedHomeSectionsItemBodyEnMax = 10000;
+
+export const saveStudioDraftResponsePublishedHomeSectionsItemImageUrlMax = 2000;
+
+export const saveStudioDraftResponsePublishedHomeSectionsItemHrefMax = 2000;
+
+export const saveStudioDraftResponsePublishedHomeSectionsMax = 30;
+
+export const saveStudioDraftResponsePublishedPagesItemIdMax = 100;
+
+export const saveStudioDraftResponsePublishedPagesItemSlugMax = 120;
+
+
+export const saveStudioDraftResponsePublishedPagesItemSlugRegExp = new RegExp('^[a-z0-9]+(?:-[a-z0-9]+)*$');
+export const saveStudioDraftResponsePublishedPagesItemTitleArMax = 200;
+
+export const saveStudioDraftResponsePublishedPagesItemTitleEnMax = 200;
+
+export const saveStudioDraftResponsePublishedPagesItemDescriptionArMax = 500;
+
+export const saveStudioDraftResponsePublishedPagesItemDescriptionEnMax = 500;
+
+export const saveStudioDraftResponsePublishedPagesItemSectionsItemIdMax = 100;
+
+export const saveStudioDraftResponsePublishedPagesItemSectionsItemHeadingArMax = 200;
+
+export const saveStudioDraftResponsePublishedPagesItemSectionsItemHeadingEnMax = 200;
+
+export const saveStudioDraftResponsePublishedPagesItemSectionsItemBodyArMax = 20000;
+
+export const saveStudioDraftResponsePublishedPagesItemSectionsItemBodyEnMax = 20000;
+
+export const saveStudioDraftResponsePublishedPagesItemSectionsItemMediaUrlMax = 2000;
+
+export const saveStudioDraftResponsePublishedPagesItemSectionsItemButtonArMax = 100;
+
+export const saveStudioDraftResponsePublishedPagesItemSectionsItemButtonEnMax = 100;
+
+export const saveStudioDraftResponsePublishedPagesItemSectionsItemHrefMax = 2000;
+
+export const saveStudioDraftResponsePublishedPagesItemSectionsMax = 60;
+
+export const saveStudioDraftResponsePublishedPagesMax = 60;
+
+export const saveStudioDraftResponsePublishedBannersItemIdMax = 100;
+
+export const saveStudioDraftResponsePublishedBannersItemTextArMax = 500;
+
+export const saveStudioDraftResponsePublishedBannersItemTextEnMax = 500;
+
+export const saveStudioDraftResponsePublishedBannersItemHrefMax = 2000;
+
+export const saveStudioDraftResponsePublishedBannersMax = 10;
+
+export const saveStudioDraftResponsePublishedCampaignsItemIdMax = 100;
+
+export const saveStudioDraftResponsePublishedCampaignsItemNameMax = 100;
+
+export const saveStudioDraftResponsePublishedCampaignsItemSourceMax = 100;
+
+export const saveStudioDraftResponsePublishedCampaignsItemMediumMax = 100;
+
+export const saveStudioDraftResponsePublishedCampaignsItemTargetMax = 2000;
+
+export const saveStudioDraftResponsePublishedCampaignsMax = 100;
+
+
+
+export const SaveStudioDraftResponse = zod.object({
+  "draft": zod.object({
+  "branding": zod.object({
+  "nameAr": zod.string().max(saveStudioDraftResponseDraftBrandingNameArMax),
+  "nameEn": zod.string().max(saveStudioDraftResponseDraftBrandingNameEnMax),
+  "logoUrl": zod.string().max(saveStudioDraftResponseDraftBrandingLogoUrlMax),
+  "footerAr": zod.string().max(saveStudioDraftResponseDraftBrandingFooterArMax),
+  "footerEn": zod.string().max(saveStudioDraftResponseDraftBrandingFooterEnMax),
+  "phone": zod.string().max(saveStudioDraftResponseDraftBrandingPhoneMax),
+  "email": zod.string().max(saveStudioDraftResponseDraftBrandingEmailMax),
+  "whatsapp": zod.string().max(saveStudioDraftResponseDraftBrandingWhatsappMax),
+  "profileUrl": zod.string().max(saveStudioDraftResponseDraftBrandingProfileUrlMax),
+  "facebook": zod.string().max(saveStudioDraftResponseDraftBrandingFacebookMax),
+  "instagram": zod.string().max(saveStudioDraftResponseDraftBrandingInstagramMax),
+  "linkedin": zod.string().max(saveStudioDraftResponseDraftBrandingLinkedinMax),
+  "seoTitleAr": zod.string().max(saveStudioDraftResponseDraftBrandingSeoTitleArMax),
+  "seoTitleEn": zod.string().max(saveStudioDraftResponseDraftBrandingSeoTitleEnMax),
+  "seoDescriptionAr": zod.string().max(saveStudioDraftResponseDraftBrandingSeoDescriptionArMax),
+  "seoDescriptionEn": zod.string().max(saveStudioDraftResponseDraftBrandingSeoDescriptionEnMax)
+}),
+  "navigation": zod.array(zod.object({
+  "id": zod.string().max(saveStudioDraftResponseDraftNavigationItemIdMax),
+  "labelAr": zod.string().max(saveStudioDraftResponseDraftNavigationItemLabelArMax),
+  "labelEn": zod.string().max(saveStudioDraftResponseDraftNavigationItemLabelEnMax),
+  "href": zod.string().max(saveStudioDraftResponseDraftNavigationItemHrefMax),
+  "visible": zod.boolean()
+})).max(saveStudioDraftResponseDraftNavigationMax),
+  "slides": zod.array(zod.object({
+  "id": zod.string().max(saveStudioDraftResponseDraftSlidesItemIdMax),
+  "imageUrl": zod.string().max(saveStudioDraftResponseDraftSlidesItemImageUrlMax),
+  "mobileImageUrl": zod.string().max(saveStudioDraftResponseDraftSlidesItemMobileImageUrlMax),
+  "titleAr": zod.string().max(saveStudioDraftResponseDraftSlidesItemTitleArMax),
+  "titleEn": zod.string().max(saveStudioDraftResponseDraftSlidesItemTitleEnMax),
+  "subtitleAr": zod.string().max(saveStudioDraftResponseDraftSlidesItemSubtitleArMax),
+  "subtitleEn": zod.string().max(saveStudioDraftResponseDraftSlidesItemSubtitleEnMax),
+  "buttonAr": zod.string().max(saveStudioDraftResponseDraftSlidesItemButtonArMax),
+  "buttonEn": zod.string().max(saveStudioDraftResponseDraftSlidesItemButtonEnMax),
+  "href": zod.string().max(saveStudioDraftResponseDraftSlidesItemHrefMax),
+  "enabled": zod.boolean()
+})).max(saveStudioDraftResponseDraftSlidesMax),
+  "videos": zod.array(zod.object({
+  "id": zod.string().max(saveStudioDraftResponseDraftVideosItemIdMax),
+  "titleAr": zod.string().max(saveStudioDraftResponseDraftVideosItemTitleArMax),
+  "titleEn": zod.string().max(saveStudioDraftResponseDraftVideosItemTitleEnMax),
+  "descriptionAr": zod.string().max(saveStudioDraftResponseDraftVideosItemDescriptionArMax),
+  "descriptionEn": zod.string().max(saveStudioDraftResponseDraftVideosItemDescriptionEnMax),
+  "src": zod.string().max(saveStudioDraftResponseDraftVideosItemSrcMax),
+  "poster": zod.string().max(saveStudioDraftResponseDraftVideosItemPosterMax),
+  "enabled": zod.boolean()
+})).max(saveStudioDraftResponseDraftVideosMax),
+  "homeSections": zod.array(zod.object({
+  "id": zod.string().max(saveStudioDraftResponseDraftHomeSectionsItemIdMax),
+  "key": zod.enum(['intro', 'products', 'videos', 'branches', 'certificates', 'blog', 'cta', 'custom']),
+  "titleAr": zod.string().max(saveStudioDraftResponseDraftHomeSectionsItemTitleArMax),
+  "titleEn": zod.string().max(saveStudioDraftResponseDraftHomeSectionsItemTitleEnMax),
+  "bodyAr": zod.string().max(saveStudioDraftResponseDraftHomeSectionsItemBodyArMax),
+  "bodyEn": zod.string().max(saveStudioDraftResponseDraftHomeSectionsItemBodyEnMax),
+  "imageUrl": zod.string().max(saveStudioDraftResponseDraftHomeSectionsItemImageUrlMax),
+  "href": zod.string().max(saveStudioDraftResponseDraftHomeSectionsItemHrefMax),
+  "visible": zod.boolean()
+})).max(saveStudioDraftResponseDraftHomeSectionsMax),
+  "pages": zod.array(zod.object({
+  "id": zod.string().max(saveStudioDraftResponseDraftPagesItemIdMax),
+  "slug": zod.string().min(1).max(saveStudioDraftResponseDraftPagesItemSlugMax).regex(saveStudioDraftResponseDraftPagesItemSlugRegExp),
+  "titleAr": zod.string().max(saveStudioDraftResponseDraftPagesItemTitleArMax),
+  "titleEn": zod.string().max(saveStudioDraftResponseDraftPagesItemTitleEnMax),
+  "descriptionAr": zod.string().max(saveStudioDraftResponseDraftPagesItemDescriptionArMax),
+  "descriptionEn": zod.string().max(saveStudioDraftResponseDraftPagesItemDescriptionEnMax),
+  "published": zod.boolean(),
+  "sections": zod.array(zod.object({
+  "id": zod.string().max(saveStudioDraftResponseDraftPagesItemSectionsItemIdMax),
+  "kind": zod.enum(['text', 'image', 'video', 'cta']),
+  "headingAr": zod.string().max(saveStudioDraftResponseDraftPagesItemSectionsItemHeadingArMax),
+  "headingEn": zod.string().max(saveStudioDraftResponseDraftPagesItemSectionsItemHeadingEnMax),
+  "bodyAr": zod.string().max(saveStudioDraftResponseDraftPagesItemSectionsItemBodyArMax),
+  "bodyEn": zod.string().max(saveStudioDraftResponseDraftPagesItemSectionsItemBodyEnMax),
+  "mediaUrl": zod.string().max(saveStudioDraftResponseDraftPagesItemSectionsItemMediaUrlMax),
+  "buttonAr": zod.string().max(saveStudioDraftResponseDraftPagesItemSectionsItemButtonArMax),
+  "buttonEn": zod.string().max(saveStudioDraftResponseDraftPagesItemSectionsItemButtonEnMax),
+  "href": zod.string().max(saveStudioDraftResponseDraftPagesItemSectionsItemHrefMax),
+  "visible": zod.boolean()
+})).max(saveStudioDraftResponseDraftPagesItemSectionsMax)
+})).max(saveStudioDraftResponseDraftPagesMax),
+  "banners": zod.array(zod.object({
+  "id": zod.string().max(saveStudioDraftResponseDraftBannersItemIdMax),
+  "textAr": zod.string().max(saveStudioDraftResponseDraftBannersItemTextArMax),
+  "textEn": zod.string().max(saveStudioDraftResponseDraftBannersItemTextEnMax),
+  "href": zod.string().max(saveStudioDraftResponseDraftBannersItemHrefMax),
+  "enabled": zod.boolean()
+})).max(saveStudioDraftResponseDraftBannersMax),
+  "campaigns": zod.array(zod.object({
+  "id": zod.string().max(saveStudioDraftResponseDraftCampaignsItemIdMax),
+  "name": zod.string().min(1).max(saveStudioDraftResponseDraftCampaignsItemNameMax),
+  "source": zod.string().max(saveStudioDraftResponseDraftCampaignsItemSourceMax),
+  "medium": zod.string().max(saveStudioDraftResponseDraftCampaignsItemMediumMax),
+  "target": zod.string().max(saveStudioDraftResponseDraftCampaignsItemTargetMax)
+})).max(saveStudioDraftResponseDraftCampaignsMax)
+}),
+  "published": zod.object({
+  "branding": zod.object({
+  "nameAr": zod.string().max(saveStudioDraftResponsePublishedBrandingNameArMax),
+  "nameEn": zod.string().max(saveStudioDraftResponsePublishedBrandingNameEnMax),
+  "logoUrl": zod.string().max(saveStudioDraftResponsePublishedBrandingLogoUrlMax),
+  "footerAr": zod.string().max(saveStudioDraftResponsePublishedBrandingFooterArMax),
+  "footerEn": zod.string().max(saveStudioDraftResponsePublishedBrandingFooterEnMax),
+  "phone": zod.string().max(saveStudioDraftResponsePublishedBrandingPhoneMax),
+  "email": zod.string().max(saveStudioDraftResponsePublishedBrandingEmailMax),
+  "whatsapp": zod.string().max(saveStudioDraftResponsePublishedBrandingWhatsappMax),
+  "profileUrl": zod.string().max(saveStudioDraftResponsePublishedBrandingProfileUrlMax),
+  "facebook": zod.string().max(saveStudioDraftResponsePublishedBrandingFacebookMax),
+  "instagram": zod.string().max(saveStudioDraftResponsePublishedBrandingInstagramMax),
+  "linkedin": zod.string().max(saveStudioDraftResponsePublishedBrandingLinkedinMax),
+  "seoTitleAr": zod.string().max(saveStudioDraftResponsePublishedBrandingSeoTitleArMax),
+  "seoTitleEn": zod.string().max(saveStudioDraftResponsePublishedBrandingSeoTitleEnMax),
+  "seoDescriptionAr": zod.string().max(saveStudioDraftResponsePublishedBrandingSeoDescriptionArMax),
+  "seoDescriptionEn": zod.string().max(saveStudioDraftResponsePublishedBrandingSeoDescriptionEnMax)
+}),
+  "navigation": zod.array(zod.object({
+  "id": zod.string().max(saveStudioDraftResponsePublishedNavigationItemIdMax),
+  "labelAr": zod.string().max(saveStudioDraftResponsePublishedNavigationItemLabelArMax),
+  "labelEn": zod.string().max(saveStudioDraftResponsePublishedNavigationItemLabelEnMax),
+  "href": zod.string().max(saveStudioDraftResponsePublishedNavigationItemHrefMax),
+  "visible": zod.boolean()
+})).max(saveStudioDraftResponsePublishedNavigationMax),
+  "slides": zod.array(zod.object({
+  "id": zod.string().max(saveStudioDraftResponsePublishedSlidesItemIdMax),
+  "imageUrl": zod.string().max(saveStudioDraftResponsePublishedSlidesItemImageUrlMax),
+  "mobileImageUrl": zod.string().max(saveStudioDraftResponsePublishedSlidesItemMobileImageUrlMax),
+  "titleAr": zod.string().max(saveStudioDraftResponsePublishedSlidesItemTitleArMax),
+  "titleEn": zod.string().max(saveStudioDraftResponsePublishedSlidesItemTitleEnMax),
+  "subtitleAr": zod.string().max(saveStudioDraftResponsePublishedSlidesItemSubtitleArMax),
+  "subtitleEn": zod.string().max(saveStudioDraftResponsePublishedSlidesItemSubtitleEnMax),
+  "buttonAr": zod.string().max(saveStudioDraftResponsePublishedSlidesItemButtonArMax),
+  "buttonEn": zod.string().max(saveStudioDraftResponsePublishedSlidesItemButtonEnMax),
+  "href": zod.string().max(saveStudioDraftResponsePublishedSlidesItemHrefMax),
+  "enabled": zod.boolean()
+})).max(saveStudioDraftResponsePublishedSlidesMax),
+  "videos": zod.array(zod.object({
+  "id": zod.string().max(saveStudioDraftResponsePublishedVideosItemIdMax),
+  "titleAr": zod.string().max(saveStudioDraftResponsePublishedVideosItemTitleArMax),
+  "titleEn": zod.string().max(saveStudioDraftResponsePublishedVideosItemTitleEnMax),
+  "descriptionAr": zod.string().max(saveStudioDraftResponsePublishedVideosItemDescriptionArMax),
+  "descriptionEn": zod.string().max(saveStudioDraftResponsePublishedVideosItemDescriptionEnMax),
+  "src": zod.string().max(saveStudioDraftResponsePublishedVideosItemSrcMax),
+  "poster": zod.string().max(saveStudioDraftResponsePublishedVideosItemPosterMax),
+  "enabled": zod.boolean()
+})).max(saveStudioDraftResponsePublishedVideosMax),
+  "homeSections": zod.array(zod.object({
+  "id": zod.string().max(saveStudioDraftResponsePublishedHomeSectionsItemIdMax),
+  "key": zod.enum(['intro', 'products', 'videos', 'branches', 'certificates', 'blog', 'cta', 'custom']),
+  "titleAr": zod.string().max(saveStudioDraftResponsePublishedHomeSectionsItemTitleArMax),
+  "titleEn": zod.string().max(saveStudioDraftResponsePublishedHomeSectionsItemTitleEnMax),
+  "bodyAr": zod.string().max(saveStudioDraftResponsePublishedHomeSectionsItemBodyArMax),
+  "bodyEn": zod.string().max(saveStudioDraftResponsePublishedHomeSectionsItemBodyEnMax),
+  "imageUrl": zod.string().max(saveStudioDraftResponsePublishedHomeSectionsItemImageUrlMax),
+  "href": zod.string().max(saveStudioDraftResponsePublishedHomeSectionsItemHrefMax),
+  "visible": zod.boolean()
+})).max(saveStudioDraftResponsePublishedHomeSectionsMax),
+  "pages": zod.array(zod.object({
+  "id": zod.string().max(saveStudioDraftResponsePublishedPagesItemIdMax),
+  "slug": zod.string().min(1).max(saveStudioDraftResponsePublishedPagesItemSlugMax).regex(saveStudioDraftResponsePublishedPagesItemSlugRegExp),
+  "titleAr": zod.string().max(saveStudioDraftResponsePublishedPagesItemTitleArMax),
+  "titleEn": zod.string().max(saveStudioDraftResponsePublishedPagesItemTitleEnMax),
+  "descriptionAr": zod.string().max(saveStudioDraftResponsePublishedPagesItemDescriptionArMax),
+  "descriptionEn": zod.string().max(saveStudioDraftResponsePublishedPagesItemDescriptionEnMax),
+  "published": zod.boolean(),
+  "sections": zod.array(zod.object({
+  "id": zod.string().max(saveStudioDraftResponsePublishedPagesItemSectionsItemIdMax),
+  "kind": zod.enum(['text', 'image', 'video', 'cta']),
+  "headingAr": zod.string().max(saveStudioDraftResponsePublishedPagesItemSectionsItemHeadingArMax),
+  "headingEn": zod.string().max(saveStudioDraftResponsePublishedPagesItemSectionsItemHeadingEnMax),
+  "bodyAr": zod.string().max(saveStudioDraftResponsePublishedPagesItemSectionsItemBodyArMax),
+  "bodyEn": zod.string().max(saveStudioDraftResponsePublishedPagesItemSectionsItemBodyEnMax),
+  "mediaUrl": zod.string().max(saveStudioDraftResponsePublishedPagesItemSectionsItemMediaUrlMax),
+  "buttonAr": zod.string().max(saveStudioDraftResponsePublishedPagesItemSectionsItemButtonArMax),
+  "buttonEn": zod.string().max(saveStudioDraftResponsePublishedPagesItemSectionsItemButtonEnMax),
+  "href": zod.string().max(saveStudioDraftResponsePublishedPagesItemSectionsItemHrefMax),
+  "visible": zod.boolean()
+})).max(saveStudioDraftResponsePublishedPagesItemSectionsMax)
+})).max(saveStudioDraftResponsePublishedPagesMax),
+  "banners": zod.array(zod.object({
+  "id": zod.string().max(saveStudioDraftResponsePublishedBannersItemIdMax),
+  "textAr": zod.string().max(saveStudioDraftResponsePublishedBannersItemTextArMax),
+  "textEn": zod.string().max(saveStudioDraftResponsePublishedBannersItemTextEnMax),
+  "href": zod.string().max(saveStudioDraftResponsePublishedBannersItemHrefMax),
+  "enabled": zod.boolean()
+})).max(saveStudioDraftResponsePublishedBannersMax),
+  "campaigns": zod.array(zod.object({
+  "id": zod.string().max(saveStudioDraftResponsePublishedCampaignsItemIdMax),
+  "name": zod.string().min(1).max(saveStudioDraftResponsePublishedCampaignsItemNameMax),
+  "source": zod.string().max(saveStudioDraftResponsePublishedCampaignsItemSourceMax),
+  "medium": zod.string().max(saveStudioDraftResponsePublishedCampaignsItemMediumMax),
+  "target": zod.string().max(saveStudioDraftResponsePublishedCampaignsItemTargetMax)
+})).max(saveStudioDraftResponsePublishedCampaignsMax)
+}),
+  "updatedAt": zod.string().nullable(),
+  "publishedAt": zod.string().nullable()
+})
+
+
+export const publishStudioResponseDraftBrandingNameArMax = 200;
+
+export const publishStudioResponseDraftBrandingNameEnMax = 200;
+
+export const publishStudioResponseDraftBrandingLogoUrlMax = 2000;
+
+export const publishStudioResponseDraftBrandingFooterArMax = 3000;
+
+export const publishStudioResponseDraftBrandingFooterEnMax = 3000;
+
+export const publishStudioResponseDraftBrandingPhoneMax = 50;
+
+export const publishStudioResponseDraftBrandingEmailMax = 200;
+
+export const publishStudioResponseDraftBrandingWhatsappMax = 50;
+
+export const publishStudioResponseDraftBrandingProfileUrlMax = 2000;
+
+export const publishStudioResponseDraftBrandingFacebookMax = 2000;
+
+export const publishStudioResponseDraftBrandingInstagramMax = 2000;
+
+export const publishStudioResponseDraftBrandingLinkedinMax = 2000;
+
+export const publishStudioResponseDraftBrandingSeoTitleArMax = 200;
+
+export const publishStudioResponseDraftBrandingSeoTitleEnMax = 200;
+
+export const publishStudioResponseDraftBrandingSeoDescriptionArMax = 500;
+
+export const publishStudioResponseDraftBrandingSeoDescriptionEnMax = 500;
+
+export const publishStudioResponseDraftNavigationItemIdMax = 100;
+
+export const publishStudioResponseDraftNavigationItemLabelArMax = 100;
+
+export const publishStudioResponseDraftNavigationItemLabelEnMax = 100;
+
+export const publishStudioResponseDraftNavigationItemHrefMax = 2000;
+
+export const publishStudioResponseDraftNavigationMax = 20;
+
+export const publishStudioResponseDraftSlidesItemIdMax = 100;
+
+export const publishStudioResponseDraftSlidesItemImageUrlMax = 2000;
+
+export const publishStudioResponseDraftSlidesItemMobileImageUrlMax = 2000;
+
+export const publishStudioResponseDraftSlidesItemTitleArMax = 200;
+
+export const publishStudioResponseDraftSlidesItemTitleEnMax = 200;
+
+export const publishStudioResponseDraftSlidesItemSubtitleArMax = 1000;
+
+export const publishStudioResponseDraftSlidesItemSubtitleEnMax = 1000;
+
+export const publishStudioResponseDraftSlidesItemButtonArMax = 100;
+
+export const publishStudioResponseDraftSlidesItemButtonEnMax = 100;
+
+export const publishStudioResponseDraftSlidesItemHrefMax = 2000;
+
+export const publishStudioResponseDraftSlidesMax = 20;
+
+export const publishStudioResponseDraftVideosItemIdMax = 100;
+
+export const publishStudioResponseDraftVideosItemTitleArMax = 200;
+
+export const publishStudioResponseDraftVideosItemTitleEnMax = 200;
+
+export const publishStudioResponseDraftVideosItemDescriptionArMax = 1000;
+
+export const publishStudioResponseDraftVideosItemDescriptionEnMax = 1000;
+
+export const publishStudioResponseDraftVideosItemSrcMax = 2000;
+
+export const publishStudioResponseDraftVideosItemPosterMax = 2000;
+
+export const publishStudioResponseDraftVideosMax = 20;
+
+export const publishStudioResponseDraftHomeSectionsItemIdMax = 100;
+
+export const publishStudioResponseDraftHomeSectionsItemTitleArMax = 200;
+
+export const publishStudioResponseDraftHomeSectionsItemTitleEnMax = 200;
+
+export const publishStudioResponseDraftHomeSectionsItemBodyArMax = 10000;
+
+export const publishStudioResponseDraftHomeSectionsItemBodyEnMax = 10000;
+
+export const publishStudioResponseDraftHomeSectionsItemImageUrlMax = 2000;
+
+export const publishStudioResponseDraftHomeSectionsItemHrefMax = 2000;
+
+export const publishStudioResponseDraftHomeSectionsMax = 30;
+
+export const publishStudioResponseDraftPagesItemIdMax = 100;
+
+export const publishStudioResponseDraftPagesItemSlugMax = 120;
+
+
+export const publishStudioResponseDraftPagesItemSlugRegExp = new RegExp('^[a-z0-9]+(?:-[a-z0-9]+)*$');
+export const publishStudioResponseDraftPagesItemTitleArMax = 200;
+
+export const publishStudioResponseDraftPagesItemTitleEnMax = 200;
+
+export const publishStudioResponseDraftPagesItemDescriptionArMax = 500;
+
+export const publishStudioResponseDraftPagesItemDescriptionEnMax = 500;
+
+export const publishStudioResponseDraftPagesItemSectionsItemIdMax = 100;
+
+export const publishStudioResponseDraftPagesItemSectionsItemHeadingArMax = 200;
+
+export const publishStudioResponseDraftPagesItemSectionsItemHeadingEnMax = 200;
+
+export const publishStudioResponseDraftPagesItemSectionsItemBodyArMax = 20000;
+
+export const publishStudioResponseDraftPagesItemSectionsItemBodyEnMax = 20000;
+
+export const publishStudioResponseDraftPagesItemSectionsItemMediaUrlMax = 2000;
+
+export const publishStudioResponseDraftPagesItemSectionsItemButtonArMax = 100;
+
+export const publishStudioResponseDraftPagesItemSectionsItemButtonEnMax = 100;
+
+export const publishStudioResponseDraftPagesItemSectionsItemHrefMax = 2000;
+
+export const publishStudioResponseDraftPagesItemSectionsMax = 60;
+
+export const publishStudioResponseDraftPagesMax = 60;
+
+export const publishStudioResponseDraftBannersItemIdMax = 100;
+
+export const publishStudioResponseDraftBannersItemTextArMax = 500;
+
+export const publishStudioResponseDraftBannersItemTextEnMax = 500;
+
+export const publishStudioResponseDraftBannersItemHrefMax = 2000;
+
+export const publishStudioResponseDraftBannersMax = 10;
+
+export const publishStudioResponseDraftCampaignsItemIdMax = 100;
+
+export const publishStudioResponseDraftCampaignsItemNameMax = 100;
+
+export const publishStudioResponseDraftCampaignsItemSourceMax = 100;
+
+export const publishStudioResponseDraftCampaignsItemMediumMax = 100;
+
+export const publishStudioResponseDraftCampaignsItemTargetMax = 2000;
+
+export const publishStudioResponseDraftCampaignsMax = 100;
+
+export const publishStudioResponsePublishedBrandingNameArMax = 200;
+
+export const publishStudioResponsePublishedBrandingNameEnMax = 200;
+
+export const publishStudioResponsePublishedBrandingLogoUrlMax = 2000;
+
+export const publishStudioResponsePublishedBrandingFooterArMax = 3000;
+
+export const publishStudioResponsePublishedBrandingFooterEnMax = 3000;
+
+export const publishStudioResponsePublishedBrandingPhoneMax = 50;
+
+export const publishStudioResponsePublishedBrandingEmailMax = 200;
+
+export const publishStudioResponsePublishedBrandingWhatsappMax = 50;
+
+export const publishStudioResponsePublishedBrandingProfileUrlMax = 2000;
+
+export const publishStudioResponsePublishedBrandingFacebookMax = 2000;
+
+export const publishStudioResponsePublishedBrandingInstagramMax = 2000;
+
+export const publishStudioResponsePublishedBrandingLinkedinMax = 2000;
+
+export const publishStudioResponsePublishedBrandingSeoTitleArMax = 200;
+
+export const publishStudioResponsePublishedBrandingSeoTitleEnMax = 200;
+
+export const publishStudioResponsePublishedBrandingSeoDescriptionArMax = 500;
+
+export const publishStudioResponsePublishedBrandingSeoDescriptionEnMax = 500;
+
+export const publishStudioResponsePublishedNavigationItemIdMax = 100;
+
+export const publishStudioResponsePublishedNavigationItemLabelArMax = 100;
+
+export const publishStudioResponsePublishedNavigationItemLabelEnMax = 100;
+
+export const publishStudioResponsePublishedNavigationItemHrefMax = 2000;
+
+export const publishStudioResponsePublishedNavigationMax = 20;
+
+export const publishStudioResponsePublishedSlidesItemIdMax = 100;
+
+export const publishStudioResponsePublishedSlidesItemImageUrlMax = 2000;
+
+export const publishStudioResponsePublishedSlidesItemMobileImageUrlMax = 2000;
+
+export const publishStudioResponsePublishedSlidesItemTitleArMax = 200;
+
+export const publishStudioResponsePublishedSlidesItemTitleEnMax = 200;
+
+export const publishStudioResponsePublishedSlidesItemSubtitleArMax = 1000;
+
+export const publishStudioResponsePublishedSlidesItemSubtitleEnMax = 1000;
+
+export const publishStudioResponsePublishedSlidesItemButtonArMax = 100;
+
+export const publishStudioResponsePublishedSlidesItemButtonEnMax = 100;
+
+export const publishStudioResponsePublishedSlidesItemHrefMax = 2000;
+
+export const publishStudioResponsePublishedSlidesMax = 20;
+
+export const publishStudioResponsePublishedVideosItemIdMax = 100;
+
+export const publishStudioResponsePublishedVideosItemTitleArMax = 200;
+
+export const publishStudioResponsePublishedVideosItemTitleEnMax = 200;
+
+export const publishStudioResponsePublishedVideosItemDescriptionArMax = 1000;
+
+export const publishStudioResponsePublishedVideosItemDescriptionEnMax = 1000;
+
+export const publishStudioResponsePublishedVideosItemSrcMax = 2000;
+
+export const publishStudioResponsePublishedVideosItemPosterMax = 2000;
+
+export const publishStudioResponsePublishedVideosMax = 20;
+
+export const publishStudioResponsePublishedHomeSectionsItemIdMax = 100;
+
+export const publishStudioResponsePublishedHomeSectionsItemTitleArMax = 200;
+
+export const publishStudioResponsePublishedHomeSectionsItemTitleEnMax = 200;
+
+export const publishStudioResponsePublishedHomeSectionsItemBodyArMax = 10000;
+
+export const publishStudioResponsePublishedHomeSectionsItemBodyEnMax = 10000;
+
+export const publishStudioResponsePublishedHomeSectionsItemImageUrlMax = 2000;
+
+export const publishStudioResponsePublishedHomeSectionsItemHrefMax = 2000;
+
+export const publishStudioResponsePublishedHomeSectionsMax = 30;
+
+export const publishStudioResponsePublishedPagesItemIdMax = 100;
+
+export const publishStudioResponsePublishedPagesItemSlugMax = 120;
+
+
+export const publishStudioResponsePublishedPagesItemSlugRegExp = new RegExp('^[a-z0-9]+(?:-[a-z0-9]+)*$');
+export const publishStudioResponsePublishedPagesItemTitleArMax = 200;
+
+export const publishStudioResponsePublishedPagesItemTitleEnMax = 200;
+
+export const publishStudioResponsePublishedPagesItemDescriptionArMax = 500;
+
+export const publishStudioResponsePublishedPagesItemDescriptionEnMax = 500;
+
+export const publishStudioResponsePublishedPagesItemSectionsItemIdMax = 100;
+
+export const publishStudioResponsePublishedPagesItemSectionsItemHeadingArMax = 200;
+
+export const publishStudioResponsePublishedPagesItemSectionsItemHeadingEnMax = 200;
+
+export const publishStudioResponsePublishedPagesItemSectionsItemBodyArMax = 20000;
+
+export const publishStudioResponsePublishedPagesItemSectionsItemBodyEnMax = 20000;
+
+export const publishStudioResponsePublishedPagesItemSectionsItemMediaUrlMax = 2000;
+
+export const publishStudioResponsePublishedPagesItemSectionsItemButtonArMax = 100;
+
+export const publishStudioResponsePublishedPagesItemSectionsItemButtonEnMax = 100;
+
+export const publishStudioResponsePublishedPagesItemSectionsItemHrefMax = 2000;
+
+export const publishStudioResponsePublishedPagesItemSectionsMax = 60;
+
+export const publishStudioResponsePublishedPagesMax = 60;
+
+export const publishStudioResponsePublishedBannersItemIdMax = 100;
+
+export const publishStudioResponsePublishedBannersItemTextArMax = 500;
+
+export const publishStudioResponsePublishedBannersItemTextEnMax = 500;
+
+export const publishStudioResponsePublishedBannersItemHrefMax = 2000;
+
+export const publishStudioResponsePublishedBannersMax = 10;
+
+export const publishStudioResponsePublishedCampaignsItemIdMax = 100;
+
+export const publishStudioResponsePublishedCampaignsItemNameMax = 100;
+
+export const publishStudioResponsePublishedCampaignsItemSourceMax = 100;
+
+export const publishStudioResponsePublishedCampaignsItemMediumMax = 100;
+
+export const publishStudioResponsePublishedCampaignsItemTargetMax = 2000;
+
+export const publishStudioResponsePublishedCampaignsMax = 100;
+
+
+
+export const PublishStudioResponse = zod.object({
+  "draft": zod.object({
+  "branding": zod.object({
+  "nameAr": zod.string().max(publishStudioResponseDraftBrandingNameArMax),
+  "nameEn": zod.string().max(publishStudioResponseDraftBrandingNameEnMax),
+  "logoUrl": zod.string().max(publishStudioResponseDraftBrandingLogoUrlMax),
+  "footerAr": zod.string().max(publishStudioResponseDraftBrandingFooterArMax),
+  "footerEn": zod.string().max(publishStudioResponseDraftBrandingFooterEnMax),
+  "phone": zod.string().max(publishStudioResponseDraftBrandingPhoneMax),
+  "email": zod.string().max(publishStudioResponseDraftBrandingEmailMax),
+  "whatsapp": zod.string().max(publishStudioResponseDraftBrandingWhatsappMax),
+  "profileUrl": zod.string().max(publishStudioResponseDraftBrandingProfileUrlMax),
+  "facebook": zod.string().max(publishStudioResponseDraftBrandingFacebookMax),
+  "instagram": zod.string().max(publishStudioResponseDraftBrandingInstagramMax),
+  "linkedin": zod.string().max(publishStudioResponseDraftBrandingLinkedinMax),
+  "seoTitleAr": zod.string().max(publishStudioResponseDraftBrandingSeoTitleArMax),
+  "seoTitleEn": zod.string().max(publishStudioResponseDraftBrandingSeoTitleEnMax),
+  "seoDescriptionAr": zod.string().max(publishStudioResponseDraftBrandingSeoDescriptionArMax),
+  "seoDescriptionEn": zod.string().max(publishStudioResponseDraftBrandingSeoDescriptionEnMax)
+}),
+  "navigation": zod.array(zod.object({
+  "id": zod.string().max(publishStudioResponseDraftNavigationItemIdMax),
+  "labelAr": zod.string().max(publishStudioResponseDraftNavigationItemLabelArMax),
+  "labelEn": zod.string().max(publishStudioResponseDraftNavigationItemLabelEnMax),
+  "href": zod.string().max(publishStudioResponseDraftNavigationItemHrefMax),
+  "visible": zod.boolean()
+})).max(publishStudioResponseDraftNavigationMax),
+  "slides": zod.array(zod.object({
+  "id": zod.string().max(publishStudioResponseDraftSlidesItemIdMax),
+  "imageUrl": zod.string().max(publishStudioResponseDraftSlidesItemImageUrlMax),
+  "mobileImageUrl": zod.string().max(publishStudioResponseDraftSlidesItemMobileImageUrlMax),
+  "titleAr": zod.string().max(publishStudioResponseDraftSlidesItemTitleArMax),
+  "titleEn": zod.string().max(publishStudioResponseDraftSlidesItemTitleEnMax),
+  "subtitleAr": zod.string().max(publishStudioResponseDraftSlidesItemSubtitleArMax),
+  "subtitleEn": zod.string().max(publishStudioResponseDraftSlidesItemSubtitleEnMax),
+  "buttonAr": zod.string().max(publishStudioResponseDraftSlidesItemButtonArMax),
+  "buttonEn": zod.string().max(publishStudioResponseDraftSlidesItemButtonEnMax),
+  "href": zod.string().max(publishStudioResponseDraftSlidesItemHrefMax),
+  "enabled": zod.boolean()
+})).max(publishStudioResponseDraftSlidesMax),
+  "videos": zod.array(zod.object({
+  "id": zod.string().max(publishStudioResponseDraftVideosItemIdMax),
+  "titleAr": zod.string().max(publishStudioResponseDraftVideosItemTitleArMax),
+  "titleEn": zod.string().max(publishStudioResponseDraftVideosItemTitleEnMax),
+  "descriptionAr": zod.string().max(publishStudioResponseDraftVideosItemDescriptionArMax),
+  "descriptionEn": zod.string().max(publishStudioResponseDraftVideosItemDescriptionEnMax),
+  "src": zod.string().max(publishStudioResponseDraftVideosItemSrcMax),
+  "poster": zod.string().max(publishStudioResponseDraftVideosItemPosterMax),
+  "enabled": zod.boolean()
+})).max(publishStudioResponseDraftVideosMax),
+  "homeSections": zod.array(zod.object({
+  "id": zod.string().max(publishStudioResponseDraftHomeSectionsItemIdMax),
+  "key": zod.enum(['intro', 'products', 'videos', 'branches', 'certificates', 'blog', 'cta', 'custom']),
+  "titleAr": zod.string().max(publishStudioResponseDraftHomeSectionsItemTitleArMax),
+  "titleEn": zod.string().max(publishStudioResponseDraftHomeSectionsItemTitleEnMax),
+  "bodyAr": zod.string().max(publishStudioResponseDraftHomeSectionsItemBodyArMax),
+  "bodyEn": zod.string().max(publishStudioResponseDraftHomeSectionsItemBodyEnMax),
+  "imageUrl": zod.string().max(publishStudioResponseDraftHomeSectionsItemImageUrlMax),
+  "href": zod.string().max(publishStudioResponseDraftHomeSectionsItemHrefMax),
+  "visible": zod.boolean()
+})).max(publishStudioResponseDraftHomeSectionsMax),
+  "pages": zod.array(zod.object({
+  "id": zod.string().max(publishStudioResponseDraftPagesItemIdMax),
+  "slug": zod.string().min(1).max(publishStudioResponseDraftPagesItemSlugMax).regex(publishStudioResponseDraftPagesItemSlugRegExp),
+  "titleAr": zod.string().max(publishStudioResponseDraftPagesItemTitleArMax),
+  "titleEn": zod.string().max(publishStudioResponseDraftPagesItemTitleEnMax),
+  "descriptionAr": zod.string().max(publishStudioResponseDraftPagesItemDescriptionArMax),
+  "descriptionEn": zod.string().max(publishStudioResponseDraftPagesItemDescriptionEnMax),
+  "published": zod.boolean(),
+  "sections": zod.array(zod.object({
+  "id": zod.string().max(publishStudioResponseDraftPagesItemSectionsItemIdMax),
+  "kind": zod.enum(['text', 'image', 'video', 'cta']),
+  "headingAr": zod.string().max(publishStudioResponseDraftPagesItemSectionsItemHeadingArMax),
+  "headingEn": zod.string().max(publishStudioResponseDraftPagesItemSectionsItemHeadingEnMax),
+  "bodyAr": zod.string().max(publishStudioResponseDraftPagesItemSectionsItemBodyArMax),
+  "bodyEn": zod.string().max(publishStudioResponseDraftPagesItemSectionsItemBodyEnMax),
+  "mediaUrl": zod.string().max(publishStudioResponseDraftPagesItemSectionsItemMediaUrlMax),
+  "buttonAr": zod.string().max(publishStudioResponseDraftPagesItemSectionsItemButtonArMax),
+  "buttonEn": zod.string().max(publishStudioResponseDraftPagesItemSectionsItemButtonEnMax),
+  "href": zod.string().max(publishStudioResponseDraftPagesItemSectionsItemHrefMax),
+  "visible": zod.boolean()
+})).max(publishStudioResponseDraftPagesItemSectionsMax)
+})).max(publishStudioResponseDraftPagesMax),
+  "banners": zod.array(zod.object({
+  "id": zod.string().max(publishStudioResponseDraftBannersItemIdMax),
+  "textAr": zod.string().max(publishStudioResponseDraftBannersItemTextArMax),
+  "textEn": zod.string().max(publishStudioResponseDraftBannersItemTextEnMax),
+  "href": zod.string().max(publishStudioResponseDraftBannersItemHrefMax),
+  "enabled": zod.boolean()
+})).max(publishStudioResponseDraftBannersMax),
+  "campaigns": zod.array(zod.object({
+  "id": zod.string().max(publishStudioResponseDraftCampaignsItemIdMax),
+  "name": zod.string().min(1).max(publishStudioResponseDraftCampaignsItemNameMax),
+  "source": zod.string().max(publishStudioResponseDraftCampaignsItemSourceMax),
+  "medium": zod.string().max(publishStudioResponseDraftCampaignsItemMediumMax),
+  "target": zod.string().max(publishStudioResponseDraftCampaignsItemTargetMax)
+})).max(publishStudioResponseDraftCampaignsMax)
+}),
+  "published": zod.object({
+  "branding": zod.object({
+  "nameAr": zod.string().max(publishStudioResponsePublishedBrandingNameArMax),
+  "nameEn": zod.string().max(publishStudioResponsePublishedBrandingNameEnMax),
+  "logoUrl": zod.string().max(publishStudioResponsePublishedBrandingLogoUrlMax),
+  "footerAr": zod.string().max(publishStudioResponsePublishedBrandingFooterArMax),
+  "footerEn": zod.string().max(publishStudioResponsePublishedBrandingFooterEnMax),
+  "phone": zod.string().max(publishStudioResponsePublishedBrandingPhoneMax),
+  "email": zod.string().max(publishStudioResponsePublishedBrandingEmailMax),
+  "whatsapp": zod.string().max(publishStudioResponsePublishedBrandingWhatsappMax),
+  "profileUrl": zod.string().max(publishStudioResponsePublishedBrandingProfileUrlMax),
+  "facebook": zod.string().max(publishStudioResponsePublishedBrandingFacebookMax),
+  "instagram": zod.string().max(publishStudioResponsePublishedBrandingInstagramMax),
+  "linkedin": zod.string().max(publishStudioResponsePublishedBrandingLinkedinMax),
+  "seoTitleAr": zod.string().max(publishStudioResponsePublishedBrandingSeoTitleArMax),
+  "seoTitleEn": zod.string().max(publishStudioResponsePublishedBrandingSeoTitleEnMax),
+  "seoDescriptionAr": zod.string().max(publishStudioResponsePublishedBrandingSeoDescriptionArMax),
+  "seoDescriptionEn": zod.string().max(publishStudioResponsePublishedBrandingSeoDescriptionEnMax)
+}),
+  "navigation": zod.array(zod.object({
+  "id": zod.string().max(publishStudioResponsePublishedNavigationItemIdMax),
+  "labelAr": zod.string().max(publishStudioResponsePublishedNavigationItemLabelArMax),
+  "labelEn": zod.string().max(publishStudioResponsePublishedNavigationItemLabelEnMax),
+  "href": zod.string().max(publishStudioResponsePublishedNavigationItemHrefMax),
+  "visible": zod.boolean()
+})).max(publishStudioResponsePublishedNavigationMax),
+  "slides": zod.array(zod.object({
+  "id": zod.string().max(publishStudioResponsePublishedSlidesItemIdMax),
+  "imageUrl": zod.string().max(publishStudioResponsePublishedSlidesItemImageUrlMax),
+  "mobileImageUrl": zod.string().max(publishStudioResponsePublishedSlidesItemMobileImageUrlMax),
+  "titleAr": zod.string().max(publishStudioResponsePublishedSlidesItemTitleArMax),
+  "titleEn": zod.string().max(publishStudioResponsePublishedSlidesItemTitleEnMax),
+  "subtitleAr": zod.string().max(publishStudioResponsePublishedSlidesItemSubtitleArMax),
+  "subtitleEn": zod.string().max(publishStudioResponsePublishedSlidesItemSubtitleEnMax),
+  "buttonAr": zod.string().max(publishStudioResponsePublishedSlidesItemButtonArMax),
+  "buttonEn": zod.string().max(publishStudioResponsePublishedSlidesItemButtonEnMax),
+  "href": zod.string().max(publishStudioResponsePublishedSlidesItemHrefMax),
+  "enabled": zod.boolean()
+})).max(publishStudioResponsePublishedSlidesMax),
+  "videos": zod.array(zod.object({
+  "id": zod.string().max(publishStudioResponsePublishedVideosItemIdMax),
+  "titleAr": zod.string().max(publishStudioResponsePublishedVideosItemTitleArMax),
+  "titleEn": zod.string().max(publishStudioResponsePublishedVideosItemTitleEnMax),
+  "descriptionAr": zod.string().max(publishStudioResponsePublishedVideosItemDescriptionArMax),
+  "descriptionEn": zod.string().max(publishStudioResponsePublishedVideosItemDescriptionEnMax),
+  "src": zod.string().max(publishStudioResponsePublishedVideosItemSrcMax),
+  "poster": zod.string().max(publishStudioResponsePublishedVideosItemPosterMax),
+  "enabled": zod.boolean()
+})).max(publishStudioResponsePublishedVideosMax),
+  "homeSections": zod.array(zod.object({
+  "id": zod.string().max(publishStudioResponsePublishedHomeSectionsItemIdMax),
+  "key": zod.enum(['intro', 'products', 'videos', 'branches', 'certificates', 'blog', 'cta', 'custom']),
+  "titleAr": zod.string().max(publishStudioResponsePublishedHomeSectionsItemTitleArMax),
+  "titleEn": zod.string().max(publishStudioResponsePublishedHomeSectionsItemTitleEnMax),
+  "bodyAr": zod.string().max(publishStudioResponsePublishedHomeSectionsItemBodyArMax),
+  "bodyEn": zod.string().max(publishStudioResponsePublishedHomeSectionsItemBodyEnMax),
+  "imageUrl": zod.string().max(publishStudioResponsePublishedHomeSectionsItemImageUrlMax),
+  "href": zod.string().max(publishStudioResponsePublishedHomeSectionsItemHrefMax),
+  "visible": zod.boolean()
+})).max(publishStudioResponsePublishedHomeSectionsMax),
+  "pages": zod.array(zod.object({
+  "id": zod.string().max(publishStudioResponsePublishedPagesItemIdMax),
+  "slug": zod.string().min(1).max(publishStudioResponsePublishedPagesItemSlugMax).regex(publishStudioResponsePublishedPagesItemSlugRegExp),
+  "titleAr": zod.string().max(publishStudioResponsePublishedPagesItemTitleArMax),
+  "titleEn": zod.string().max(publishStudioResponsePublishedPagesItemTitleEnMax),
+  "descriptionAr": zod.string().max(publishStudioResponsePublishedPagesItemDescriptionArMax),
+  "descriptionEn": zod.string().max(publishStudioResponsePublishedPagesItemDescriptionEnMax),
+  "published": zod.boolean(),
+  "sections": zod.array(zod.object({
+  "id": zod.string().max(publishStudioResponsePublishedPagesItemSectionsItemIdMax),
+  "kind": zod.enum(['text', 'image', 'video', 'cta']),
+  "headingAr": zod.string().max(publishStudioResponsePublishedPagesItemSectionsItemHeadingArMax),
+  "headingEn": zod.string().max(publishStudioResponsePublishedPagesItemSectionsItemHeadingEnMax),
+  "bodyAr": zod.string().max(publishStudioResponsePublishedPagesItemSectionsItemBodyArMax),
+  "bodyEn": zod.string().max(publishStudioResponsePublishedPagesItemSectionsItemBodyEnMax),
+  "mediaUrl": zod.string().max(publishStudioResponsePublishedPagesItemSectionsItemMediaUrlMax),
+  "buttonAr": zod.string().max(publishStudioResponsePublishedPagesItemSectionsItemButtonArMax),
+  "buttonEn": zod.string().max(publishStudioResponsePublishedPagesItemSectionsItemButtonEnMax),
+  "href": zod.string().max(publishStudioResponsePublishedPagesItemSectionsItemHrefMax),
+  "visible": zod.boolean()
+})).max(publishStudioResponsePublishedPagesItemSectionsMax)
+})).max(publishStudioResponsePublishedPagesMax),
+  "banners": zod.array(zod.object({
+  "id": zod.string().max(publishStudioResponsePublishedBannersItemIdMax),
+  "textAr": zod.string().max(publishStudioResponsePublishedBannersItemTextArMax),
+  "textEn": zod.string().max(publishStudioResponsePublishedBannersItemTextEnMax),
+  "href": zod.string().max(publishStudioResponsePublishedBannersItemHrefMax),
+  "enabled": zod.boolean()
+})).max(publishStudioResponsePublishedBannersMax),
+  "campaigns": zod.array(zod.object({
+  "id": zod.string().max(publishStudioResponsePublishedCampaignsItemIdMax),
+  "name": zod.string().min(1).max(publishStudioResponsePublishedCampaignsItemNameMax),
+  "source": zod.string().max(publishStudioResponsePublishedCampaignsItemSourceMax),
+  "medium": zod.string().max(publishStudioResponsePublishedCampaignsItemMediumMax),
+  "target": zod.string().max(publishStudioResponsePublishedCampaignsItemTargetMax)
+})).max(publishStudioResponsePublishedCampaignsMax)
+}),
+  "updatedAt": zod.string().nullable(),
+  "publishedAt": zod.string().nullable()
+})
+
+
+export const recordSiteActivityBodySessionIdMin = 16;
+export const recordSiteActivityBodySessionIdMax = 80;
+
+export const recordSiteActivityBodyPathMax = 300;
+
+export const recordSiteActivityBodySourceMax = 100;
+
+export const recordSiteActivityBodyCampaignMax = 100;
+
+
+
+export const RecordSiteActivityBody = zod.object({
+  "sessionId": zod.string().min(recordSiteActivityBodySessionIdMin).max(recordSiteActivityBodySessionIdMax),
+  "event": zod.enum(['page_view', 'whatsapp_click', 'quote_click', 'profile_download', 'contact_submit', 'quote_submit']),
+  "path": zod.string().max(recordSiteActivityBodyPathMax),
+  "source": zod.string().max(recordSiteActivityBodySourceMax),
+  "campaign": zod.string().max(recordSiteActivityBodyCampaignMax)
+})
+
+export const RecordSiteActivityResponse = zod.void()
+
+
+export const getSiteInsightsQueryDaysDefault = 30;
+
+export const GetSiteInsightsQueryParams = zod.object({
+  "days": zod.union([zod.literal(7),zod.literal(30),zod.literal(90)]).default(getSiteInsightsQueryDaysDefault)
+})
+
+export const GetSiteInsightsResponse = zod.object({
+  "days": zod.number().int(),
+  "views": zod.number().int(),
+  "sessions": zod.number().int(),
+  "whatsappClicks": zod.number().int(),
+  "profileDownloads": zod.number().int(),
+  "quotes": zod.number().int(),
+  "messages": zod.number().int(),
+  "timeline": zod.array(zod.object({
+  "date": zod.string(),
+  "views": zod.number().int(),
+  "quotes": zod.number().int(),
+  "messages": zod.number().int()
+})),
+  "quoteStatuses": zod.array(zod.object({
+  "name": zod.string(),
+  "count": zod.number().int()
+})),
+  "topPages": zod.array(zod.object({
+  "name": zod.string(),
+  "count": zod.number().int()
+})),
+  "campaigns": zod.array(zod.object({
+  "name": zod.string(),
+  "count": zod.number().int()
+}))
+})
+
+

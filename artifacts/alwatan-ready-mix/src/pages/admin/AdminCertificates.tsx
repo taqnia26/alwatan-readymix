@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import MediaInput from '@/components/admin/MediaInput';
 import { useLanguage } from '@/lib/i18n';
 import {
   useListAdminCertificates,
@@ -279,6 +280,7 @@ export default function AdminCertificates() {
                       </Button>
                     </div>
                     <p className="text-xs text-muted-foreground">{t('أرفق صورة أو أدخل رابطًا مباشرًا (حتى 10 م.ب)', 'Attach an image or enter a direct URL (up to 10 MB)')}</p>
+                    <MediaInput value={field.value ?? ''} onChange={field.onChange} kind="image" />
                     <FormMessage />
                   </FormItem>
                 )} />
@@ -304,6 +306,7 @@ export default function AdminCertificates() {
                       </Button>
                     </div>
                     <p className="text-xs text-muted-foreground">{t('أرفق ملف PDF أو أدخل رابطًا مباشرًا (حتى 25 م.ب)', 'Attach a PDF or enter a direct URL (up to 25 MB)')}</p>
+                    <MediaInput value={field.value ?? ''} onChange={field.onChange} kind="pdf" />
                     <FormMessage />
                   </FormItem>
                 )} />
