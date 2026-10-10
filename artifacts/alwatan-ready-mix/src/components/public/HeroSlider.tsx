@@ -8,6 +8,15 @@ import SmartLink from './SmartLink';
 import BrandEnergyLines from './BrandEnergyLines';
 
 const INTERVAL = 6500;
+const LEGACY_HERO: Record<string, string> = {
+  '/media/slider-fleet-day.png': '/media/hero-ai-day-fleet.webp',
+  '/media/slider-yard-mobile.png': '/media/hero-ai-day-fleet.webp',
+  '/media/slider-project-night.png': '/media/hero-ai-night-project.webp',
+  '/media/slider-plant-mobile.png': '/media/hero-ai-night-project.webp',
+  '/media/slider-branch-night.png': '/media/hero-ai-riyadh-branch.webp',
+  '/media/slider-fleet-night.png': '/media/hero-ai-night-plant.webp',
+};
+const heroSrc = (u: string) => LEGACY_HERO[u] ?? u;
 const fmt = (n: number) => String(n).padStart(2, '0');
 
 export default function HeroSlider({ slides }: { slides: StudioSlide[] }) {
@@ -75,7 +84,7 @@ export default function HeroSlider({ slides }: { slides: StudioSlide[] }) {
       onMouseLeave={() => setHovered(false)}
       onKeyDown={(e) => { if (e.key === 'ArrowRight') (isRtl ? prev : next)(); if (e.key === 'ArrowLeft') (isRtl ? next : prev)(); }}
     >
-      <div className="relative aspect-[3/4] w-full overflow-hidden sm:aspect-video xl:max-h-[720px]">
+      <div className="relative aspect-[4/3] w-full overflow-hidden bg-secondary sm:aspect-video xl:max-h-[720px]">
       <AnimatePresence initial={false} custom={dir}>
         <motion.div
           key={s.id}
@@ -92,8 +101,8 @@ export default function HeroSlider({ slides }: { slides: StudioSlide[] }) {
         >
           <div className="absolute inset-0">
             <picture className="block h-full w-full">
-              {s.mobileImageUrl && <source media="(max-width: 768px)" srcSet={s.mobileImageUrl} />}
-              <img src={s.imageUrl} alt={title} draggable={false} className="block h-full w-full object-contain object-center" fetchPriority={index === 0 ? 'high' : 'auto'} />
+              {s.mobileImageUrl && <source media="(max-width: 768px)" srcSet={heroSrc(s.mobileImageUrl)} />}
+              <img src={heroSrc(s.imageUrl)} alt={title} draggable={false} className="block h-full w-full object-cover object-[40%_center] sm:object-center" fetchPriority={index === 0 ? 'high' : 'auto'} />
             </picture>
           </div>
         </motion.div>

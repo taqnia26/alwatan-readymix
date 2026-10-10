@@ -52,3 +52,6 @@ Thumbs.db
 **/var/media/
 **/.upload-signing-key
 .test-build/
+
+# Raw generated media; only optimized website assets are shipped.
+/generated-artifacts/

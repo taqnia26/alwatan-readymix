@@ -10,6 +10,17 @@ export const STUDIO_KEYS = {
   publishedAt: "studio_published_at",
 };
 
+// Upgrade only bundled slider artwork, including previously saved studio configs.
+// Uploaded/custom images and other uses of the original posters are unchanged.
+const HERO_IMAGES: Record<string, string> = {
+  "/media/slider-fleet-day.png": "/media/hero-ai-day-fleet.webp",
+  "/media/slider-yard-mobile.png": "/media/hero-ai-day-fleet.webp",
+  "/media/slider-project-night.png": "/media/hero-ai-night-project.webp",
+  "/media/slider-plant-mobile.png": "/media/hero-ai-night-project.webp",
+  "/media/slider-branch-night.png": "/media/hero-ai-riyadh-branch.webp",
+  "/media/slider-fleet-night.png": "/media/hero-ai-night-plant.webp",
+};
+
 export async function defaultStudio(): Promise<StudioConfig> {
   const [settings, content] = await Promise.all([
     db.select().from(siteSettingsTable),
@@ -25,8 +36,8 @@ export async function defaultStudio(): Promise<StudioConfig> {
     ["جودة في كل خطوة", "Quality at every step"],
   ];
   const slides = ["slider-fleet-day", "slider-project-night", "slider-branch-night", "slider-fleet-night"].map((name, i) => ({
-    id: `slide-${i + 1}`, imageUrl: `/media/${name}.png`,
-    mobileImageUrl: i < 2 ? `/media/${i === 0 ? "slider-yard-mobile" : "slider-plant-mobile"}.png` : `/media/${name}.png`,
+    id: `slide-${i + 1}`, imageUrl: HERO_IMAGES[`/media/${name}.png`],
+    mobileImageUrl: HERO_IMAGES[`/media/${name}.png`],
     titleAr: titles[i][0], titleEn: titles[i][1],
     subtitleAr: "حلول خرسانة جاهزة موثوقة لمشاريع الرياض",
     subtitleEn: "Reliable ready-mix solutions for Riyadh's projects",
@@ -77,7 +88,16 @@ export async function readStudio() {
   const initial = await defaultStudio();
   const decode = (key: string): StudioConfig => {
     if (!values[key]) return initial;
-    return GetPublicStudioResponse.parse(JSON.parse(values[key]));
+    const config = GetPublicStudioResponse.parse(JSON.parse(values[key]));
+    return {
+      ...config,
+      slides: config.slides.map(slide => ({
+        ...slide,
+        imageUrl: HERO_IMAGES[slide.imageUrl] ?? slide.imageUrl,
+        mobileImageUrl: slide.mobileImageUrl
+          ? HERO_IMAGES[slide.mobileImageUrl] ?? slide.mobileImageUrl : slide.mobileImageUrl,
+      })),
+    };
   };
   return {
     draft: decode(STUDIO_KEYS.draft), published: decode(STUDIO_KEYS.published),
