@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useLanguage } from '@/lib/i18n';
 import { useStudioEditor } from '@/hooks/use-studio-editor';
-import { moveItem, newPage, newSection, patchItem, removeItem, slugify, uid, pick } from '@/lib/studio';
+import { moveItem, newPage, newSection, patchItem, removeItem, slugify, uid, pick, pageHref } from '@/lib/studio';
 import { Bi, Card, ConfirmDelete, Field, Media, RowControls, Toggle, Txt } from './studio-ui';
 import StudioSections from '@/components/public/StudioSections';
 import { useToast } from '@/hooks/use-toast';
@@ -58,12 +58,19 @@ function PageEditor({ page, index, cfg, onBack }: { page: StudioPage; index: num
   const { update } = useStudioEditor();
   const { toast } = useToast();
   const [preview, setPreview] = useState(false);
-  const set = (p: Partial<StudioPage>) => update((c) => ({ ...c, pages: patchItem(c.pages, index, p) }));
+  const set = (p: Partial<StudioPage>) => update((c) => ({
+    ...c, pages: patchItem(c.pages, index, p),
+    navigation: c.navigation.map(n => n.href === pageHref(page.slug) ? {
+      ...n, href: pageHref(p.slug ?? page.slug),
+      labelAr: n.labelAr === page.titleAr ? p.titleAr ?? n.labelAr : n.labelAr,
+      labelEn: n.labelEn === page.titleEn ? p.titleEn ?? n.labelEn : n.labelEn,
+    } : n),
+  }));
   const setSections = (fn: (s: StudioPageSection[]) => StudioPageSection[]) => update((c) => ({ ...c, pages: c.pages.map((p, k) => (k === index ? { ...p, sections: fn(p.sections) } : p)) }));
   const slugOk = SLUG_RE.test(page.slug) && !cfg.pages.some((p, k) => k !== index && p.slug === page.slug);
-  const inNav = cfg.navigation.some((n) => n.href === `/p/${page.slug}`);
+  const inNav = cfg.navigation.some((n) => n.href === pageHref(page.slug));
   const addNav = () => {
-    update((c) => ({ ...c, navigation: [...c.navigation, { id: uid('nav'), labelAr: page.titleAr, labelEn: page.titleEn, href: `/p/${page.slug}`, visible: true }] }));
+    update((c) => ({ ...c, navigation: [...c.navigation, { id: uid('nav'), labelAr: page.titleAr, labelEn: page.titleEn, href: pageHref(page.slug), visible: true }] }));
     toast({ title: t('أضيفت الصفحة إلى القائمة (في المسودة)', 'Page added to navigation (in draft)') });
   };
   return (
@@ -79,12 +86,12 @@ function PageEditor({ page, index, cfg, onBack }: { page: StudioPage; index: num
         <Bi label={t('عنوان الصفحة', 'Page title')} ar={page.titleAr} en={page.titleEn} onAr={(v) => set({ titleAr: v })} onEn={(v) => set({ titleEn: v })} max={200} testId="input-page-title" />
         <Bi label={t('وصف SEO', 'SEO description')} multiline rows={2} ar={page.descriptionAr} en={page.descriptionEn} onAr={(v) => set({ descriptionAr: v })} onEn={(v) => set({ descriptionEn: v })} max={500} />
         <div className="grid items-end gap-4 md:grid-cols-2">
-          <Field label={t('الرابط المختصر (slug)', 'URL slug')} hint={slugOk ? `/p/${page.slug}` : t('أحرف إنجليزية صغيرة وأرقام وشرطات، وفريد', 'Lowercase letters, digits, hyphens; must be unique')}>
-            <Input value={page.slug} dir="ltr" onChange={(e) => set({ slug: e.target.value })} className={slugOk ? '' : 'border-destructive'} data-testid="input-page-slug" />
+          <Field label={t('الرابط المختصر (slug)', 'URL slug')} hint={slugOk ? pageHref(page.slug) : t('أحرف إنجليزية صغيرة وأرقام وشرطات، وفريد', 'Lowercase letters, digits, hyphens; must be unique')}>
+            <Input value={page.slug} readOnly={page.slug === 'about'} dir="ltr" onChange={(e) => set({ slug: e.target.value })} className={slugOk ? '' : 'border-destructive'} data-testid="input-page-slug" />
           </Field>
           <div className="flex flex-wrap items-center gap-4">
             <Toggle label={page.published ? t('منشورة (عند النشر)', 'Published (on publish)') : t('مسودة', 'Draft')} checked={page.published} onChange={(v) => set({ published: v })} testId="switch-page-published" />
-            {page.published && slugOk && <a href={`/p/${page.slug}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-sm font-bold text-primary hover:underline"><ExternalLink className="h-3.5 w-3.5" />{t('فتح العام', 'Open live')}</a>}
+            {page.published && slugOk && <a href={pageHref(page.slug)} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-sm font-bold text-primary hover:underline"><ExternalLink className="h-3.5 w-3.5" />{t('فتح العام', 'Open live')}</a>}
           </div>
         </div>
       </Card>
@@ -109,7 +116,7 @@ function PageEditor({ page, index, cfg, onBack }: { page: StudioPage; index: num
         <DialogContent className="max-h-[92dvh] max-w-5xl overflow-hidden p-0" dir={language === 'ar' ? 'rtl' : 'ltr'}>
           <DialogHeader className="border-b p-4"><DialogTitle>{t('معاينة المسودة', 'Draft preview')}</DialogTitle><DialogDescription>{t('هكذا ستظهر الصفحة بعد النشر.', 'How the page will look once published.')}</DialogDescription></DialogHeader>
           <div className="admin-scrollbar max-h-[75dvh] overflow-y-auto bg-background">
-            <div className="bg-secondary px-6 py-10 text-white"><h1 className="text-3xl font-black">{pick(language, page.titleAr, page.titleEn) || t('بدون عنوان', 'Untitled')}</h1></div>
+            <div className="bg-secondary px-6 py-10 text-white"><h1 className="text-3xl font-black">{pick(language, page.titleAr, page.titleEn) || t('بدون عنوان', 'Untitled')}</h1><p className="mt-3 text-white/75">{pick(language, page.descriptionAr, page.descriptionEn)}</p></div>
             <StudioSections sections={page.sections} />
           </div>
         </DialogContent>
@@ -137,7 +144,7 @@ export default function PageBuilder({ cfg }: { cfg: StudioConfig }) {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <p className="text-sm text-muted-foreground">{t('الصفحات المنشورة تُخدَم على /p/الرابط.', 'Published pages are served at /p/slug.')}</p>
+        <p className="text-sm text-muted-foreground">{t('من نحن مرتبطة مباشرة بـ /about. الصفحات الجديدة تُعرض على /p/الرابط بعد النشر.', 'About is connected to /about. Custom pages appear at /p/slug after publishing.')}</p>
         <Button className="gap-2" onClick={() => setCreating(true)} disabled={cfg.pages.length >= 60} data-testid="button-new-page"><FilePlus2 className="h-4 w-4" />{t('صفحة جديدة', 'New page')}</Button>
       </div>
       {cfg.pages.length === 0 ? (
@@ -148,12 +155,12 @@ export default function PageBuilder({ cfg }: { cfg: StudioConfig }) {
             <div key={p.id} className="flex items-center gap-3 rounded-xl border bg-card p-4 shadow-sm" data-testid={`card-page-${p.slug}`}>
               <button className="min-w-0 flex-1 text-start" onClick={() => setSel(p.id)}>
                 <div className="truncate font-extrabold text-secondary">{pick(language, p.titleAr, p.titleEn) || t('بدون عنوان', 'Untitled')}</div>
-                <div className="mt-1 flex items-center gap-2 text-xs"><span dir="ltr" className="text-muted-foreground">/p/{p.slug}</span><span className={`rounded-full px-2 py-0.5 font-bold ${p.published ? 'bg-emerald-100 text-emerald-800' : 'bg-muted text-muted-foreground'}`}>{p.published ? t('منشورة', 'Published') : t('مسودة', 'Draft')}</span><span className="text-muted-foreground">{p.sections.length} {t('قسم', 'sections')}</span></div>
+                <div className="mt-1 flex items-center gap-2 text-xs"><span dir="ltr" className="text-muted-foreground">{pageHref(p.slug)}</span><span className={`rounded-full px-2 py-0.5 font-bold ${p.published ? 'bg-emerald-100 text-emerald-800' : 'bg-muted text-muted-foreground'}`}>{p.published ? t('منشورة', 'Published') : t('مسودة', 'Draft')}</span><span className="text-muted-foreground">{p.sections.length} {t('قسم', 'sections')}</span></div>
               </button>
               <Button variant="outline" size="sm" onClick={() => setSel(p.id)}>{t('تحرير', 'Edit')}</Button>
-              <ConfirmDelete title={t('حذف هذه الصفحة؟', 'Remove this page?')} onConfirm={() => update((c) => ({ ...c, pages: removeItem(c.pages, i), navigation: c.navigation.filter((n) => n.href !== `/p/${p.slug}`) }))}>
+              {p.slug !== 'about' && <ConfirmDelete title={t('حذف هذه الصفحة؟', 'Remove this page?')} onConfirm={() => update((c) => ({ ...c, pages: removeItem(c.pages, i), navigation: c.navigation.filter((n) => n.href !== pageHref(p.slug)) }))}>
                 {(open) => <Button variant="outline" size="icon" className="h-9 w-9 text-destructive" onClick={open} aria-label={t('حذف', 'Remove')}><span className="sr-only">x</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14" /></svg></Button>}
-              </ConfirmDelete>
+              </ConfirmDelete>}
             </div>
           ))}
         </div>

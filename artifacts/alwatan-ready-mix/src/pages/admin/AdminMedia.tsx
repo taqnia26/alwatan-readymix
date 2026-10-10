@@ -9,7 +9,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { useLanguage } from '@/lib/i18n';
 import { useToast } from '@/hooks/use-toast';
-import { useMediaUpload, validateFile } from '@/hooks/use-media-upload';
+import { useMediaUpload, validateFile, mediaUploadError } from '@/hooks/use-media-upload';
+import VideoPlayer from '@/components/VideoPlayer';
 import { mediaKind } from '@/lib/studio';
 import { PageHead } from '@/components/admin/studio-ui';
 import { MediaThumb } from '@/components/admin/MediaPicker';
@@ -39,14 +40,24 @@ export default function AdminMedia() {
     if (!f) return;
     const err = validateFile(f, language);
     if (err) { toast({ title: err, variant: 'destructive' }); return; }
-    try { await upload(f); toast({ title: t('تم رفع الملف', 'File uploaded') }); } catch { toast({ title: t('فشل رفع الملف', 'Upload failed'), variant: 'destructive' }); }
+    try { await upload(f); toast({ title: t('تم رفع الملف', 'File uploaded') }); } catch (error) { toast({ title: t('فشل رفع الملف', 'Upload failed'), description: mediaUploadError(error, language), variant: 'destructive' }); }
   };
-  const copy = (m: MediaItem) => { void navigator.clipboard.writeText(`${window.location.origin}${url(m)}`); toast({ title: t('تم نسخ الرابط', 'URL copied') }); };
+  const copy = async (m: MediaItem) => {
+    try {
+      await navigator.clipboard.writeText(`${window.location.origin}${url(m)}`);
+      toast({ title: t('تم نسخ الرابط', 'URL copied') });
+    } catch {
+      toast({ title: t('المتصفح منع النسخ التلقائي', 'Browser blocked clipboard access'), description: `${window.location.origin}${url(m)}`, variant: 'destructive' });
+    }
+  };
   const remove = () => {
     if (!toDelete) return;
     del.mutate({ id: toDelete.id }, {
       onSuccess: () => { void qc.invalidateQueries({ queryKey: getListMediaQueryKey() }); toast({ title: t('تم الحذف', 'Deleted') }); setToDelete(null); },
-      onError: () => { toast({ title: t('فشل الحذف', 'Delete failed'), variant: 'destructive' }); setToDelete(null); },
+      onError: (error) => {
+        const data = (error as { data?: { error?: string } }).data;
+        toast({ title: t('فشل الحذف', 'Delete failed'), description: data?.error || error.message, variant: 'destructive' }); setToDelete(null);
+      },
     });
   };
   const filters: ['all' | 'image' | 'video' | 'pdf', string][] = [['all', t('الكل', 'All')], ['image', t('صور', 'Images')], ['video', t('فيديو', 'Videos')], ['pdf', 'PDF']];
@@ -86,7 +97,7 @@ export default function AdminMedia() {
       <Dialog open={!!preview} onOpenChange={(o) => !o && setPreview(null)}>
         <DialogContent className="max-w-4xl" dir={isRtl ? 'rtl' : 'ltr'}>
           <DialogHeader><DialogTitle className="truncate">{preview?.originalName}</DialogTitle></DialogHeader>
-          {preview && (() => { const k = mediaKind(preview.objectPath, preview.contentType); return k === 'video' ? <video src={url(preview)} controls className="max-h-[70dvh] w-full bg-black" /> : k === 'pdf' ? <iframe src={url(preview)} title={preview.originalName} className="h-[70dvh] w-full" /> : <img src={url(preview)} alt={preview.altText} className="mx-auto max-h-[70dvh] object-contain" />; })()}
+          {preview && (() => { const k = mediaKind(preview.objectPath, preview.contentType); return k === 'video' ? <VideoPlayer src={url(preview)} className="max-h-[70dvh] w-full bg-black" /> : k === 'pdf' ? <iframe src={url(preview)} title={preview.originalName} className="h-[70dvh] w-full" /> : <img src={url(preview)} alt={preview.altText} className="mx-auto max-h-[70dvh] object-contain" />; })()}
         </DialogContent>
       </Dialog>
       <AlertDialog open={!!toDelete} onOpenChange={(o) => !o && setToDelete(null)}>

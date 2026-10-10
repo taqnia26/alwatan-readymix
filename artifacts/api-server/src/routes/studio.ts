@@ -13,6 +13,10 @@ router.get("/public/studio", async (_req, res) => {
   // Only published pages and visible media are exposed to anonymous visitors.
   res.json({ ...state.published,
     pages: state.published.pages.filter(page => page.published),
+    navigation: state.published.navigation.filter(item => item.visible &&
+      (!(item.href.startsWith("/p/") || item.href === "/about") ||
+        state.published.pages.some(page => page.published &&
+          item.href === (page.slug === "about" ? "/about" : `/p/${page.slug}`)))),
     slides: state.published.slides.filter(slide => slide.enabled),
     videos: state.published.videos.filter(video => video.enabled),
     campaigns: [],

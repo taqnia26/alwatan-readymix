@@ -2,6 +2,8 @@ import type { StudioConfig, StudioPageSection, StudioHomeSection } from '@worksp
 
 export const uid = (p = 'id') => `${p}-${Math.random().toString(36).slice(2, 8)}${Date.now().toString(36).slice(-3)}`;
 
+export const pageHref = (slug: string) => slug === 'about' ? '/about' : `/p/${slug}`;
+
 export function pick(lang: string, ar: string, en: string) {
   const a = (ar ?? '').trim();
   const e = (en ?? '').trim();

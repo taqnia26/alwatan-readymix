@@ -60,7 +60,7 @@ function Router() {
               <Route path="/contact" component={Contact} />
               <Route path="/company-profile" component={CompanyProfile} />
               <Route path="/quote" component={Quote} />
-              <Route path="/p/:slug" component={StudioPage} />
+              <Route path="/p/:slug">{() => <StudioPage />}</Route>
               <Route component={NotFound} />
             </Switch>
           </Layout>

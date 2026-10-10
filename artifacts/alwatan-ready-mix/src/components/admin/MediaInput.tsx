@@ -12,7 +12,7 @@ export default function MediaInput({ value, onChange, kind = 'image', preview = 
 }) {
   const { t } = useLanguage();
   const [open, setOpen] = useState(false);
-  const k = value ? mediaKind(value) : 'image';
+  const k = kind !== 'any' ? kind : value ? mediaKind(value) : 'image';
   return (
     <div className="space-y-2">
       <div className="flex gap-2">

@@ -7,14 +7,15 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useLanguage } from '@/lib/i18n';
 import { mediaKind } from '@/lib/studio';
-import { useMediaUpload, validateFile } from '@/hooks/use-media-upload';
+import { useMediaUpload, validateFile, mediaUploadError } from '@/hooks/use-media-upload';
+import VideoPlayer from '@/components/VideoPlayer';
 import { useToast } from '@/hooks/use-toast';
 
 export type PickKind = 'image' | 'video' | 'pdf' | 'any';
 
 export function MediaThumb({ url, kind, className = '' }: { url: string; kind: string; className?: string }) {
   if (kind === 'image') return <img src={url} alt="" loading="lazy" className={`object-cover ${className}`} />;
-  if (kind === 'video') return <video src={url} muted preload="metadata" className={`object-cover ${className}`} />;
+  if (kind === 'video') return <VideoPlayer src={url} muted controls={false} compact className={`object-cover ${className}`} />;
   return <div className={`flex items-center justify-center bg-muted text-muted-foreground ${className}`}><FileText className="h-8 w-8" /></div>;
 }
 
@@ -44,7 +45,7 @@ export default function MediaPicker({ open, onOpenChange, onSelect, kind = 'any'
       onSelect(r.url);
       onOpenChange(false);
     } catch (e) {
-      toast({ title: t('فشل الرفع', 'Upload failed'), description: e instanceof Error ? e.message : undefined, variant: 'destructive' });
+      toast({ title: t('فشل الرفع', 'Upload failed'), description: mediaUploadError(e, language), variant: 'destructive' });
     } finally { if (ref.current) ref.current.value = ''; }
   };
 

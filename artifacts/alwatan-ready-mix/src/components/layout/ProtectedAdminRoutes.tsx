@@ -34,7 +34,7 @@ export default function ProtectedAdminRoutes() {
             <Route path="/admin/media" component={AdminMedia} />
             <Route path="/admin/users" component={AdminUsers} />
             <Route path="/admin/messages" component={AdminMessages} />
-            <Route path="/admin/pages" component={AdminPages} />
+            <Route path="/admin/pages">{() => <AdminPages />}</Route>
             <Route path="/admin/sliders" component={AdminSliders} />
             <Route path="/admin/marketing" component={AdminMarketing} />
             <Route path="/admin/branding" component={AdminBranding} />

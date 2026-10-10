@@ -6,8 +6,6 @@ import {
   useCreateCertificate,
   useUpdateCertificate,
   useDeleteCertificate,
-  useRequestMediaUpload,
-  useFinalizeMedia,
 } from '@workspace/api-client-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
@@ -17,6 +15,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useQueryClient } from '@tanstack/react-query';
 import { getListAdminCertificatesQueryKey } from '@workspace/api-client-react';
 import { useToast } from '@/hooks/use-toast';
+import { useMediaUpload, uploadContentType, mediaUploadError } from '@/hooks/use-media-upload';
 import { Plus, Edit2, Trash2, Award, FileText, UploadCloud, Loader2 } from 'lucide-react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
@@ -31,11 +30,11 @@ const certificateSchema = z.object({
   descriptionAr: z.string().min(1, 'Required'),
   descriptionEn: z.string().min(1, 'Required'),
   imageUrl: z.string().refine(
-    value => value.startsWith('/api/storage/objects/') || z.string().url().safeParse(value).success,
+    value => !value || (value.startsWith('/') && !value.startsWith('//') && !value.includes('\\')) || (/^https?:\/\//i.test(value) && z.string().url().safeParse(value).success),
     'Must be a valid URL',
   ),
   fileUrl: z.string().refine(
-    value => value.startsWith('/api/storage/objects/') || z.string().url().safeParse(value).success,
+    value => !value || (value.startsWith('/') && !value.startsWith('//') && !value.includes('\\')) || (/^https?:\/\//i.test(value) && z.string().url().safeParse(value).success),
     'Must be a valid URL',
   ),
   issuedBy: z.string().min(1, 'Required'),
@@ -50,8 +49,7 @@ export default function AdminCertificates() {
   const createCertificate = useCreateCertificate();
   const updateCertificate = useUpdateCertificate();
   const deleteCertificate = useDeleteCertificate();
-  const requestUpload = useRequestMediaUpload();
-  const finalizeMedia = useFinalizeMedia();
+  const { upload } = useMediaUpload();
   
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -110,7 +108,8 @@ export default function AdminCertificates() {
     field: 'imageUrl' | 'fileUrl',
   ) => {
     const isImage = field === 'imageUrl';
-    const validType = isImage ? file.type.startsWith('image/') : file.type === 'application/pdf';
+    const contentType = uploadContentType(file);
+    const validType = isImage ? contentType.startsWith('image/') : contentType === 'application/pdf';
     const maxSize = isImage ? 10 * 1024 * 1024 : 25 * 1024 * 1024;
 
     if (!validType) {
@@ -136,32 +135,11 @@ export default function AdminCertificates() {
 
     setUploadingField(field);
     try {
-      const { uploadURL, objectPath } = await requestUpload.mutateAsync({
-        data: { name: file.name, size: file.size, contentType: file.type },
-      });
-      const response = await fetch(uploadURL, {
-        method: 'PUT',
-        headers: { 'Content-Type': file.type },
-        body: file,
-      });
-      if (!response.ok) throw new Error('Upload failed');
-
-      await finalizeMedia.mutateAsync({
-        data: {
-          objectPath,
-          originalName: file.name,
-          contentType: file.type,
-          size: file.size,
-          altText: file.name,
-        },
-      });
-
-      const fileUrl = `/api/storage${objectPath}`;
+      const { url: fileUrl } = await upload(file);
       form.setValue(field, fileUrl, { shouldDirty: true, shouldValidate: true });
       toast({ title: t('تم إرفاق الملف بنجاح', 'File attached successfully') });
     } catch (error) {
-      console.error(error);
-      toast({ title: t('فشل رفع الملف', 'File upload failed'), variant: 'destructive' });
+      toast({ title: t('فشل رفع الملف', 'File upload failed'), description: mediaUploadError(error, isRtl ? 'ar' : 'en'), variant: 'destructive' });
     } finally {
       setUploadingField(null);
     }
@@ -206,9 +184,9 @@ export default function AdminCertificates() {
               <p className="text-xs text-gray-500 mb-2">{cert.issuedBy} - {format(new Date(cert.issuedDate), 'yyyy-MM-dd')}</p>
               
               <div className="mt-auto flex justify-between items-center pt-3 border-t border-gray-100">
-                <a href={cert.fileUrl} target="_blank" rel="noreferrer" className="text-primary hover:underline text-xs flex items-center gap-1 font-bold">
+                {cert.fileUrl ? <a href={cert.fileUrl} target="_blank" rel="noreferrer" className="text-primary hover:underline text-xs flex items-center gap-1 font-bold">
                   <FileText className="w-3.5 h-3.5" /> PDF
-                </a>
+                </a> : <span className="text-xs text-muted-foreground">{t('لم يتم إرفاق PDF', 'No PDF attached')}</span>}
                 <div className="flex gap-1">
                   <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={() => openEdit(cert)}>
                     <Edit2 className="w-3 h-3" />

@@ -62,12 +62,19 @@ export function createStorageRouter(storage: StorageService, media: MediaReposit
     if (!originalName || originalName.length > 255 || !uploadLimit(contentType)) {
       res.status(400).json({ error: "objectPath, originalName and contentType are required" }); return;
     }
+    let actualSize: number;
     try {
       const [metadata] = await (await storage.file(objectPath)).getMetadata();
-      const actualSize = Number(metadata.size);
+      actualSize = Number(metadata.size);
       if (metadata.contentType !== contentType || !Number.isSafeInteger(actualSize) || actualSize <= 0 || actualSize > uploadLimit(contentType)) {
         res.status(400).json({ error: "Uploaded file type or size does not match the allowed limits" }); return;
       }
+    } catch (error) {
+      req.log.error({ err: error }, "Uploaded object validation failed");
+      res.status(400).json({ error: "Uploaded object was not found or is unreadable" });
+      return;
+    }
+    try {
       const asset = await media.finalize({
         objectPath, originalName, contentType, size: actualSize,
         altText: stringValue(req.body?.altText), createdBy: req.adminUser?.id,
@@ -75,7 +82,7 @@ export function createStorageRouter(storage: StorageService, media: MediaReposit
       res.status(201).json(asset);
     } catch (error) {
       req.log.error({ err: error }, "Failed to finalize media asset");
-      res.status(400).json({ error: "Uploaded object was not found" });
+      res.status(500).json({ error: "تعذر تسجيل الملف في مكتبة الوسائط. حاول مجددًا أو تحقق من إعدادات قاعدة البيانات." });
     }
   });
 

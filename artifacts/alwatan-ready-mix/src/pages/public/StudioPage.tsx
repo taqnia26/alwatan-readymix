@@ -10,8 +10,9 @@ import { pick } from '@/lib/studio';
 import StudioSections from '@/components/public/StudioSections';
 import NotFound from '@/pages/not-found';
 
-export default function StudioPage() {
-  const { slug } = useParams<{ slug: string }>();
+export default function StudioPage({ pageSlug }: { pageSlug?: string } = {}) {
+  const { slug: routeSlug } = useParams<{ slug: string }>();
+  const slug = pageSlug ?? routeSlug;
   const { t, language } = useLanguage();
   const studio = usePublicStudio();
   const page = studio.data?.pages.find((p) => p.slug === slug && p.published);

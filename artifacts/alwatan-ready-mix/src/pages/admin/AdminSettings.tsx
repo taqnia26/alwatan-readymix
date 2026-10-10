@@ -1,125 +1,44 @@
-import { useState, useEffect } from 'react';
-import { useLanguage } from '@/lib/i18n';
-import { useGetAdminSettings, useUpdateAdminSettings } from '@workspace/api-client-react';
+import { useEffect, useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import { useGetAdminSettings, useUpdateAdminSettings, getGetAdminSettingsQueryKey } from '@workspace/api-client-react';
+import AdminBranding from './AdminBranding';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { useQueryClient } from '@tanstack/react-query';
-import { getGetAdminSettingsQueryKey } from '@workspace/api-client-react';
+import { useLanguage } from '@/lib/i18n';
 import { useToast } from '@/hooks/use-toast';
-import { Save } from 'lucide-react';
 
 export default function AdminSettings() {
-  const { t, isRtl } = useLanguage();
-  const { data: settings, isLoading } = useGetAdminSettings();
-  const updateSettings = useUpdateAdminSettings();
-  
-  const queryClient = useQueryClient();
+  const { t } = useLanguage();
   const { toast } = useToast();
-
-  const [formData, setFormData] = useState<Record<string, string>>({});
-
+  const qc = useQueryClient();
+  const settings = useGetAdminSettings();
+  const save = useUpdateAdminSettings();
+  const [email, setEmail] = useState('');
+  const [dirty, setDirty] = useState(false);
   useEffect(() => {
-    if (settings) {
-      setFormData(settings as Record<string, string>);
-    }
-  }, [settings]);
+    if (settings.data && !dirty) setEmail(settings.data.quoteEmail ?? '');
+  }, [settings.data, dirty]);
 
-  const handleChange = (key: string, value: string) => {
-    setFormData(prev => ({ ...prev, [key]: value }));
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    updateSettings.mutate(
-      { data: formData },
-      {
-        onSuccess: () => {
-          queryClient.invalidateQueries({ queryKey: getGetAdminSettingsQueryKey() });
-          toast({ title: t('تم حفظ الإعدادات', 'Settings saved') });
-        }
+  return <div className="space-y-6">
+    <AdminBranding />
+    <form className="space-y-3 rounded-xl border bg-card p-5" onSubmit={async e => {
+      e.preventDefault();
+      try {
+        await save.mutateAsync({ data: { quoteEmail: email.trim() } });
+        await qc.invalidateQueries({ queryKey: getGetAdminSettingsQueryKey() });
+        setDirty(false);
+        toast({ title: t('تم حفظ بريد استقبال الطلبات', 'Quote notification email saved') });
+      } catch (error) {
+        toast({ title: t('تعذر حفظ البريد', 'Could not save email'), description: error instanceof Error ? error.message : undefined, variant: 'destructive' });
       }
-    );
-  };
-
-  if (isLoading) return <div className="p-8 flex justify-center"><div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div></div>;
-
-  return (
-    <div className="space-y-6 animate-in fade-in duration-500 max-w-3xl">
-      <div>
-        <h2 className="text-xl font-bold text-secondary">{t('إعدادات الموقع', 'Site Settings')}</h2>
-        <p className="text-gray-500 text-sm">
-          {t('تحديث معلومات التواصل والروابط العامة', 'Update contact info and public links')}
-        </p>
-      </div>
-
-      <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-6">
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-2">
-            <label className="text-sm font-bold text-secondary">{t('رقم الواتساب', 'WhatsApp Number')}</label>
-            <Input 
-              dir="ltr" 
-              value={formData.whatsapp || ''} 
-              onChange={e => handleChange('whatsapp', e.target.value)} 
-              placeholder="+9665..."
-            />
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-sm font-bold text-secondary">{t('هاتف المبيعات', 'Sales Phone')}</label>
-            <Input 
-              dir="ltr" 
-              value={formData.phone || ''} 
-              onChange={e => handleChange('phone', e.target.value)} 
-            />
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-sm font-bold text-secondary">{t('البريد الإلكتروني', 'Email')}</label>
-            <Input 
-              dir="ltr" 
-              type="email"
-              value={formData.email || ''} 
-              onChange={e => handleChange('email', e.target.value)} 
-            />
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-sm font-bold text-secondary">{t('بريد طلبات التسعير', 'Quote Email')}</label>
-            <Input 
-              dir="ltr" 
-              type="email"
-              value={formData.quoteEmail || ''} 
-              onChange={e => handleChange('quoteEmail', e.target.value)} 
-            />
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-sm font-bold text-secondary">{t('رابط انستقرام', 'Instagram URL')}</label>
-            <Input 
-              dir="ltr" 
-              value={formData.instagramUrl || ''} 
-              onChange={e => handleChange('instagramUrl', e.target.value)} 
-            />
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-sm font-bold text-secondary">{t('رابط لينكد إن', 'LinkedIn URL')}</label>
-            <Input 
-              dir="ltr" 
-              value={formData.linkedinUrl || ''} 
-              onChange={e => handleChange('linkedinUrl', e.target.value)} 
-            />
-          </div>
-        </div>
-
-        <div className="pt-4 border-t border-gray-100">
-          <Button type="submit" className="gap-2 bg-primary hover:bg-primary/90 min-w-32" disabled={updateSettings.isPending}>
-            <Save className="w-4 h-4" />
-            {updateSettings.isPending ? t('جاري الحفظ...', 'Saving...') : t('حفظ الإعدادات', 'Save Settings')}
-          </Button>
-        </div>
-      </form>
-    </div>
-  );
+    }}>
+      <h3 className="font-bold">{t('إشعارات طلبات التسعير', 'Quote notifications')}</h3>
+      <p className="text-sm text-muted-foreground">{t('بيانات الموقع والتواصل أعلاه تستخدم المسودة والنشر. هذا البريد إعداد داخلي يُحفظ مباشرة.', 'Site and contact data above use draft/publish. This internal email setting saves immediately.')}</p>
+      {settings.error ? <Button type="button" variant="outline" onClick={() => void settings.refetch()}>{t('إعادة تحميل الإعدادات', 'Reload settings')}</Button> : <>
+        <label className="block text-sm font-semibold" htmlFor="quote-notification-email">{t('بريد استقبال الطلبات', 'Notification email')}</label>
+        <Input id="quote-notification-email" type="email" dir="ltr" value={email} onChange={e => { setEmail(e.target.value); setDirty(true); }} disabled={settings.isLoading || save.isPending} />
+        <Button type="submit" disabled={settings.isLoading || save.isPending || !dirty}>{save.isPending ? t('جارٍ الحفظ...', 'Saving...') : t('حفظ بريد الطلبات', 'Save notification email')}</Button>
+      </>}
+    </form>
+  </div>;
 }

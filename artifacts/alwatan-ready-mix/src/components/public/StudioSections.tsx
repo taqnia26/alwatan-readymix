@@ -1,15 +1,16 @@
 import { ArrowUpRight } from 'lucide-react';
 import type { StudioPageSection } from '@workspace/api-client-react';
 import { useLanguage } from '@/lib/i18n';
+import VideoPlayer from '@/components/VideoPlayer';
 import { mediaKind, pick } from '@/lib/studio';
 import Reveal from './Reveal';
 import RichText from './RichText';
 import SmartLink from './SmartLink';
 
-export function MediaBlock({ url, alt, className = '' }: { url: string; alt: string; className?: string }) {
+export function MediaBlock({ url, alt, className = '', kind }: { url: string; alt: string; className?: string; kind?: 'image' | 'video' | 'pdf' }) {
   if (!url) return null;
-  const k = mediaKind(url);
-  if (k === 'video') return <video src={url} controls playsInline preload="metadata" className={`w-full bg-black ${className}`} />;
+  const k = kind ?? mediaKind(url);
+  if (k === 'video') return <VideoPlayer src={url} className={`w-full bg-black ${className}`} />;
   if (k === 'pdf') return <iframe src={url} title={alt} className={`h-[70dvh] w-full bg-card ${className}`} />;
   return <img src={url} alt={alt} loading="lazy" className={`w-full object-cover ${className}`} />;
 }
@@ -44,7 +45,7 @@ export default function StudioSections({ sections }: { sections: StudioPageSecti
             <section key={s.id} className="container mx-auto px-6 py-10 md:py-14">
               <Reveal>
                 {heading && <h2 className="mb-6 text-2xl font-extrabold text-secondary md:text-4xl">{heading}</h2>}
-                <div className="overflow-hidden rounded-2xl border bg-card shadow-lg"><MediaBlock url={s.mediaUrl} alt={heading} className="max-h-[70dvh]" /></div>
+                <div className="overflow-hidden rounded-2xl border bg-card shadow-lg"><MediaBlock url={s.mediaUrl} alt={heading} kind={s.kind} className="max-h-[70dvh]" /></div>
                 {body && <RichText value={body} className="mt-5 max-w-3xl text-muted-foreground" />}
                 {btn && s.href && <SmartLink href={s.href} className="mt-5 inline-flex font-bold text-primary hover:underline">{btn}</SmartLink>}
               </Reveal>

@@ -61,7 +61,8 @@ export function StudioEditorProvider({ children }: { children: ReactNode }) {
     if (!config) return false;
     try {
       const s = await saveM.mutateAsync({ data: { config } });
-      setBaseline(JSON.stringify(config));
+      setConfig(current => JSON.stringify(current) === JSON.stringify(config) ? s.draft : current);
+      setBaseline(JSON.stringify(s.draft));
       qc.setQueryData(getGetAdminStudioQueryKey(), s);
       toast({ title: t('تم حفظ المسودة. الموقع العام لم يتغير بعد.', 'Draft saved. The public site is unchanged.') });
       return true;
@@ -77,6 +78,8 @@ export function StudioEditorProvider({ children }: { children: ReactNode }) {
       const s = await pubM.mutateAsync();
       qc.setQueryData(getGetAdminStudioQueryKey(), s);
       await qc.invalidateQueries({ queryKey: getGetPublicStudioQueryKey() });
+      await qc.invalidateQueries({ queryKey: ['/api/settings/public'] });
+      await qc.invalidateQueries({ queryKey: ['/api/public/home'] });
       toast({ title: t('تم النشر. التغييرات ظاهرة الآن للزوار.', 'Published. Changes are now live.') });
       return true;
     } catch (e) {

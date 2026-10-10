@@ -1,5 +1,5 @@
 import { db, siteSettingsTable, pageContentTable } from "@workspace/db";
-import { eq, inArray } from "drizzle-orm";
+import { inArray } from "drizzle-orm";
 import { GetPublicStudioResponse } from "@workspace/api-zod";
 import type { StudioConfig } from "@workspace/api-zod";
 
@@ -24,11 +24,22 @@ const HERO_IMAGES: Record<string, string> = {
 export async function defaultStudio(): Promise<StudioConfig> {
   const [settings, content] = await Promise.all([
     db.select().from(siteSettingsTable),
-    db.select().from(pageContentTable).where(eq(pageContentTable.pageSlug, "home")),
+    db.select().from(pageContentTable).where(inArray(pageContentTable.pageSlug, ["home", "about"])),
   ]);
   const values = Object.fromEntries(settings.map(row => [row.key, row.value]));
   const copy = (section: string, field: string, lang: "Ar" | "En", fallback: string) =>
-    content.find(row => row.sectionKey === section && row.fieldKey === field)?.[`value${lang}`] || fallback;
+    content.find(row => row.pageSlug === "home" && row.sectionKey === section && row.fieldKey === field)?.[`value${lang}`] || fallback;
+  const aboutCopy = (keys: [string, string][], lang: "Ar" | "En", fallback: string) => {
+    for (const [sectionKey, fieldKey] of keys) {
+      const value = content.find(row => row.pageSlug === "about" && row.sectionKey === sectionKey && row.fieldKey === fieldKey)?.[`value${lang}`];
+      if (value) return value;
+    }
+    return fallback;
+  };
+  const aboutSection = (id: string, kind: "text" | "image" | "cta", headingAr: string, headingEn: string, bodyAr: string, bodyEn: string, mediaUrl = "") => ({
+    id, kind, headingAr, headingEn, bodyAr, bodyEn, mediaUrl,
+    buttonAr: "", buttonEn: "", href: "", visible: true,
+  });
   const titles = [
     ["خرسانة تبني الثقة", "Concrete that builds trust"],
     ["شريك مشاريعك الكبرى", "Your partner for major projects"],
@@ -78,7 +89,34 @@ export async function defaultStudio(): Promise<StudioConfig> {
       { id: "blog", key: "blog", titleAr: "معرفة تدعم البناء", titleEn: "Knowledge that supports construction", bodyAr: "أحدث المقالات والأخبار", bodyEn: "Latest articles and news", imageUrl: "", href: "/blog", visible: true },
       { id: "cta", key: "cta", titleAr: "مشروعك القادم يبدأ هنا", titleEn: "Your next project starts here", bodyAr: "تحدث مع فريقنا عن احتياجات مشروعك", bodyEn: "Talk to our team about your project", imageUrl: "", href: "/quote", visible: true },
     ],
-    pages: [], banners: [], campaigns: [],
+    pages: [{
+      id: "builtin-about", slug: "about", published: true,
+      titleAr: aboutCopy([["intro", "title"]], "Ar", "عن شركة الوطن"),
+      titleEn: aboutCopy([["intro", "title"]], "En", "About AlWatan"),
+      descriptionAr: "رواد صناعة الخرسانة الجاهزة في المملكة العربية السعودية",
+      descriptionEn: "Pioneers of Ready-Mix Concrete in Saudi Arabia",
+      sections: [
+        aboutSection("about-story", "image",
+          aboutCopy([["story", "title"]], "Ar", "قصتنا"),
+          aboutCopy([["story", "title"]], "En", "Our Story"),
+          aboutCopy([["story", "content"], ["intro", "body"]], "Ar", "تأسست شركة الوطن لتقديم حلول الخرسانة الجاهزة بجودة موثوقة والتزام بمشاريع شركائنا."),
+          aboutCopy([["story", "content"], ["intro", "body"]], "En", "AlWatan delivers reliable ready-mix concrete with a commitment to our partners' projects."),
+          aboutCopy([["story", "imageUrl"]], "Ar", "/construction-1.png")),
+        aboutSection("about-vision", "text",
+          aboutCopy([["vision", "title"]], "Ar", "رؤيتنا"),
+          aboutCopy([["vision", "title"]], "En", "Our Vision"),
+          aboutCopy([["vision", "content"], ["values", "vision"]], "Ar", "أن نكون الخيار الأكثر ثقة لمشاريع المملكة"),
+          aboutCopy([["vision", "content"], ["values", "vision"]], "En", "To be the most trusted choice for projects across the Kingdom")),
+        aboutSection("about-mission", "text",
+          aboutCopy([["mission", "title"]], "Ar", "مهمتنا"),
+          aboutCopy([["mission", "title"]], "En", "Our Mission"),
+          aboutCopy([["mission", "content"], ["values", "mission"]], "Ar", "نخدم شركاءنا بجودة وسلامة والتزام"),
+          aboutCopy([["mission", "content"], ["values", "mission"]], "En", "Serve our partners with quality, safety, and commitment")),
+        aboutSection("about-quality", "cta", "الالتزام بالجودة", "Commitment to Quality",
+          "نطبق أعلى معايير الجودة في جميع مراحل الإنتاج، من اختيار المواد الخام وحتى تسليم الخرسانة في موقع المشروع.",
+          "We apply high quality standards at every production stage, from raw materials to delivery at your project."),
+      ],
+    }], banners: [], campaigns: [],
   };
 }
 
@@ -91,6 +129,8 @@ export async function readStudio() {
     const config = GetPublicStudioResponse.parse(JSON.parse(values[key]));
     return {
       ...config,
+      pages: config.pages.some(page => page.slug === "about")
+        ? config.pages : [...initial.pages, ...config.pages],
       slides: config.slides.map(slide => ({
         ...slide,
         imageUrl: HERO_IMAGES[slide.imageUrl] ?? slide.imageUrl,
