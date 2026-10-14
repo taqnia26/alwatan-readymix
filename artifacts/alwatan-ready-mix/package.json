@@ -8,7 +8,8 @@
     "build": "vite build --config vite.config.ts",
     "serve": "vite preview --config vite.config.ts --host 0.0.0.0",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test:cms": "tsc -p tsconfig.test.json --noEmit && vitest run --config vitest.config.ts"
+    "test:cms": "tsc -p tsconfig.test.json --noEmit && vitest run --config vitest.config.ts tests/cms.test.tsx",
+    "test:media": "node scripts/run-media-tests.mjs"
   },
   "devDependencies": {
     "@clerk/react": "^6.14.5",

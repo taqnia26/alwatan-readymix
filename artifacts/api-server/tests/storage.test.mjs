@@ -11,6 +11,7 @@ import { createObjectStorage, objectStorage } from "../src/lib/objectStorage.ts"
 import { LocalObjectStorage } from "../src/lib/storage/local.ts";
 import { matchesType, uploadLimit } from "../src/lib/storage/policy.ts";
 import { createStorageRouter } from "../src/routes/storage-router.ts";
+import { chromium } from "playwright";
 
 const png = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jIxoAAAAASUVORK5CYII=", "base64");
 const assets = new Map();
@@ -64,6 +65,8 @@ before(async () => {
   root = await mkdtemp(path.join(tmpdir(), "alwatan-local-storage-"));
   storage = createObjectStorage(undefined, root);
   const app = express();
+  app.get("/test-player", (_req, res) => res.type("html").send('<!doctype html><html><body><div id="root"></div><script src="/test-player.js"></script></body></html>'));
+  app.get("/test-player.js", (_req, res) => res.sendFile(path.resolve(".test-build/video-player.js"), { dotfiles: "allow" }));
   app.use(express.json());
   app.use((req, _res, next) => { req.log = { error() {}, warn() {} }; next(); });
   app.use("/api", createStorageRouter(storage, repository, admin, sameOrigin));
@@ -145,6 +148,89 @@ test("single-use tokens, including concurrent requests and consumption across se
   const restarted = new LocalObjectStorage(root);
   await assert.rejects(restarted.receiveUpload(tokenOf(signed.uploadURL), Readable.from([png]), "image/png", String(png.length)), error => error.status === 409);
   await storage.delete(signed.objectPath);
+});
+
+test("image/WebM/PDF finalize and library refetch keep verified bytes across a storage restart", async () => {
+  for (const [contentType, bytes] of [
+    ["image/png", png],
+    ["video/webm", await readFile("tests/fixtures/playable.webm")],
+    ["application/pdf", Buffer.from("%PDF-1.7\n%%EOF\n")],
+  ]) {
+    const signed = await issue(bytes.length, contentType);
+    try {
+      assert.equal((await put(signed, bytes, contentType)).status, 204);
+      const final = await finalize(signed, contentType);
+      assert.equal(final.status, 201);
+      const asset = await final.json();
+      for (let reload = 0; reload < 2; reload++) {
+        const library = await fetch(`${base}/api/admin/media`, { headers: auth() });
+        assert.equal(library.status, 200);
+        assert.ok((await library.json()).some(m => m.id === asset.id && m.contentType === contentType && m.objectPath === signed.objectPath));
+      }
+      const restarted = new LocalObjectStorage(root);
+      const [metadata] = await (await restarted.file(signed.objectPath)).getMetadata();
+      assert.equal(metadata.contentType, contentType);
+      assert.deepEqual(Buffer.from(await (await fetch(apiPath(signed.objectPath))).arrayBuffer()), bytes);
+      assets.delete(asset.id);
+    } finally { await storage.delete(signed.objectPath); }
+  }
+});
+
+test("real VideoPlayer plays extensionless WebM; MP4 download integrity is independent of H264 support", async t => {
+  const browser = await chromium.launch({
+    headless: true,
+    ...(process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH ? { executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH } : {}),
+    args: ["--no-sandbox", "--disable-gpu", "--renderer-process-limit=2"],
+  });
+  const created = [];
+  try {
+    const page = await browser.newPage();
+    for (const [type, fixture] of [["video/webm", "playable.webm"], ["video/mp4", "h264.mp4"]]) {
+      const bytes = await readFile(`tests/fixtures/${fixture}`);
+      const signed = await issue(bytes.length, type);
+      created.push(signed.objectPath);
+      assert.equal((await put(signed, bytes, type)).status, 204);
+      const source = apiPath(signed.objectPath);
+      assert.equal(path.extname(new URL(source).pathname), "");
+      // Assert HTTP and bytes before interpreting any decoder result.
+      const download = await fetch(source);
+      assert.equal(download.status, 200);
+      assert.equal(download.headers.get("content-type"), type);
+      assert.deepEqual(Buffer.from(await download.arrayBuffer()), bytes);
+      await page.goto(`${base}/test-player?src=${encodeURIComponent(source)}`);
+      await page.waitForSelector("video, [role=alert]");
+      const playback = await page.evaluate(async type => {
+        const video = document.querySelector("video") ?? window.failedVideo;
+        const supported = video.canPlayType(type === "video/webm" ? 'video/webm; codecs="vp8"' : 'video/mp4; codecs="avc1.42E01E"');
+        let errorCode = null;
+        video.addEventListener("error", () => { errorCode = video.error?.code; });
+        try {
+          await Promise.race([
+            video.play(),
+            new Promise((_, reject) => setTimeout(() => reject(new Error("playback timeout")), 10_000)),
+          ]);
+          await new Promise(resolve => setTimeout(resolve, 300));
+          return { supported, played: !video.paused && video.currentTime > 0, time: video.currentTime, errorCode };
+        } catch (error) {
+          return { supported, played: false, errorCode: video.error?.code ?? errorCode, failure: error.name };
+        }
+      }, type);
+      if (type === "video/webm") {
+        assert.equal(playback.played, true, JSON.stringify(playback));
+        assert.equal(await page.locator('[role="alert"]').count(), 0);
+      } else if (!playback.played && !playback.supported && playback.errorCode === 4) {
+        t.diagnostic("H264 unsupported by this browser; MP4 HTTP response and full bytes verified intact (not a download failure).");
+        assert.match(await page.locator('[role="alert"]').textContent(), /codec/);
+        assert.equal(await page.getByRole("link", { name: "Download video" }).getAttribute("href"), source);
+      } else {
+        assert.equal(playback.played, true, `Browser advertises H264; playback must succeed: ${JSON.stringify(playback)}`);
+        t.diagnostic("H264 supported and MP4 playback verified; full download bytes also intact.");
+      }
+    }
+  } finally {
+    await browser.close();
+    for (const objectPath of created) await storage.delete(objectPath);
+  }
 });
 
 test("tampered claims, expiry, bound type, bound length, and chunked stream hard cap", async () => {

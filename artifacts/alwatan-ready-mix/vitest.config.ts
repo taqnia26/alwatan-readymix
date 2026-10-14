@@ -13,6 +13,10 @@ export default defineConfig({
     environment: 'jsdom',
     include: ['tests/**/*.test.tsx'],
     setupFiles: ['tests/setup.ts'],
-    testTimeout: 15_000,
+    clearMocks: true,
+    // Keep CI resource usage bounded when the storage/browser suite also runs.
+    maxWorkers: 1,
+    fileParallelism: false,
+    testTimeout: 30_000,
   },
 });

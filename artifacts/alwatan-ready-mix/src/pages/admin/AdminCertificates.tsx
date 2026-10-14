@@ -77,7 +77,7 @@ export default function AdminCertificates() {
     form.reset({
       titleAr: cert.titleAr, titleEn: cert.titleEn, certificateNumber: cert.certificateNumber || '',
       descriptionAr: cert.descriptionAr, descriptionEn: cert.descriptionEn,
-      imageUrl: cert.imageUrl, fileUrl: cert.fileUrl,
+      imageUrl: cert.imageUrl ?? '', fileUrl: cert.fileUrl ?? '',
       issuedBy: cert.issuedBy, issuedDate: format(new Date(cert.issuedDate), 'yyyy-MM-dd')
     });
     setIsDialogOpen(true);
