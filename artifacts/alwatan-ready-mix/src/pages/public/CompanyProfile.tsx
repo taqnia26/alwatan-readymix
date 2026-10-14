@@ -70,8 +70,8 @@ export default function CompanyProfile() {
               </h2>
               <p className="mt-4 text-lg leading-relaxed text-muted-foreground">
                 {t(
-                  'تصفّح الملف التعريفي الرسمي كمجلة حقيقية تقلّب صفحاتها، يشمل نبذة الشركة وخدماتها ومشاريعها ووثائقها.',
-                  'Browse the official profile as a real magazine you can page through, covering the company, services, projects, and documents.',
+                  'تصفّح صفحات الملف التعريفي الرسمي، الذي يشمل نبذة الشركة وخدماتها ومشاريعها ووثائقها.',
+                  'Browse the official company profile, covering the company, services, projects, and documents.',
                 )}
               </p>
 

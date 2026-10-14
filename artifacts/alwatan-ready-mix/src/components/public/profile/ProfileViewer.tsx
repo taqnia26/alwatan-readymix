@@ -15,7 +15,7 @@ function Loading({ progress }: { progress: number | null }) {
         <div className="flex-1 rounded-e-md bg-muted" />
       </div>
       <p className="text-sm font-medium text-muted-foreground">
-        {t('جارٍ تجهيز المجلة...', 'Preparing the magazine...')}
+        {t('جارٍ تجهيز الملف التعريفي...', 'Preparing the company profile...')}
         {progress != null && ` ${Math.round(progress * 100)}%`}
       </p>
     </div>
