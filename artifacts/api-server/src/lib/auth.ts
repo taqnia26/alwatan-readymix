@@ -1,9 +1,11 @@
-import { createHash, randomBytes, scrypt as scryptCallback, timingSafeEqual } from "node:crypto";
+import { randomBytes, scrypt as scryptCallback, timingSafeEqual } from "node:crypto";
 import { promisify } from "node:util";
 import type { NextFunction, Request, Response } from "express";
-import { and, eq, gt, isNull } from "drizzle-orm";
+import { and, eq, isNull } from "drizzle-orm";
 import { adminSessionsTable, adminUsersTable, db, pageContentTable } from "@workspace/db";
 import { sql } from "drizzle-orm";
+import { getAdminFromToken, hashToken } from "./admin-session";
+export { getAdminFromToken } from "./admin-session";
 
 const scrypt = promisify(scryptCallback);
 
@@ -37,10 +39,6 @@ export async function verifyPassword(password: string, encoded: string | null): 
   }
 }
 
-function hashToken(token: string): string {
-  return createHash("sha256").update(token).digest("hex");
-}
-
 export function sessionCookieOptions() {
   return {
     httpOnly: true,
@@ -70,33 +68,15 @@ export async function revokeAdminSession(token: string | undefined): Promise<voi
     .where(and(eq(adminSessionsTable.tokenHash, hashToken(token)), isNull(adminSessionsTable.revokedAt)));
 }
 
-export async function getAdminFromToken(token: string | undefined) {
-  if (!token) return undefined;
-  const [row] = await db
-    .select({ session: adminSessionsTable, user: adminUsersTable })
-    .from(adminSessionsTable)
-    .innerJoin(adminUsersTable, eq(adminSessionsTable.adminUserId, adminUsersTable.id))
-    .where(
-      and(
-        eq(adminSessionsTable.tokenHash, hashToken(token)),
-        isNull(adminSessionsTable.revokedAt),
-        gt(adminSessionsTable.expiresAt, new Date()),
-        eq(adminUsersTable.isActive, true),
-      ),
-    );
-  if (!row) return undefined;
-  await db
-    .update(adminSessionsTable)
-    .set({ lastUsedAt: new Date() })
-    .where(eq(adminSessionsTable.id, row.session.id));
-  return row.user;
-}
-
 export async function requireAdmin(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
     const user = await getAdminFromToken(req.cookies?.[ADMIN_SESSION_COOKIE]);
-    if (!user) {
+    if (!user || !user.isActive) {
       res.status(401).json({ error: "Authentication required" });
+      return;
+    }
+    if (user.role !== "admin") {
+      res.status(403).json({ error: "Administrator permission required" });
       return;
     }
     req.adminUser = user;
