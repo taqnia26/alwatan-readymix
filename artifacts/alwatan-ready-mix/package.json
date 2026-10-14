@@ -85,6 +85,8 @@
     "zod": "catalog:"
   },
   "dependencies": {
-    "dompurify": "^3.4.15"
+    "dompurify": "^3.4.15",
+    "pdfjs-dist": "^5.4.296",
+    "react-pageflip": "^2.0.3"
   }
 }

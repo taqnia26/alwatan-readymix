@@ -1,15 +1,24 @@
 import BrandEnergyLines from '@/components/public/BrandEnergyLines';
-import { useEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { Download, ExternalLink, Eye, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/lib/i18n';
 import { trackSiteActivity } from '@/lib/site-activity';
+import { usePublicStudio } from '@/hooks/use-public-studio';
+import { ProfileError } from '@/components/public/profile/ProfileViewer';
 
-const PROFILE_URL = '/alwatan-company-profile.pdf';
+const ProfileViewer = lazy(() => import('@/components/public/profile/ProfileViewer'));
+const DEFAULT_PROFILE_URL = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/alwatan-company-profile.pdf`;
 
 export default function CompanyProfile() {
   const { t } = useLanguage();
   const [showViewer, setShowViewer] = useState(false);
+  const studio = usePublicStudio();
+  const configFailed = !studio.data && studio.isError;
+  const configLoading = !studio.data && !studio.isError;
+  const configured = studio.data?.branding?.profileUrl?.trim() ?? '';
+  const PROFILE_URL = configured || DEFAULT_PROFILE_URL;
+  const isDefault = !configLoading && !configFailed && PROFILE_URL === DEFAULT_PROFILE_URL;
 
   useEffect(() => {
     document.title = t(
@@ -44,11 +53,11 @@ export default function CompanyProfile() {
         <div className="mx-auto max-w-6xl overflow-hidden rounded-3xl border border-border bg-card shadow-xl">
           <div className="grid items-center gap-0 lg:grid-cols-[0.8fr_1.2fr]">
             <div className="relative min-h-[360px] overflow-hidden bg-muted lg:min-h-[540px]">
-              <img
+              {isDefault ? <img
                 src="/company-profile-cover.png"
                 alt={t('غلاف الملف التعريفي لشركة الوطن', 'AlWatan company profile cover')}
-                className="absolute inset-0 h-full w-full object-cover"
-              />
+                className="absolute inset-0 h-full w-full object-contain"
+              /> : <div className="absolute inset-0 flex items-center justify-center bg-secondary text-primary"><FileText className="h-24 w-24" /></div>}
               <div className="absolute inset-0 bg-gradient-to-t from-secondary/45 via-transparent to-transparent" />
             </div>
 
@@ -61,8 +70,8 @@ export default function CompanyProfile() {
               </h2>
               <p className="mt-4 text-lg leading-relaxed text-muted-foreground">
                 {t(
-                  'نسخة متكاملة من 43 صفحة تشمل نبذة الشركة ورؤيتها وخدماتها ومشاريعها وعملاءها ووثائقها الرسمية.',
-                  'A comprehensive 43-page profile covering the company, vision, services, projects, clients, and official documents.',
+                  'تصفّح الملف التعريفي الرسمي كمجلة حقيقية تقلّب صفحاتها، يشمل نبذة الشركة وخدماتها ومشاريعها ووثائقها.',
+                  'Browse the official profile as a real magazine you can page through, covering the company, services, projects, and documents.',
                 )}
               </p>
 
@@ -70,6 +79,8 @@ export default function CompanyProfile() {
                 <Button
                   size="lg"
                   className="h-13 gap-2 px-7 font-bold"
+                  disabled={configLoading}
+                  data-testid="button-browse-profile"
                   onClick={() => setShowViewer((current) => !current)}
                 >
                   <Eye className="h-5 w-5" />
@@ -77,29 +88,33 @@ export default function CompanyProfile() {
                     ? t('إغلاق المعاينة', 'Close Preview')
                     : t('تصفح داخل الصفحة', 'Browse on Page')}
                 </Button>
-                <a href={PROFILE_URL} target="_blank" rel="noreferrer">
+                {!configFailed && !configLoading && <a href={PROFILE_URL} target="_blank" rel="noreferrer">
                   <Button size="lg" variant="outline" className="h-13 w-full gap-2 px-7 font-bold">
                     <ExternalLink className="h-5 w-5" />
                     {t('فتح في نافذة جديدة', 'Open in New Tab')}
                   </Button>
-                </a>
-                <a href={PROFILE_URL} download onClick={() => trackSiteActivity('profile_download')}>
+                </a>}
+                {!configFailed && !configLoading && <a href={PROFILE_URL} download onClick={() => trackSiteActivity('profile_download')}>
                   <Button size="lg" variant="ghost" className="h-13 w-full gap-2 px-7 font-bold">
                     <Download className="h-5 w-5" />
                     {t('تحميل الملف', 'Download PDF')}
                   </Button>
-                </a>
+                </a>}
               </div>
             </div>
           </div>
 
           {showViewer && (
             <div className="border-t border-border bg-muted/40 p-3 md:p-6">
-              <iframe
-                src={`${PROFILE_URL}#view=FitH`}
-                title={t('عارض الملف التعريفي لشركة الوطن', 'AlWatan company profile viewer')}
-                className="h-[72vh] min-h-[620px] w-full rounded-2xl border border-border bg-white"
-              />
+              <div className="overflow-hidden rounded-2xl border border-border bg-card">
+                {configFailed ? (
+                  <ProfileError kind="config" config onRetry={() => void studio.refetch()} />
+                ) : (
+                  <Suspense fallback={<div className="h-[50vh] animate-pulse bg-muted" />}>
+                    <ProfileViewer key={PROFILE_URL} url={PROFILE_URL} />
+                  </Suspense>
+                )}
+              </div>
             </div>
           )}
         </div>
