@@ -89,6 +89,7 @@ export const GetHomeResponse = zod.object({
   "phone3": zod.string().optional(),
   "phone4": zod.string().optional(),
   "email": zod.string(),
+  "email2": zod.string().optional(),
   "instagramUrl": zod.string(),
   "linkedinUrl": zod.string()
 })
@@ -620,6 +621,7 @@ export const GetPublicSettingsResponse = zod.object({
   "phone3": zod.string().optional(),
   "phone4": zod.string().optional(),
   "email": zod.string(),
+  "email2": zod.string().optional(),
   "instagramUrl": zod.string(),
   "linkedinUrl": zod.string()
 })
@@ -1244,6 +1246,8 @@ export const getPublicStudioResponseBrandingPhone4Max = 50;
 
 export const getPublicStudioResponseBrandingEmailMax = 200;
 
+export const getPublicStudioResponseBrandingEmail2Max = 200;
+
 export const getPublicStudioResponseBrandingWhatsappMax = 50;
 
 export const getPublicStudioResponseBrandingProfileUrlMax = 2000;
@@ -1398,6 +1402,7 @@ export const GetPublicStudioResponse = zod.object({
   "phone3": zod.string().max(getPublicStudioResponseBrandingPhone3Max).optional(),
   "phone4": zod.string().max(getPublicStudioResponseBrandingPhone4Max).optional(),
   "email": zod.string().max(getPublicStudioResponseBrandingEmailMax),
+  "email2": zod.string().max(getPublicStudioResponseBrandingEmail2Max).optional(),
   "whatsapp": zod.string().max(getPublicStudioResponseBrandingWhatsappMax),
   "profileUrl": zod.string().max(getPublicStudioResponseBrandingProfileUrlMax),
   "facebook": zod.string().max(getPublicStudioResponseBrandingFacebookMax),
@@ -1507,6 +1512,8 @@ export const getAdminStudioResponseDraftBrandingPhone3Max = 50;
 export const getAdminStudioResponseDraftBrandingPhone4Max = 50;
 
 export const getAdminStudioResponseDraftBrandingEmailMax = 200;
+
+export const getAdminStudioResponseDraftBrandingEmail2Max = 200;
 
 export const getAdminStudioResponseDraftBrandingWhatsappMax = 50;
 
@@ -1668,6 +1675,8 @@ export const getAdminStudioResponsePublishedBrandingPhone4Max = 50;
 
 export const getAdminStudioResponsePublishedBrandingEmailMax = 200;
 
+export const getAdminStudioResponsePublishedBrandingEmail2Max = 200;
+
 export const getAdminStudioResponsePublishedBrandingWhatsappMax = 50;
 
 export const getAdminStudioResponsePublishedBrandingProfileUrlMax = 2000;
@@ -1823,6 +1832,7 @@ export const GetAdminStudioResponse = zod.object({
   "phone3": zod.string().max(getAdminStudioResponseDraftBrandingPhone3Max).optional(),
   "phone4": zod.string().max(getAdminStudioResponseDraftBrandingPhone4Max).optional(),
   "email": zod.string().max(getAdminStudioResponseDraftBrandingEmailMax),
+  "email2": zod.string().max(getAdminStudioResponseDraftBrandingEmail2Max).optional(),
   "whatsapp": zod.string().max(getAdminStudioResponseDraftBrandingWhatsappMax),
   "profileUrl": zod.string().max(getAdminStudioResponseDraftBrandingProfileUrlMax),
   "facebook": zod.string().max(getAdminStudioResponseDraftBrandingFacebookMax),
@@ -1923,6 +1933,7 @@ export const GetAdminStudioResponse = zod.object({
   "phone3": zod.string().max(getAdminStudioResponsePublishedBrandingPhone3Max).optional(),
   "phone4": zod.string().max(getAdminStudioResponsePublishedBrandingPhone4Max).optional(),
   "email": zod.string().max(getAdminStudioResponsePublishedBrandingEmailMax),
+  "email2": zod.string().max(getAdminStudioResponsePublishedBrandingEmail2Max).optional(),
   "whatsapp": zod.string().max(getAdminStudioResponsePublishedBrandingWhatsappMax),
   "profileUrl": zod.string().max(getAdminStudioResponsePublishedBrandingProfileUrlMax),
   "facebook": zod.string().max(getAdminStudioResponsePublishedBrandingFacebookMax),
@@ -2035,6 +2046,8 @@ export const saveStudioDraftBodyConfigBrandingPhone3Max = 50;
 export const saveStudioDraftBodyConfigBrandingPhone4Max = 50;
 
 export const saveStudioDraftBodyConfigBrandingEmailMax = 200;
+
+export const saveStudioDraftBodyConfigBrandingEmail2Max = 200;
 
 export const saveStudioDraftBodyConfigBrandingWhatsappMax = 50;
 
@@ -2191,6 +2204,7 @@ export const SaveStudioDraftBody = zod.object({
   "phone3": zod.string().max(saveStudioDraftBodyConfigBrandingPhone3Max).optional(),
   "phone4": zod.string().max(saveStudioDraftBodyConfigBrandingPhone4Max).optional(),
   "email": zod.string().max(saveStudioDraftBodyConfigBrandingEmailMax),
+  "email2": zod.string().max(saveStudioDraftBodyConfigBrandingEmail2Max).optional(),
   "whatsapp": zod.string().max(saveStudioDraftBodyConfigBrandingWhatsappMax),
   "profileUrl": zod.string().max(saveStudioDraftBodyConfigBrandingProfileUrlMax),
   "facebook": zod.string().max(saveStudioDraftBodyConfigBrandingFacebookMax),
@@ -2300,6 +2314,8 @@ export const saveStudioDraftResponseDraftBrandingPhone3Max = 50;
 export const saveStudioDraftResponseDraftBrandingPhone4Max = 50;
 
 export const saveStudioDraftResponseDraftBrandingEmailMax = 200;
+
+export const saveStudioDraftResponseDraftBrandingEmail2Max = 200;
 
 export const saveStudioDraftResponseDraftBrandingWhatsappMax = 50;
 
@@ -2461,6 +2477,8 @@ export const saveStudioDraftResponsePublishedBrandingPhone4Max = 50;
 
 export const saveStudioDraftResponsePublishedBrandingEmailMax = 200;
 
+export const saveStudioDraftResponsePublishedBrandingEmail2Max = 200;
+
 export const saveStudioDraftResponsePublishedBrandingWhatsappMax = 50;
 
 export const saveStudioDraftResponsePublishedBrandingProfileUrlMax = 2000;
@@ -2616,6 +2634,7 @@ export const SaveStudioDraftResponse = zod.object({
   "phone3": zod.string().max(saveStudioDraftResponseDraftBrandingPhone3Max).optional(),
   "phone4": zod.string().max(saveStudioDraftResponseDraftBrandingPhone4Max).optional(),
   "email": zod.string().max(saveStudioDraftResponseDraftBrandingEmailMax),
+  "email2": zod.string().max(saveStudioDraftResponseDraftBrandingEmail2Max).optional(),
   "whatsapp": zod.string().max(saveStudioDraftResponseDraftBrandingWhatsappMax),
   "profileUrl": zod.string().max(saveStudioDraftResponseDraftBrandingProfileUrlMax),
   "facebook": zod.string().max(saveStudioDraftResponseDraftBrandingFacebookMax),
@@ -2716,6 +2735,7 @@ export const SaveStudioDraftResponse = zod.object({
   "phone3": zod.string().max(saveStudioDraftResponsePublishedBrandingPhone3Max).optional(),
   "phone4": zod.string().max(saveStudioDraftResponsePublishedBrandingPhone4Max).optional(),
   "email": zod.string().max(saveStudioDraftResponsePublishedBrandingEmailMax),
+  "email2": zod.string().max(saveStudioDraftResponsePublishedBrandingEmail2Max).optional(),
   "whatsapp": zod.string().max(saveStudioDraftResponsePublishedBrandingWhatsappMax),
   "profileUrl": zod.string().max(saveStudioDraftResponsePublishedBrandingProfileUrlMax),
   "facebook": zod.string().max(saveStudioDraftResponsePublishedBrandingFacebookMax),
@@ -2828,6 +2848,8 @@ export const publishStudioResponseDraftBrandingPhone3Max = 50;
 export const publishStudioResponseDraftBrandingPhone4Max = 50;
 
 export const publishStudioResponseDraftBrandingEmailMax = 200;
+
+export const publishStudioResponseDraftBrandingEmail2Max = 200;
 
 export const publishStudioResponseDraftBrandingWhatsappMax = 50;
 
@@ -2989,6 +3011,8 @@ export const publishStudioResponsePublishedBrandingPhone4Max = 50;
 
 export const publishStudioResponsePublishedBrandingEmailMax = 200;
 
+export const publishStudioResponsePublishedBrandingEmail2Max = 200;
+
 export const publishStudioResponsePublishedBrandingWhatsappMax = 50;
 
 export const publishStudioResponsePublishedBrandingProfileUrlMax = 2000;
@@ -3144,6 +3168,7 @@ export const PublishStudioResponse = zod.object({
   "phone3": zod.string().max(publishStudioResponseDraftBrandingPhone3Max).optional(),
   "phone4": zod.string().max(publishStudioResponseDraftBrandingPhone4Max).optional(),
   "email": zod.string().max(publishStudioResponseDraftBrandingEmailMax),
+  "email2": zod.string().max(publishStudioResponseDraftBrandingEmail2Max).optional(),
   "whatsapp": zod.string().max(publishStudioResponseDraftBrandingWhatsappMax),
   "profileUrl": zod.string().max(publishStudioResponseDraftBrandingProfileUrlMax),
   "facebook": zod.string().max(publishStudioResponseDraftBrandingFacebookMax),
@@ -3244,6 +3269,7 @@ export const PublishStudioResponse = zod.object({
   "phone3": zod.string().max(publishStudioResponsePublishedBrandingPhone3Max).optional(),
   "phone4": zod.string().max(publishStudioResponsePublishedBrandingPhone4Max).optional(),
   "email": zod.string().max(publishStudioResponsePublishedBrandingEmailMax),
+  "email2": zod.string().max(publishStudioResponsePublishedBrandingEmail2Max).optional(),
   "whatsapp": zod.string().max(publishStudioResponsePublishedBrandingWhatsappMax),
   "profileUrl": zod.string().max(publishStudioResponsePublishedBrandingProfileUrlMax),
   "facebook": zod.string().max(publishStudioResponsePublishedBrandingFacebookMax),

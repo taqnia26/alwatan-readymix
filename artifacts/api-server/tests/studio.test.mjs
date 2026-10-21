@@ -111,17 +111,26 @@ test("contact settings use published identity, not legacy settings or unpublishe
   const before = await request("/settings/public", "GET", undefined, 200, false);
   assert.equal(before.phone, config.branding.phone);
   assert.notEqual(before.phone, "LEGACY-PHONE-NOT-LIVE");
-  Object.assign(config.branding, { phone: "0123456789", email: "hello@example.test", whatsapp: "966123456789", instagram: "https://example.test/ig", linkedin: "https://example.test/in" });
+  Object.assign(config.branding, { phone: "0123456789", email: "hello@example.test", email2: "sales@example.test", whatsapp: "966123456789", instagram: "https://example.test/ig", linkedin: "https://example.test/in" });
   await save(config);
+  assert.equal((await request("/admin/studio")).draft.branding.email2, "sales@example.test");
   assert.deepEqual(await request("/settings/public"), before);
   await publish();
   const settings = await request("/settings/public");
   assert.deepEqual(settings, {
     phone: config.branding.phone, email: config.branding.email, whatsapp: config.branding.whatsapp,
+    phone2: config.branding.phone2 || "", phone3: config.branding.phone3 || "", phone4: config.branding.phone4 || "",
+    email2: config.branding.email2,
     instagramUrl: config.branding.instagram, linkedinUrl: config.branding.linkedin,
     quoteEmail: "notifications@example.test",
   });
   assert.deepEqual(await request("/settings/public"), settings);
+  config.branding.email2 = "";
+  await save(config);
+  assert.equal((await request("/settings/public")).email2, "sales@example.test");
+  await publish();
+  assert.equal((await request("/settings/public")).email2, "");
+  assert.equal((await request("/settings/public")).email, "hello@example.test");
 });
 
 test("renamed page links switch only on publish; unpublished and deleted pages disappear", async () => {

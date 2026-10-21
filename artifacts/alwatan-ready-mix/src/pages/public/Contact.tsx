@@ -95,9 +95,11 @@ export default function Contact() {
               </div>
               <div>
                 <h3 className="font-bold text-secondary mb-2">{t('البريد الإلكتروني', 'Email')}</h3>
-                <a href={`mailto:${settings?.email || 'info@alwatan-readymix.com'}`} className="text-gray-600 text-sm font-mono hover:text-primary transition-colors">
-                  {settings?.email || 'info@alwatan-readymix.com'}
-                </a>
+                {[settings?.email || 'info@alwatan-readymix.com', settings?.email2].filter((email): email is string => Boolean(email?.trim())).map((email, index) => (
+                  <a key={index} href={`mailto:${email}`} dir="ltr" data-testid={`link-contact-email-${index + 1}`} className="block break-all text-gray-600 text-sm font-mono hover:text-primary transition-colors">
+                    {email}
+                  </a>
+                ))}
               </div>
             </div>
           </div>

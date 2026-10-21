@@ -1132,6 +1132,7 @@ components:
         phone3: { type: string, maxLength: 50 }
         phone4: { type: string, maxLength: 50 }
         email: { type: string, maxLength: 200 }
+        email2: { type: string, maxLength: 200 }
         whatsapp: { type: string, maxLength: 50 }
         profileUrl: { type: string, maxLength: 2000 }
         facebook: { type: string, maxLength: 2000 }
@@ -1444,6 +1445,7 @@ components:
         phone3: { type: string }
         phone4: { type: string }
         email: { type: string }
+        email2: { type: string }
         instagramUrl: { type: string }
         linkedinUrl: { type: string }
       required: [whatsapp, quoteEmail, phone, email, instagramUrl, linkedinUrl]

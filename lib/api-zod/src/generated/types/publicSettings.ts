@@ -14,6 +14,7 @@ export interface PublicSettings {
   phone3?: string;
   phone4?: string;
   email: string;
+  email2?: string;
   instagramUrl: string;
   linkedinUrl: string;
 }

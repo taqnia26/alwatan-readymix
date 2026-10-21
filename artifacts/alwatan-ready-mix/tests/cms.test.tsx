@@ -136,20 +136,30 @@ describe('CMS regression journey (isolated transport)', () => {
   it('settings redirects to identity and contact fields save through the studio draft, not legacy settings', async () => {
     const admin = mount('/admin/settings');
     await userEvent.click(await screen.findByRole('tab', { name: 'التواصل' }));
-    expect((screen.getByLabelText('الهاتف') as HTMLInputElement).value).toBe('0111111111');
-    change(screen.getByLabelText('الهاتف'), '0222222222');
-    change(screen.getByLabelText('البريد', { exact: true }), 'draft@example.test');
+    expect((screen.getByTestId('input-contact-phone-1') as HTMLInputElement).value).toBe('0111111111');
+    change(screen.getByTestId('input-contact-phone-1'), '0222222222');
+    change(screen.getByTestId('input-contact-email'), 'draft@example.test');
+    change(screen.getByTestId('input-contact-email-2'), 'sales@example.test');
     change(screen.getByLabelText('واتساب (أرقام فقط)'), '966222222222');
     await save();
     expect(transport.snapshot().draft.branding.phone).toBe('0222222222');
+    expect(transport.snapshot().draft.branding.email2).toBe('sales@example.test');
+    expect(transport.snapshot().published.branding.email2).toBeUndefined();
     expect(transport.snapshot().published.branding.phone).toBe('0111111111');
     expect(transport.requests.filter(r => r.method === 'PUT').map(r => r.path)).toEqual(['/api/admin/studio']);
     await publish();
     expect(transport.snapshot().published.branding.email).toBe('draft@example.test');
+    expect(transport.snapshot().published.branding.email2).toBe('sales@example.test');
     admin.unmount();
     mount('/admin/branding');
     await userEvent.click(await screen.findByRole('tab', { name: 'التواصل' }));
-    expect((screen.getByLabelText('الهاتف') as HTMLInputElement).value).toBe('0222222222');
+    expect((screen.getByTestId('input-contact-phone-1') as HTMLInputElement).value).toBe('0222222222');
+    expect((screen.getByTestId('input-contact-email-2') as HTMLInputElement).value).toBe('sales@example.test');
+    change(screen.getByTestId('input-contact-email-2'), '');
+    await save();
+    await publish();
+    expect(transport.snapshot().published.branding.email2).toBe('');
+    expect(transport.snapshot().published.branding.email).toBe('draft@example.test');
   });
 
   it('creates a page, updates its navigation on slug edit, hides it after unpublishing, and deletes its link', async () => {

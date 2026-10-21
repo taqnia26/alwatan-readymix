@@ -83,6 +83,8 @@ export interface StudioBranding {
   phone4?: string;
   /** @maxLength 200 */
   email: string;
+  /** @maxLength 200 */
+  email2?: string;
   /** @maxLength 50 */
   whatsapp: string;
   /** @maxLength 2000 */
@@ -542,6 +544,7 @@ export interface PublicSettings {
   phone3?: string;
   phone4?: string;
   email: string;
+  email2?: string;
   instagramUrl: string;
   linkedinUrl: string;
 }

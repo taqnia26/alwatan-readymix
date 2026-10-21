@@ -27,6 +27,8 @@ export interface StudioBranding {
   phone4?: string;
   /** @maxLength 200 */
   email: string;
+  /** @maxLength 200 */
+  email2?: string;
   /** @maxLength 50 */
   whatsapp: string;
   /** @maxLength 2000 */

@@ -38,6 +38,7 @@ export default function AdminBranding() {
                   <Txt label={t('رقم التواصل ٣', 'Contact number 3')} value={b.phone3 || ''} dir="ltr" onChange={(v) => setB({ phone3: v })} max={50} testId="input-contact-phone-3" />
                   <Txt label={t('رقم التواصل ٤', 'Contact number 4')} value={b.phone4 || ''} dir="ltr" onChange={(v) => setB({ phone4: v })} max={50} testId="input-contact-phone-4" />
                   <Txt label={t('البريد الإلكتروني للتواصل', 'Contact email')} value={b.email} dir="ltr" onChange={(v) => setB({ email: v })} max={200} testId="input-contact-email" />
+                  <Txt label={t('البريد الإلكتروني الثاني (اختياري)', 'Second contact email (optional)')} value={b.email2 || ''} dir="ltr" onChange={(v) => setB({ email2: v })} max={200} testId="input-contact-email-2" />
                   <Txt label={t('واتساب (أرقام فقط)', 'WhatsApp (digits)')} value={b.whatsapp} dir="ltr" onChange={(v) => setB({ whatsapp: v })} max={50} />
                 </div>
                 <Media label={t('الملف التعريفي PDF', 'Company profile PDF')} kind="pdf" value={b.profileUrl} onChange={(v) => setB({ profileUrl: v })} />

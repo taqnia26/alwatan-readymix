@@ -56,7 +56,9 @@ export default function SiteFooter({ branding, nav, phone, email }: { branding?:
           <h4 className="mb-6 text-lg font-extrabold text-accent">{t('تواصل معنا', 'Contact Us')}</h4>
           <ul className="space-y-4 font-medium text-white/75">
             <li className="flex items-center gap-3"><MapPin className="h-4 w-4 text-primary" />{t('الرياض، المملكة العربية السعودية', 'Riyadh, Saudi Arabia')}</li>
-            <li className="flex items-center gap-3"><Mail className="h-4 w-4 text-primary" /><a href={`mailto:${email}`} className="hover:text-white">{email}</a></li>
+            {[email, branding?.email2].filter((value): value is string => Boolean(value?.trim())).map((value, index) => (
+              <li key={index} className="flex items-center gap-3"><Mail className="h-4 w-4 shrink-0 text-primary" /><a href={`mailto:${value}`} dir="ltr" data-testid={`link-footer-email-${index + 1}`} className="break-all hover:text-white">{value}</a></li>
+            ))}
             {[phone, branding?.phone2, branding?.phone3, branding?.phone4].filter((value): value is string => Boolean(value?.trim())).map((value, i) => (
               <li key={i} className="flex items-center gap-3"><Phone className="h-4 w-4 text-primary" /><a href={`tel:${value.replace(/[^+\d]/g, '')}`} dir="ltr" className="hover:text-white" data-testid={`link-footer-phone-${i + 1}`}>{value}</a></li>
             ))}

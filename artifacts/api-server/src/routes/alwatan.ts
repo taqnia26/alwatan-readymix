@@ -147,6 +147,7 @@ async function getPublicSettings() {
     quoteEmail: settings.quoteEmail ?? "",
     phone: branding.phone,
     email: branding.email,
+    email2: branding.email2 || "",
     instagramUrl: branding.instagram,
     linkedinUrl: branding.linkedin,
   };
