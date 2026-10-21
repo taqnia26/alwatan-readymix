@@ -1,6 +1,7 @@
 import { useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useLanguage } from '@/lib/i18n';
-import { useLogin } from '@workspace/api-client-react';
+import { getGetAuthMeQueryKey, useLogin } from '@workspace/api-client-react';
 import { useLocation } from 'wouter';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -9,6 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 export default function AdminLogin() {
   const { t, isRtl } = useLanguage();
   const [, setLocation] = useLocation();
+  const queryClient = useQueryClient();
   const login = useLogin();
   const { toast } = useToast();
 
@@ -20,13 +22,20 @@ export default function AdminLogin() {
     login.mutate(
       { data: { username, password } },
       {
-        onSuccess: () => {
+        onSuccess: async (session) => {
+          // A cached anonymous response (or an older in-flight /auth/me)
+          // must not send the newly authenticated user back to this page.
+          const queryKey = getGetAuthMeQueryKey();
+          await queryClient.cancelQueries({ queryKey });
+          queryClient.setQueryData(queryKey, { user: session.user });
           setLocation('/admin');
         },
-        onError: () => {
+        onError: (error) => {
           toast({ 
             title: t('فشل تسجيل الدخول', 'Login failed'),
-            description: t('تأكد من صحة اسم المستخدم وكلمة المرور', 'Check your username and password'),
+            description: error.status === 401
+              ? t('تأكد من صحة اسم المستخدم وكلمة المرور', 'Check your username and password')
+              : t('تعذر إكمال تسجيل الدخول. يرجى إعادة المحاولة بعد قليل.', 'Unable to complete sign-in. Please try again shortly.'),
             variant: 'destructive' 
           });
         }
@@ -57,10 +66,11 @@ export default function AdminLogin() {
 
         <form onSubmit={handleLogin} className="space-y-6">
           <div className="space-y-2">
-            <label className="text-sm font-bold text-secondary">
+            <label htmlFor="admin-username" className="text-sm font-bold text-secondary">
               {t('اسم المستخدم', 'Username')}
             </label>
             <Input 
+              id="admin-username"
               name="username"
               autoComplete="username"
               required
@@ -73,10 +83,11 @@ export default function AdminLogin() {
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-bold text-secondary">
+            <label htmlFor="admin-password" className="text-sm font-bold text-secondary">
               {t('كلمة المرور', 'Password')}
             </label>
             <Input 
+              id="admin-password"
               name="password"
               autoComplete="current-password"
               type="password"
