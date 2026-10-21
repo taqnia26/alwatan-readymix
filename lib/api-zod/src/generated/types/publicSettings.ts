@@ -10,6 +10,9 @@ export interface PublicSettings {
   whatsapp: string;
   quoteEmail: string;
   phone: string;
+  phone2?: string;
+  phone3?: string;
+  phone4?: string;
   email: string;
   instagramUrl: string;
   linkedinUrl: string;

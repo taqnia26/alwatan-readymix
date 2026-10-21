@@ -6,6 +6,7 @@ import adminManagementRouter from "./admin-management";
 import storageRouter from "./storage";
 import studioRouter from "./studio";
 import insightsRouter from "./insights";
+import webChatRouter from "./web-chat";
 
 const router: IRouter = Router();
 
@@ -16,5 +17,6 @@ router.use(adminManagementRouter);
 router.use(storageRouter);
 router.use(studioRouter);
 router.use(insightsRouter);
+router.use(webChatRouter);
 
 export default router;

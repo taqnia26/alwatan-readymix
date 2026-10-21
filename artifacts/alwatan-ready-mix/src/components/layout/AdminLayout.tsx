@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Link, useLocation } from 'wouter';
 import {
   LayoutDashboard, FileText, MessageSquare, Settings, LogOut, Package, MapPin, Image as ImageIcon, Users, Award, BookOpen, Send,
-  Menu, Globe, LayoutTemplate, GalleryHorizontal, Megaphone, Palette, ExternalLink,
+  Menu, Globe, LayoutTemplate, GalleryHorizontal, Megaphone, Palette, ExternalLink, MessagesSquare,
 } from 'lucide-react';
 import { useGetAuthMe, useLogout } from '@workspace/api-client-react';
 import { useQueryClient } from '@tanstack/react-query';
@@ -38,6 +38,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
     ] },
     { title: t('الوارد', 'Inbox'), items: [
       { href: '/admin/quotes', icon: MessageSquare, label: t('طلبات التسعير', 'Quotes') },
+      { href: '/admin/chats', icon: MessagesSquare, label: t('المحادثات المباشرة', 'Live chats') },
       { href: '/admin/messages', icon: Send, label: t('رسائل التواصل', 'Messages') },
     ] },
     { title: t('النظام', 'System'), items: [

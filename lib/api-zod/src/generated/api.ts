@@ -85,6 +85,9 @@ export const GetHomeResponse = zod.object({
   "whatsapp": zod.string(),
   "quoteEmail": zod.string(),
   "phone": zod.string(),
+  "phone2": zod.string().optional(),
+  "phone3": zod.string().optional(),
+  "phone4": zod.string().optional(),
   "email": zod.string(),
   "instagramUrl": zod.string(),
   "linkedinUrl": zod.string()
@@ -613,6 +616,9 @@ export const GetPublicSettingsResponse = zod.object({
   "whatsapp": zod.string(),
   "quoteEmail": zod.string(),
   "phone": zod.string(),
+  "phone2": zod.string().optional(),
+  "phone3": zod.string().optional(),
+  "phone4": zod.string().optional(),
   "email": zod.string(),
   "instagramUrl": zod.string(),
   "linkedinUrl": zod.string()
@@ -1067,6 +1073,157 @@ export const ServePublicMediaParams = zod.object({
 export const ServePublicMediaResponse = zod.unknown()
 
 
+export const GetVisitorChatResponse = zod.object({
+  "conversation": zod.union([zod.object({
+  "id": zod.number().int(),
+  "name": zod.string(),
+  "phone": zod.string(),
+  "email": zod.string(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string(),
+  "unreadCount": zod.number().int(),
+  "lastMessage": zod.string()
+}),zod.null()]),
+  "messages": zod.array(zod.object({
+  "id": zod.number().int(),
+  "conversationId": zod.number().int(),
+  "sender": zod.enum(['visitor', 'admin']),
+  "content": zod.string(),
+  "createdAt": zod.string()
+}))
+})
+
+
+export const startVisitorChatBodyNameMax = 100;
+
+export const startVisitorChatBodyPhoneMax = 50;
+
+export const startVisitorChatBodyEmailMax = 200;
+
+export const startVisitorChatBodyContentMax = 2000;
+
+
+
+export const StartVisitorChatBody = zod.object({
+  "name": zod.string().min(1).max(startVisitorChatBodyNameMax),
+  "phone": zod.string().max(startVisitorChatBodyPhoneMax).optional(),
+  "email": zod.string().max(startVisitorChatBodyEmailMax).optional(),
+  "content": zod.string().min(1).max(startVisitorChatBodyContentMax)
+})
+
+export const StartVisitorChatResponse = zod.object({
+  "conversation": zod.union([zod.object({
+  "id": zod.number().int(),
+  "name": zod.string(),
+  "phone": zod.string(),
+  "email": zod.string(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string(),
+  "unreadCount": zod.number().int(),
+  "lastMessage": zod.string()
+}),zod.null()]),
+  "messages": zod.array(zod.object({
+  "id": zod.number().int(),
+  "conversationId": zod.number().int(),
+  "sender": zod.enum(['visitor', 'admin']),
+  "content": zod.string(),
+  "createdAt": zod.string()
+}))
+})
+
+
+export const sendVisitorMessageBodyContentMax = 2000;
+
+
+
+export const SendVisitorMessageBody = zod.object({
+  "content": zod.string().min(1).max(sendVisitorMessageBodyContentMax)
+})
+
+export const SendVisitorMessageResponse = zod.object({
+  "id": zod.number().int(),
+  "conversationId": zod.number().int(),
+  "sender": zod.enum(['visitor', 'admin']),
+  "content": zod.string(),
+  "createdAt": zod.string()
+})
+
+
+export const listAdminChatsQueryOffsetDefault = 0;
+export const listAdminChatsQueryOffsetMin = 0;
+
+
+
+export const ListAdminChatsQueryParams = zod.object({
+  "offset": zod.coerce.number().int().min(listAdminChatsQueryOffsetMin).default(listAdminChatsQueryOffsetDefault)
+})
+
+export const ListAdminChatsResponseItem = zod.object({
+  "id": zod.number().int(),
+  "name": zod.string(),
+  "phone": zod.string(),
+  "email": zod.string(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string(),
+  "unreadCount": zod.number().int(),
+  "lastMessage": zod.string()
+})
+export const ListAdminChatsResponse = zod.array(ListAdminChatsResponseItem)
+
+
+export const GetAdminChatParams = zod.object({
+  "id": zod.coerce.number().int()
+})
+
+export const GetAdminChatResponse = zod.object({
+  "conversation": zod.union([zod.object({
+  "id": zod.number().int(),
+  "name": zod.string(),
+  "phone": zod.string(),
+  "email": zod.string(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string(),
+  "unreadCount": zod.number().int(),
+  "lastMessage": zod.string()
+}),zod.null()]),
+  "messages": zod.array(zod.object({
+  "id": zod.number().int(),
+  "conversationId": zod.number().int(),
+  "sender": zod.enum(['visitor', 'admin']),
+  "content": zod.string(),
+  "createdAt": zod.string()
+}))
+})
+
+
+export const ReplyAdminChatParams = zod.object({
+  "id": zod.coerce.number().int()
+})
+
+export const replyAdminChatBodyContentMax = 2000;
+
+
+
+export const ReplyAdminChatBody = zod.object({
+  "content": zod.string().min(1).max(replyAdminChatBodyContentMax)
+})
+
+export const ReplyAdminChatResponse = zod.object({
+  "id": zod.number().int(),
+  "conversationId": zod.number().int(),
+  "sender": zod.enum(['visitor', 'admin']),
+  "content": zod.string(),
+  "createdAt": zod.string()
+})
+
+
+export const MarkAdminChatReadParams = zod.object({
+  "id": zod.coerce.number().int()
+})
+
+export const MarkAdminChatReadResponse = zod.void()
+
+
 export const getPublicStudioResponseBrandingNameArMax = 200;
 
 export const getPublicStudioResponseBrandingNameEnMax = 200;
@@ -1078,6 +1235,12 @@ export const getPublicStudioResponseBrandingFooterArMax = 3000;
 export const getPublicStudioResponseBrandingFooterEnMax = 3000;
 
 export const getPublicStudioResponseBrandingPhoneMax = 50;
+
+export const getPublicStudioResponseBrandingPhone2Max = 50;
+
+export const getPublicStudioResponseBrandingPhone3Max = 50;
+
+export const getPublicStudioResponseBrandingPhone4Max = 50;
 
 export const getPublicStudioResponseBrandingEmailMax = 200;
 
@@ -1231,6 +1394,9 @@ export const GetPublicStudioResponse = zod.object({
   "footerAr": zod.string().max(getPublicStudioResponseBrandingFooterArMax),
   "footerEn": zod.string().max(getPublicStudioResponseBrandingFooterEnMax),
   "phone": zod.string().max(getPublicStudioResponseBrandingPhoneMax),
+  "phone2": zod.string().max(getPublicStudioResponseBrandingPhone2Max).optional(),
+  "phone3": zod.string().max(getPublicStudioResponseBrandingPhone3Max).optional(),
+  "phone4": zod.string().max(getPublicStudioResponseBrandingPhone4Max).optional(),
   "email": zod.string().max(getPublicStudioResponseBrandingEmailMax),
   "whatsapp": zod.string().max(getPublicStudioResponseBrandingWhatsappMax),
   "profileUrl": zod.string().max(getPublicStudioResponseBrandingProfileUrlMax),
@@ -1333,6 +1499,12 @@ export const getAdminStudioResponseDraftBrandingFooterArMax = 3000;
 export const getAdminStudioResponseDraftBrandingFooterEnMax = 3000;
 
 export const getAdminStudioResponseDraftBrandingPhoneMax = 50;
+
+export const getAdminStudioResponseDraftBrandingPhone2Max = 50;
+
+export const getAdminStudioResponseDraftBrandingPhone3Max = 50;
+
+export const getAdminStudioResponseDraftBrandingPhone4Max = 50;
 
 export const getAdminStudioResponseDraftBrandingEmailMax = 200;
 
@@ -1488,6 +1660,12 @@ export const getAdminStudioResponsePublishedBrandingFooterEnMax = 3000;
 
 export const getAdminStudioResponsePublishedBrandingPhoneMax = 50;
 
+export const getAdminStudioResponsePublishedBrandingPhone2Max = 50;
+
+export const getAdminStudioResponsePublishedBrandingPhone3Max = 50;
+
+export const getAdminStudioResponsePublishedBrandingPhone4Max = 50;
+
 export const getAdminStudioResponsePublishedBrandingEmailMax = 200;
 
 export const getAdminStudioResponsePublishedBrandingWhatsappMax = 50;
@@ -1641,6 +1819,9 @@ export const GetAdminStudioResponse = zod.object({
   "footerAr": zod.string().max(getAdminStudioResponseDraftBrandingFooterArMax),
   "footerEn": zod.string().max(getAdminStudioResponseDraftBrandingFooterEnMax),
   "phone": zod.string().max(getAdminStudioResponseDraftBrandingPhoneMax),
+  "phone2": zod.string().max(getAdminStudioResponseDraftBrandingPhone2Max).optional(),
+  "phone3": zod.string().max(getAdminStudioResponseDraftBrandingPhone3Max).optional(),
+  "phone4": zod.string().max(getAdminStudioResponseDraftBrandingPhone4Max).optional(),
   "email": zod.string().max(getAdminStudioResponseDraftBrandingEmailMax),
   "whatsapp": zod.string().max(getAdminStudioResponseDraftBrandingWhatsappMax),
   "profileUrl": zod.string().max(getAdminStudioResponseDraftBrandingProfileUrlMax),
@@ -1738,6 +1919,9 @@ export const GetAdminStudioResponse = zod.object({
   "footerAr": zod.string().max(getAdminStudioResponsePublishedBrandingFooterArMax),
   "footerEn": zod.string().max(getAdminStudioResponsePublishedBrandingFooterEnMax),
   "phone": zod.string().max(getAdminStudioResponsePublishedBrandingPhoneMax),
+  "phone2": zod.string().max(getAdminStudioResponsePublishedBrandingPhone2Max).optional(),
+  "phone3": zod.string().max(getAdminStudioResponsePublishedBrandingPhone3Max).optional(),
+  "phone4": zod.string().max(getAdminStudioResponsePublishedBrandingPhone4Max).optional(),
   "email": zod.string().max(getAdminStudioResponsePublishedBrandingEmailMax),
   "whatsapp": zod.string().max(getAdminStudioResponsePublishedBrandingWhatsappMax),
   "profileUrl": zod.string().max(getAdminStudioResponsePublishedBrandingProfileUrlMax),
@@ -1843,6 +2027,12 @@ export const saveStudioDraftBodyConfigBrandingFooterArMax = 3000;
 export const saveStudioDraftBodyConfigBrandingFooterEnMax = 3000;
 
 export const saveStudioDraftBodyConfigBrandingPhoneMax = 50;
+
+export const saveStudioDraftBodyConfigBrandingPhone2Max = 50;
+
+export const saveStudioDraftBodyConfigBrandingPhone3Max = 50;
+
+export const saveStudioDraftBodyConfigBrandingPhone4Max = 50;
 
 export const saveStudioDraftBodyConfigBrandingEmailMax = 200;
 
@@ -1997,6 +2187,9 @@ export const SaveStudioDraftBody = zod.object({
   "footerAr": zod.string().max(saveStudioDraftBodyConfigBrandingFooterArMax),
   "footerEn": zod.string().max(saveStudioDraftBodyConfigBrandingFooterEnMax),
   "phone": zod.string().max(saveStudioDraftBodyConfigBrandingPhoneMax),
+  "phone2": zod.string().max(saveStudioDraftBodyConfigBrandingPhone2Max).optional(),
+  "phone3": zod.string().max(saveStudioDraftBodyConfigBrandingPhone3Max).optional(),
+  "phone4": zod.string().max(saveStudioDraftBodyConfigBrandingPhone4Max).optional(),
   "email": zod.string().max(saveStudioDraftBodyConfigBrandingEmailMax),
   "whatsapp": zod.string().max(saveStudioDraftBodyConfigBrandingWhatsappMax),
   "profileUrl": zod.string().max(saveStudioDraftBodyConfigBrandingProfileUrlMax),
@@ -2099,6 +2292,12 @@ export const saveStudioDraftResponseDraftBrandingFooterArMax = 3000;
 export const saveStudioDraftResponseDraftBrandingFooterEnMax = 3000;
 
 export const saveStudioDraftResponseDraftBrandingPhoneMax = 50;
+
+export const saveStudioDraftResponseDraftBrandingPhone2Max = 50;
+
+export const saveStudioDraftResponseDraftBrandingPhone3Max = 50;
+
+export const saveStudioDraftResponseDraftBrandingPhone4Max = 50;
 
 export const saveStudioDraftResponseDraftBrandingEmailMax = 200;
 
@@ -2254,6 +2453,12 @@ export const saveStudioDraftResponsePublishedBrandingFooterEnMax = 3000;
 
 export const saveStudioDraftResponsePublishedBrandingPhoneMax = 50;
 
+export const saveStudioDraftResponsePublishedBrandingPhone2Max = 50;
+
+export const saveStudioDraftResponsePublishedBrandingPhone3Max = 50;
+
+export const saveStudioDraftResponsePublishedBrandingPhone4Max = 50;
+
 export const saveStudioDraftResponsePublishedBrandingEmailMax = 200;
 
 export const saveStudioDraftResponsePublishedBrandingWhatsappMax = 50;
@@ -2407,6 +2612,9 @@ export const SaveStudioDraftResponse = zod.object({
   "footerAr": zod.string().max(saveStudioDraftResponseDraftBrandingFooterArMax),
   "footerEn": zod.string().max(saveStudioDraftResponseDraftBrandingFooterEnMax),
   "phone": zod.string().max(saveStudioDraftResponseDraftBrandingPhoneMax),
+  "phone2": zod.string().max(saveStudioDraftResponseDraftBrandingPhone2Max).optional(),
+  "phone3": zod.string().max(saveStudioDraftResponseDraftBrandingPhone3Max).optional(),
+  "phone4": zod.string().max(saveStudioDraftResponseDraftBrandingPhone4Max).optional(),
   "email": zod.string().max(saveStudioDraftResponseDraftBrandingEmailMax),
   "whatsapp": zod.string().max(saveStudioDraftResponseDraftBrandingWhatsappMax),
   "profileUrl": zod.string().max(saveStudioDraftResponseDraftBrandingProfileUrlMax),
@@ -2504,6 +2712,9 @@ export const SaveStudioDraftResponse = zod.object({
   "footerAr": zod.string().max(saveStudioDraftResponsePublishedBrandingFooterArMax),
   "footerEn": zod.string().max(saveStudioDraftResponsePublishedBrandingFooterEnMax),
   "phone": zod.string().max(saveStudioDraftResponsePublishedBrandingPhoneMax),
+  "phone2": zod.string().max(saveStudioDraftResponsePublishedBrandingPhone2Max).optional(),
+  "phone3": zod.string().max(saveStudioDraftResponsePublishedBrandingPhone3Max).optional(),
+  "phone4": zod.string().max(saveStudioDraftResponsePublishedBrandingPhone4Max).optional(),
   "email": zod.string().max(saveStudioDraftResponsePublishedBrandingEmailMax),
   "whatsapp": zod.string().max(saveStudioDraftResponsePublishedBrandingWhatsappMax),
   "profileUrl": zod.string().max(saveStudioDraftResponsePublishedBrandingProfileUrlMax),
@@ -2609,6 +2820,12 @@ export const publishStudioResponseDraftBrandingFooterArMax = 3000;
 export const publishStudioResponseDraftBrandingFooterEnMax = 3000;
 
 export const publishStudioResponseDraftBrandingPhoneMax = 50;
+
+export const publishStudioResponseDraftBrandingPhone2Max = 50;
+
+export const publishStudioResponseDraftBrandingPhone3Max = 50;
+
+export const publishStudioResponseDraftBrandingPhone4Max = 50;
 
 export const publishStudioResponseDraftBrandingEmailMax = 200;
 
@@ -2764,6 +2981,12 @@ export const publishStudioResponsePublishedBrandingFooterEnMax = 3000;
 
 export const publishStudioResponsePublishedBrandingPhoneMax = 50;
 
+export const publishStudioResponsePublishedBrandingPhone2Max = 50;
+
+export const publishStudioResponsePublishedBrandingPhone3Max = 50;
+
+export const publishStudioResponsePublishedBrandingPhone4Max = 50;
+
 export const publishStudioResponsePublishedBrandingEmailMax = 200;
 
 export const publishStudioResponsePublishedBrandingWhatsappMax = 50;
@@ -2917,6 +3140,9 @@ export const PublishStudioResponse = zod.object({
   "footerAr": zod.string().max(publishStudioResponseDraftBrandingFooterArMax),
   "footerEn": zod.string().max(publishStudioResponseDraftBrandingFooterEnMax),
   "phone": zod.string().max(publishStudioResponseDraftBrandingPhoneMax),
+  "phone2": zod.string().max(publishStudioResponseDraftBrandingPhone2Max).optional(),
+  "phone3": zod.string().max(publishStudioResponseDraftBrandingPhone3Max).optional(),
+  "phone4": zod.string().max(publishStudioResponseDraftBrandingPhone4Max).optional(),
   "email": zod.string().max(publishStudioResponseDraftBrandingEmailMax),
   "whatsapp": zod.string().max(publishStudioResponseDraftBrandingWhatsappMax),
   "profileUrl": zod.string().max(publishStudioResponseDraftBrandingProfileUrlMax),
@@ -3014,6 +3240,9 @@ export const PublishStudioResponse = zod.object({
   "footerAr": zod.string().max(publishStudioResponsePublishedBrandingFooterArMax),
   "footerEn": zod.string().max(publishStudioResponsePublishedBrandingFooterEnMax),
   "phone": zod.string().max(publishStudioResponsePublishedBrandingPhoneMax),
+  "phone2": zod.string().max(publishStudioResponsePublishedBrandingPhone2Max).optional(),
+  "phone3": zod.string().max(publishStudioResponsePublishedBrandingPhone3Max).optional(),
+  "phone4": zod.string().max(publishStudioResponsePublishedBrandingPhone4Max).optional(),
   "email": zod.string().max(publishStudioResponsePublishedBrandingEmailMax),
   "whatsapp": zod.string().max(publishStudioResponsePublishedBrandingWhatsappMax),
   "profileUrl": zod.string().max(publishStudioResponsePublishedBrandingProfileUrlMax),

@@ -57,7 +57,9 @@ export default function SiteFooter({ branding, nav, phone, email }: { branding?:
           <ul className="space-y-4 font-medium text-white/75">
             <li className="flex items-center gap-3"><MapPin className="h-4 w-4 text-primary" />{t('الرياض، المملكة العربية السعودية', 'Riyadh, Saudi Arabia')}</li>
             <li className="flex items-center gap-3"><Mail className="h-4 w-4 text-primary" /><a href={`mailto:${email}`} className="hover:text-white">{email}</a></li>
-            <li className="flex items-center gap-3"><Phone className="h-4 w-4 text-primary" /><a href={`tel:${phone.replace(/\s/g, '')}`} dir="ltr" className="hover:text-white">{phone}</a></li>
+            {[phone, branding?.phone2, branding?.phone3, branding?.phone4].filter((value): value is string => Boolean(value?.trim())).map((value, i) => (
+              <li key={i} className="flex items-center gap-3"><Phone className="h-4 w-4 text-primary" /><a href={`tel:${value.replace(/[^+\d]/g, '')}`} dir="ltr" className="hover:text-white" data-testid={`link-footer-phone-${i + 1}`}>{value}</a></li>
+            ))}
             <li className="flex items-center gap-3"><Globe className="h-4 w-4 text-primary" /><a href="https://www.alwatan2030.com" target="_blank" rel="noreferrer" dir="ltr" className="hover:text-white">www.alwatan2030.com</a></li>
           </ul>
         </motion.div>

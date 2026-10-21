@@ -11,6 +11,7 @@ import SiteFooter from '@/components/public/SiteFooter';
 import SmartLink from '@/components/public/SmartLink';
 import SiteActivityTracker from '@/components/SiteActivityTracker';
 import { trackSiteActivity } from '@/lib/site-activity';
+import WebChatWidget from '@/components/public/WebChatWidget';
 import BrandEnergyLines from '@/components/public/BrandEnergyLines';
 
 export default function Layout({ children }: { children: ReactNode }) {
@@ -96,6 +97,7 @@ export default function Layout({ children }: { children: ReactNode }) {
       </main>
       <SiteFooter branding={b} nav={nav} phone={phone} email={email} />
 
+      <WebChatWidget />
       <a href={waUrl} target="_blank" rel="noreferrer" onClick={() => trackSiteActivity('whatsapp_click')} aria-label={t('تواصل معنا عبر واتساب', 'Contact us on WhatsApp')} data-testid="link-whatsapp"
         className="pulse-ring group fixed bottom-5 end-5 z-[60] flex items-center gap-3 rounded-full bg-[#25D366] p-3 text-white shadow-[0_12px_35px_rgba(0,0,0,0.25)] transition-all hover:-translate-y-1 hover:bg-[#20bd5a] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#25D366]/35 md:px-5">
         <MessageCircle className="h-7 w-7 fill-current" />

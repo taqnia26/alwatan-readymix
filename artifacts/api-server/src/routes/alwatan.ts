@@ -141,6 +141,9 @@ async function getPublicSettings() {
 
   return {
     whatsapp: branding.whatsapp,
+    phone2: branding.phone2 || "",
+    phone3: branding.phone3 || "",
+    phone4: branding.phone4 || "",
     quoteEmail: settings.quoteEmail ?? "",
     phone: branding.phone,
     email: branding.email,

@@ -805,6 +805,100 @@ paths:
           schema: { type: string }
       responses:
         "200": { description: Public object bytes }
+  /chat:
+    get:
+      operationId: getVisitorChat
+      tags: [chat]
+      responses:
+        "200":
+          description: Current visitor conversation, isolated by a private cookie
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ChatSession" }
+    post:
+      operationId: startVisitorChat
+      tags: [chat]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ChatStartInput" }
+      responses:
+        "201":
+          description: Conversation started
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ChatSession" }
+  /chat/messages:
+    post:
+      operationId: sendVisitorMessage
+      tags: [chat]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ChatMessageInput" }
+      responses:
+        "201":
+          description: Message saved
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ChatMessage" }
+  /admin/chats:
+    get:
+      operationId: listAdminChats
+      tags: [chat]
+      security: [{ cookieAuth: [] }]
+      parameters:
+        - { name: offset, in: query, schema: { type: integer, minimum: 0, default: 0 } }
+      responses:
+        "200":
+          description: Latest conversations, up to 100 per page
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/ChatConversation" }
+  /admin/chats/{id}:
+    get:
+      operationId: getAdminChat
+      tags: [chat]
+      security: [{ cookieAuth: [] }]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      responses:
+        "200":
+          description: Conversation and latest 200 messages
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ChatSession" }
+  /admin/chats/{id}/messages:
+    post:
+      operationId: replyAdminChat
+      tags: [chat]
+      security: [{ cookieAuth: [] }]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ChatMessageInput" }
+      responses:
+        "201":
+          description: Staff reply saved
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ChatMessage" }
+  /admin/chats/{id}/read:
+    post:
+      operationId: markAdminChatRead
+      tags: [chat]
+      security: [{ cookieAuth: [] }]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      responses:
+        "204": { description: Visitor messages marked read }
   /public/studio:
     get:
       operationId: getPublicStudio
@@ -933,6 +1027,51 @@ components:
           schema:
             $ref: "#/components/schemas/Error"
   schemas:
+    ChatStartInput:
+      type: object
+      required: [name, content]
+      properties:
+        name: { type: string, minLength: 1, maxLength: 100 }
+        phone: { type: string, maxLength: 50 }
+        email: { type: string, maxLength: 200 }
+        content: { type: string, minLength: 1, maxLength: 2000 }
+    ChatMessageInput:
+      type: object
+      required: [content]
+      properties:
+        content: { type: string, minLength: 1, maxLength: 2000 }
+    ChatConversation:
+      type: object
+      required: [id, name, phone, email, createdAt, updatedAt, unreadCount, lastMessage]
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        phone: { type: string }
+        email: { type: string }
+        createdAt: { type: string }
+        updatedAt: { type: string }
+        unreadCount: { type: integer }
+        lastMessage: { type: string }
+    ChatMessage:
+      type: object
+      required: [id, conversationId, sender, content, createdAt]
+      properties:
+        id: { type: integer }
+        conversationId: { type: integer }
+        sender: { type: string, enum: [visitor, admin] }
+        content: { type: string }
+        createdAt: { type: string }
+    ChatSession:
+      type: object
+      required: [conversation, messages]
+      properties:
+        conversation:
+          oneOf:
+            - { $ref: "#/components/schemas/ChatConversation" }
+            - { type: "null" }
+        messages:
+          type: array
+          items: { $ref: "#/components/schemas/ChatMessage" }
     StudioConfig:
       type: object
       required: [branding, navigation, slides, videos, homeSections, pages, banners, campaigns]
@@ -989,6 +1128,9 @@ components:
         footerAr: { type: string, maxLength: 3000 }
         footerEn: { type: string, maxLength: 3000 }
         phone: { type: string, maxLength: 50 }
+        phone2: { type: string, maxLength: 50 }
+        phone3: { type: string, maxLength: 50 }
+        phone4: { type: string, maxLength: 50 }
         email: { type: string, maxLength: 200 }
         whatsapp: { type: string, maxLength: 50 }
         profileUrl: { type: string, maxLength: 2000 }
@@ -1298,6 +1440,9 @@ components:
         whatsapp: { type: string }
         quoteEmail: { type: string }
         phone: { type: string }
+        phone2: { type: string }
+        phone3: { type: string }
+        phone4: { type: string }
         email: { type: string }
         instagramUrl: { type: string }
         linkedinUrl: { type: string }

@@ -80,9 +80,9 @@ export default function Contact() {
               </div>
               <div>
                 <h3 className="font-bold text-secondary mb-2">{t('أرقام التواصل', 'Contact Numbers')}</h3>
-                <p className="text-gray-600 text-sm font-mono" dir="ltr">
-                  {settings?.phone || '059 599 9659'}
-                </p>
+                {[settings?.phone || '059 599 9659', settings?.phone2, settings?.phone3, settings?.phone4].filter((phone): phone is string => Boolean(phone?.trim())).map((phone, i) => (
+                  <a key={i} href={`tel:${phone.replace(/[^+\d]/g, '')}`} className="block text-gray-600 text-sm font-mono hover:text-primary" dir="ltr" data-testid={`link-contact-phone-${i + 1}`}>{phone}</a>
+                ))}
                 <p className="text-gray-600 text-sm font-mono mt-1" dir="ltr">
                   {settings?.whatsapp || '059 599 9659'} (WhatsApp)
                 </p>

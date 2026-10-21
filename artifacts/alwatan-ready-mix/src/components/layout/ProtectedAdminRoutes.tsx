@@ -17,6 +17,7 @@ import AdminPages from '@/pages/admin/AdminPages';
 import AdminSliders from '@/pages/admin/AdminSliders';
 import AdminMarketing from '@/pages/admin/AdminMarketing';
 import AdminBranding from '@/pages/admin/AdminBranding';
+import AdminChats from '@/pages/admin/AdminChats';
 
 export default function ProtectedAdminRoutes() {
   return (
@@ -34,6 +35,7 @@ export default function ProtectedAdminRoutes() {
             <Route path="/admin/media" component={AdminMedia} />
             <Route path="/admin/users" component={AdminUsers} />
             <Route path="/admin/messages" component={AdminMessages} />
+            <Route path="/admin/chats" component={AdminChats} />
             <Route path="/admin/pages">{() => <AdminPages />}</Route>
             <Route path="/admin/sliders" component={AdminSliders} />
             <Route path="/admin/marketing" component={AdminMarketing} />

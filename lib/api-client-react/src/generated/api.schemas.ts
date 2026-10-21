@@ -5,6 +5,63 @@
  * AlWatan Ready-Mix Company public website and admin CMS API
  * OpenAPI spec version: 0.1.0
  */
+export interface ChatStartInput {
+  /**
+     * @minLength 1
+     * @maxLength 100
+     */
+  name: string;
+  /** @maxLength 50 */
+  phone?: string;
+  /** @maxLength 200 */
+  email?: string;
+  /**
+     * @minLength 1
+     * @maxLength 2000
+     */
+  content: string;
+}
+
+export interface ChatMessageInput {
+  /**
+     * @minLength 1
+     * @maxLength 2000
+     */
+  content: string;
+}
+
+export interface ChatConversation {
+  id: number;
+  name: string;
+  phone: string;
+  email: string;
+  createdAt: string;
+  updatedAt: string;
+  unreadCount: number;
+  lastMessage: string;
+}
+
+export type ChatMessageSender = typeof ChatMessageSender[keyof typeof ChatMessageSender];
+
+
+export const ChatMessageSender = {
+  visitor: 'visitor',
+  admin: 'admin',
+} as const;
+
+export interface ChatMessage {
+  id: number;
+  conversationId: number;
+  sender: ChatMessageSender;
+  content: string;
+  createdAt: string;
+}
+
+export interface ChatSession {
+  conversation: ChatConversation | null;
+  messages: ChatMessage[];
+}
+
 export interface StudioBranding {
   /** @maxLength 200 */
   nameAr: string;
@@ -18,6 +75,12 @@ export interface StudioBranding {
   footerEn: string;
   /** @maxLength 50 */
   phone: string;
+  /** @maxLength 50 */
+  phone2?: string;
+  /** @maxLength 50 */
+  phone3?: string;
+  /** @maxLength 50 */
+  phone4?: string;
   /** @maxLength 200 */
   email: string;
   /** @maxLength 50 */
@@ -475,6 +538,9 @@ export interface PublicSettings {
   whatsapp: string;
   quoteEmail: string;
   phone: string;
+  phone2?: string;
+  phone3?: string;
+  phone4?: string;
   email: string;
   instagramUrl: string;
   linkedinUrl: string;
@@ -757,6 +823,13 @@ export type UploadLocalMediaParams = {
  * @maxLength 2048
  */
 token: string;
+};
+
+export type ListAdminChatsParams = {
+/**
+ * @minimum 0
+ */
+offset?: number;
 };
 
 export type GetSiteInsightsParams = {

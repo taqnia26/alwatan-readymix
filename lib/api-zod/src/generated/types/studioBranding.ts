@@ -19,6 +19,12 @@ export interface StudioBranding {
   footerEn: string;
   /** @maxLength 50 */
   phone: string;
+  /** @maxLength 50 */
+  phone2?: string;
+  /** @maxLength 50 */
+  phone3?: string;
+  /** @maxLength 50 */
+  phone4?: string;
   /** @maxLength 200 */
   email: string;
   /** @maxLength 50 */
