@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import MediaInput from '@/components/admin/MediaInput';
 import { useLanguage } from '@/lib/i18n';
+import { useAdminAccess } from '@/hooks/use-admin-access';
 import { useListAdminBlogPosts, useCreateBlogPost, useUpdateBlogPost, useDeleteBlogPost } from '@workspace/api-client-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
@@ -34,6 +35,7 @@ type ArticleFormValues = z.infer<typeof articleSchema>;
 
 export default function AdminArticles() {
   const { t, isRtl } = useLanguage();
+  const canEdit = useAdminAccess().canEdit('articles');
   const { data: articles, isLoading } = useListAdminBlogPosts();
   const createArticle = useCreateBlogPost();
   const updateArticle = useUpdateBlogPost();
@@ -71,6 +73,7 @@ export default function AdminArticles() {
   };
 
   const onSubmit = (data: ArticleFormValues) => {
+    if (!canEdit) return;
     if (editingSlug) {
       updateArticle.mutate({ slug: editingSlug, data }, {
         onSuccess: () => {
@@ -94,6 +97,7 @@ export default function AdminArticles() {
   };
 
   const handleDelete = (slug: string) => {
+    if (!canEdit) return;
     if (!confirm(t('هل أنت متأكد من الحذف؟', 'Are you sure you want to delete?'))) return;
     deleteArticle.mutate({ slug }, {
       onSuccess: () => {
@@ -111,7 +115,7 @@ export default function AdminArticles() {
         <div>
           <h2 className="text-xl font-bold text-secondary">{t('إدارة المقالات', 'Articles Management')}</h2>
         </div>
-        <Button onClick={openCreate} className="gap-2 bg-primary hover:bg-primary/90">
+        <Button onClick={openCreate} disabled={!canEdit} className="gap-2 bg-primary hover:bg-primary/90">
           <Plus className="w-4 h-4" />
           {t('إضافة مقال', 'Add Article')}
         </Button>
@@ -142,10 +146,10 @@ export default function AdminArticles() {
                   {article.publishedAt ? format(new Date(article.publishedAt), 'yyyy-MM-dd') : '-'}
                 </TableCell>
                 <TableCell className="text-end">
-                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => openEdit(article)}>
+                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => openEdit(article)} disabled={!canEdit}>
                     <Edit2 className="w-4 h-4" />
                   </Button>
-                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => handleDelete(article.slug)}>
+                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => handleDelete(article.slug)} disabled={!canEdit}>
                     <Trash2 className="w-4 h-4" />
                   </Button>
                 </TableCell>
@@ -219,7 +223,7 @@ export default function AdminArticles() {
                 )} />
               </div>
 
-              <Button type="submit" className="w-full" disabled={createArticle.isPending || updateArticle.isPending}>
+              <Button type="submit" className="w-full" disabled={!canEdit || createArticle.isPending || updateArticle.isPending}>
                 {t('حفظ', 'Save')}
               </Button>
             </form>

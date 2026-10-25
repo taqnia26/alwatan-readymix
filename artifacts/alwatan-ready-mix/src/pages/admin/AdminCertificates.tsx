@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import MediaInput from '@/components/admin/MediaInput';
 import { useLanguage } from '@/lib/i18n';
+import { useAdminAccess } from '@/hooks/use-admin-access';
 import {
   useListAdminCertificates,
   useCreateCertificate,
@@ -45,6 +46,7 @@ type CertificateFormValues = z.infer<typeof certificateSchema>;
 
 export default function AdminCertificates() {
   const { t, isRtl } = useLanguage();
+  const canEdit = useAdminAccess().canEdit('certificates');
   const { data: certificates, isLoading } = useListAdminCertificates();
   const createCertificate = useCreateCertificate();
   const updateCertificate = useUpdateCertificate();
@@ -84,6 +86,7 @@ export default function AdminCertificates() {
   };
 
   const onSubmit = (data: CertificateFormValues) => {
+    if (!canEdit) return;
     if (editingId) {
       updateCertificate.mutate({ id: editingId, data }, {
         onSuccess: () => {
@@ -146,6 +149,7 @@ export default function AdminCertificates() {
   };
 
   const handleDelete = (id: number) => {
+    if (!canEdit) return;
     if (!confirm(t('هل أنت متأكد من الحذف؟', 'Are you sure you want to delete?'))) return;
     deleteCertificate.mutate({ id }, {
       onSuccess: () => {
@@ -163,7 +167,7 @@ export default function AdminCertificates() {
         <div>
           <h2 className="text-xl font-bold text-secondary">{t('إدارة الشهادات', 'Certificates Management')}</h2>
         </div>
-        <Button onClick={openCreate} className="gap-2 bg-primary hover:bg-primary/90">
+        <Button onClick={openCreate} disabled={!canEdit} className="gap-2 bg-primary hover:bg-primary/90">
           <Plus className="w-4 h-4" />
           {t('إضافة شهادة', 'Add Certificate')}
         </Button>
@@ -188,10 +192,10 @@ export default function AdminCertificates() {
                   <FileText className="w-3.5 h-3.5" /> PDF
                 </a> : <span className="text-xs text-muted-foreground">{t('لم يتم إرفاق PDF', 'No PDF attached')}</span>}
                 <div className="flex gap-1">
-                  <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={() => openEdit(cert)}>
+                  <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={() => openEdit(cert)} disabled={!canEdit}>
                     <Edit2 className="w-3 h-3" />
                   </Button>
-                  <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-destructive hover:bg-destructive/10" onClick={() => handleDelete(cert.id)}>
+                  <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-destructive hover:bg-destructive/10" onClick={() => handleDelete(cert.id)} disabled={!canEdit}>
                     <Trash2 className="w-3 h-3" />
                   </Button>
                 </div>
@@ -299,7 +303,7 @@ export default function AdminCertificates() {
                 )} />
               </div>
 
-              <Button type="submit" className="w-full" disabled={createCertificate.isPending || updateCertificate.isPending || uploadingField !== null}>
+              <Button type="submit" className="w-full" disabled={!canEdit || createCertificate.isPending || updateCertificate.isPending || uploadingField !== null}>
                 {uploadingField ? t('جاري رفع الملف...', 'Uploading file...') : t('حفظ', 'Save')}
               </Button>
             </form>

@@ -10,17 +10,20 @@ import { useQueryClient } from '@tanstack/react-query';
 import { Sheet, SheetContent, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { useLanguage } from '@/lib/i18n';
 import { useToast } from '@/hooks/use-toast';
+import { useAdminAccess } from '@/hooks/use-admin-access';
+import { ACCESS_ROLES } from '@workspace/api-zod';
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
   const { t, isRtl, language, setLanguage } = useLanguage();
   const [location, setLocation] = useLocation();
   const { data: me } = useGetAuthMe();
+  const access = useAdminAccess();
   const logout = useLogout();
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
 
-  const groups = [
+  const allGroups = [
     { title: t('نظرة عامة', 'Overview'), items: [{ href: '/admin', icon: LayoutDashboard, label: t('لوحة التحكم', 'Dashboard') }] },
     { title: t('استوديو الموقع', 'Site studio'), items: [
       { href: '/admin/pages', icon: LayoutTemplate, label: t('الصفحات والرئيسية', 'Pages & Home') },
@@ -46,6 +49,11 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
       { href: '/admin/settings', icon: Settings, label: t('الإعدادات', 'Settings') },
     ] },
   ];
+  const groups = allGroups
+    .map((g) => ({ ...g, items: g.items.filter((i) => access.canAccessPath(i.href)) }))
+    .filter((g) => g.items.length > 0);
+  const roleInfo = ACCESS_ROLES.find((r) => r.key === me?.user?.role);
+  const roleLabel = roleInfo ? t(roleInfo.ar, roleInfo.en) : me?.user?.role;
   const all = groups.flatMap((g) => g.items);
   const activeMenu = all.find((m) => m.href === location) || all.find((m) => m.href !== '/admin' && location.startsWith(m.href));
 
@@ -108,7 +116,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
           </div>
           <div className="flex items-center gap-3">
             <button onClick={() => setLanguage(language === 'ar' ? 'en' : 'ar')} className="flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-sm font-bold hover:bg-muted" data-testid="button-admin-language"><Globe className="h-4 w-4" />{language === 'ar' ? 'EN' : 'عربي'}</button>
-            <div className="hidden flex-col items-end leading-tight sm:flex"><span className="text-sm font-bold text-secondary">{me?.user?.name || 'Admin'}</span><span className="text-xs text-muted-foreground">{me?.user?.role}</span></div>
+            <div className="hidden flex-col items-end leading-tight sm:flex"><span className="text-sm font-bold text-secondary">{me?.user?.name || 'Admin'}</span><span className="text-xs text-muted-foreground" data-testid="text-user-role">{roleLabel}</span></div>
             <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary font-bold uppercase text-white">{me?.user?.name?.charAt(0) || 'A'}</div>
           </div>
         </header>

@@ -96,9 +96,9 @@ export default function Branches() {
                     </p>
                   </div>
                   <a 
-                    href={`https://www.google.com/maps/dir/?api=1&destination=${activeBranch.lat},${activeBranch.lng}`} 
+                    href={(activeBranch as { googleMapsUrl?: string }).googleMapsUrl || `https://www.google.com/maps/dir/?api=1&destination=${activeBranch.lat},${activeBranch.lng}`} 
                     target="_blank" 
-                    rel="noreferrer"
+                    rel="noopener noreferrer"
                     className="bg-primary text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-primary/90 transition-colors"
                   >
                     {t('الاتجاهات', 'Directions')}

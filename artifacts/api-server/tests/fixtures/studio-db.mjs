@@ -54,4 +54,9 @@ export const db = {
       throw error;
     }
   },
+  async execute(query) {
+    const text = query.queryChunks.flatMap(chunk => chunk.value ?? []).join("");
+    if (text !== "SELECT pg_advisory_xact_lock(8726035)") throw new Error("Unexpected fixture SQL");
+    return { rows: [] };
+  },
 };

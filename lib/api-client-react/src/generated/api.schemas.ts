@@ -405,6 +405,8 @@ export interface Branch {
   lng: number;
   phone: string;
   workingHours: string;
+  /** @maxLength 2000 */
+  googleMapsUrl?: string;
   orderIndex: number;
 }
 
@@ -577,6 +579,8 @@ export interface BranchInput {
   lng: number;
   phone: string;
   workingHours: string;
+  /** @maxLength 2000 */
+  googleMapsUrl?: string;
   orderIndex?: number;
 }
 
@@ -590,6 +594,8 @@ export interface BranchUpdate {
   lng?: number;
   phone?: string;
   workingHours?: string;
+  /** @maxLength 2000 */
+  googleMapsUrl?: string;
   orderIndex?: number;
   [key: string]: unknown;
  }
@@ -659,6 +665,7 @@ export interface AdminUser {
   name: string;
   email: string;
   role: string;
+  permissions?: string[];
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
@@ -679,6 +686,8 @@ export interface AdminUserInput {
   email: string;
   password: string;
   role?: string;
+  /** @maxItems 40 */
+  permissions?: string[];
   isActive?: boolean;
 }
 
@@ -688,6 +697,8 @@ export interface AdminUserUpdate {
   email?: string;
   password?: string;
   role?: string;
+  /** @maxItems 40 */
+  permissions?: string[];
   isActive?: boolean;
 }
 

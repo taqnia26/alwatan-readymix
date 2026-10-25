@@ -20,6 +20,7 @@ function publicAdmin(user: typeof adminUsersTable.$inferSelect) {
     name: user.name,
     email: user.email,
     role: user.role,
+    permissions: user.permissions ?? [],
     isActive: user.isActive,
     createdAt: user.createdAt.toISOString(),
     updatedAt: user.updatedAt.toISOString(),
@@ -27,6 +28,7 @@ function publicAdmin(user: typeof adminUsersTable.$inferSelect) {
 }
 
 router.post("/auth/login", requireSameOrigin, async (req, res): Promise<void> => {
+  res.setHeader("Cache-Control", "no-store");
   const username = typeof req.body?.username === "string" ? req.body.username.trim() : "";
   const password = typeof req.body?.password === "string" ? req.body.password : "";
   if (!username || !password) {
@@ -52,6 +54,7 @@ router.post("/auth/logout", requireSameOrigin, async (req, res): Promise<void> =
 });
 
 router.get("/auth/me", async (req, res): Promise<void> => {
+  res.setHeader("Cache-Control", "no-store");
   const user = await getAdminFromToken(req.cookies?.[ADMIN_SESSION_COOKIE]);
   if (!user) {
     res.status(401).json({ error: "Authentication required" });

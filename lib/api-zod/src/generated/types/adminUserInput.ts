@@ -12,5 +12,7 @@ export interface AdminUserInput {
   email: string;
   password: string;
   role?: string;
+  /** @maxItems 40 */
+  permissions?: string[];
   isActive?: boolean;
 }

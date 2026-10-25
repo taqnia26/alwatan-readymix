@@ -1,6 +1,7 @@
 import { useState, type ReactNode } from 'react';
 import { ArrowDown, ArrowUp, Trash2, Save, UploadCloud, Undo2, AlertTriangle, Loader2, ExternalLink, CircleDot } from 'lucide-react';
-import { Link } from 'wouter';
+import { Link, useLocation } from 'wouter';
+import { useAdminAccess, studioResourceForPath } from '@/hooks/use-admin-access';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
@@ -113,6 +114,10 @@ export function PageHead({ title, desc, actions }: { title: string; desc?: strin
 export function StudioBar() {
   const { t } = useLanguage();
   const e = useStudioEditor();
+  const [location] = useLocation();
+  const access = useAdminAccess();
+  const canSave = access.canEdit(studioResourceForPath(location));
+  const canPublish = access.can('studio:publish');
   const [confirmPub, setConfirmPub] = useState(false);
   const status = e.dirty ? t('تعديلات غير محفوظة', 'Unsaved changes') : e.unpublished ? t('مسودة محفوظة لم تُنشر', 'Draft saved, not published') : t('منشور ومحدّث', 'Live and up to date');
   const tone = e.dirty ? 'bg-amber-100 text-amber-900 border-amber-300' : e.unpublished ? 'bg-sky-100 text-sky-900 border-sky-300' : 'bg-emerald-100 text-emerald-900 border-emerald-300';
@@ -122,13 +127,13 @@ export function StudioBar() {
       {e.state?.publishedAt && <span className="hidden md:inline text-xs text-muted-foreground">{t('آخر نشر', 'Last published')}: {new Date(e.state.publishedAt).toLocaleString()}</span>}
       <div className="ms-auto flex flex-wrap items-center gap-2">
         <Link href="/" className="inline-flex items-center gap-1 text-xs font-semibold text-muted-foreground hover:text-primary px-2"><ExternalLink className="h-3.5 w-3.5" />{t('الموقع', 'Site')}</Link>
-        <Button variant="ghost" size="sm" onClick={e.discard} disabled={!e.dirty || e.saving} className="gap-1.5" data-testid="button-discard"><Undo2 className="h-4 w-4" />{t('تجاهل التعديلات', 'Discard changes')}</Button>
-        <Button variant="outline" size="sm" onClick={() => void e.save()} disabled={!e.dirty || e.saving} className="gap-1.5" data-testid="button-save-draft">
+        {canSave && <Button variant="ghost" size="sm" onClick={e.discard} disabled={!e.dirty || e.saving} className="gap-1.5" data-testid="button-discard"><Undo2 className="h-4 w-4" />{t('تجاهل التعديلات', 'Discard changes')}</Button>}
+        {canSave && <Button variant="outline" size="sm" onClick={() => void e.save()} disabled={!e.dirty || e.saving} className="gap-1.5" data-testid="button-save-draft">
           {e.saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}{t('حفظ المسودة', 'Save draft')}
-        </Button>
-        <Button size="sm" onClick={() => setConfirmPub(true)} disabled={!e.unpublished || e.publishing || e.saving} className="gap-1.5" data-testid="button-publish">
+        </Button>}
+        {canPublish && <Button size="sm" onClick={() => setConfirmPub(true)} disabled={!e.unpublished || e.publishing || e.saving} className="gap-1.5" data-testid="button-publish">
           {e.publishing ? <Loader2 className="h-4 w-4 animate-spin" /> : <UploadCloud className="h-4 w-4" />}{t('نشر', 'Publish')}
-        </Button>
+        </Button>}
       </div>
       <AlertDialog open={confirmPub} onOpenChange={setConfirmPub}>
         <AlertDialogContent>
@@ -138,7 +143,7 @@ export function StudioBar() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>{t('إلغاء', 'Cancel')}</AlertDialogCancel>
-            <AlertDialogAction onClick={() => void e.publish()} data-testid="button-confirm-publish">{t('نشر الآن', 'Publish now')}</AlertDialogAction>
+            <AlertDialogAction disabled={!canPublish || e.publishing} onClick={() => void e.publish()} data-testid="button-confirm-publish">{t('نشر الآن', 'Publish now')}</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
@@ -150,6 +155,8 @@ export function StudioBar() {
 export function StudioGate({ children }: { children: (cfg: NonNullable<ReturnType<typeof useStudioEditor>['config']>) => ReactNode }) {
   const { t } = useLanguage();
   const e = useStudioEditor();
+  const [location] = useLocation();
+  const canEditStudio = useAdminAccess().canEdit(studioResourceForPath(location));
   if (e.isLoading) return <div className="space-y-4"><Skeleton className="h-12" /><Skeleton className="h-64" /><Skeleton className="h-40" /></div>;
   if (e.error || !e.config) {
     return (
@@ -161,5 +168,5 @@ export function StudioGate({ children }: { children: (cfg: NonNullable<ReturnTyp
       </div>
     );
   }
-  return <><StudioBar />{children(e.config)}</>;
+  return <><StudioBar /><fieldset disabled={!canEditStudio} className="min-w-0 border-0 p-0 m-0" data-testid="studio-fieldset">{children(e.config)}</fieldset></>;
 }

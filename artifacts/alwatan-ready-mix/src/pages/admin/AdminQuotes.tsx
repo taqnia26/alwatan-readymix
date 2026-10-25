@@ -1,4 +1,5 @@
 import { useLanguage } from '@/lib/i18n';
+import { useAdminAccess } from '@/hooks/use-admin-access';
 import { useListQuotes, useUpdateQuoteStatus, useDeleteQuote } from '@workspace/api-client-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -12,6 +13,7 @@ import { useState } from 'react';
 
 export default function AdminQuotes() {
   const { t, isRtl } = useLanguage();
+  const canEdit = useAdminAccess().canEdit('quotes');
   const { data: paginatedData, isLoading } = useListQuotes();
   const updateStatus = useUpdateQuoteStatus();
   const deleteQuote = useDeleteQuote();
@@ -19,6 +21,7 @@ export default function AdminQuotes() {
   const { toast } = useToast();
 
   const handleStatusChange = (id: number, status: 'new' | 'contacted' | 'closed') => {
+    if (!canEdit) return;
     updateStatus.mutate(
       { id, data: { status } },
       {
@@ -31,6 +34,7 @@ export default function AdminQuotes() {
   };
 
   const handleDelete = (id: number) => {
+    if (!canEdit) return;
     if (!confirm(t('هل أنت متأكد من الحذف؟', 'Are you sure you want to delete?'))) return;
     deleteQuote.mutate(
       { id },
@@ -110,7 +114,7 @@ export default function AdminQuotes() {
                     <Select 
                       value={quote.status} 
                       onValueChange={(v: any) => handleStatusChange(quote.id, v)}
-                      disabled={updateStatus.isPending}
+                      disabled={!canEdit || updateStatus.isPending}
                     >
                       <SelectTrigger className={`w-32 h-8 text-xs font-bold border-0 ${
                         quote.status === 'new' ? 'bg-blue-100 text-blue-700' : 
@@ -131,7 +135,7 @@ export default function AdminQuotes() {
                       variant="ghost" 
                       size="sm" 
                       className="text-destructive hover:text-destructive hover:bg-destructive/10 h-8 w-8 p-0"
-                      onClick={() => handleDelete(quote.id)}
+                      onClick={() => handleDelete(quote.id)} disabled={!canEdit}
                     >
                       <Trash2 className="w-4 h-4" />
                     </Button>

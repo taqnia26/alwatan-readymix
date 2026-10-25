@@ -85,6 +85,7 @@ function mapBranch(branch: typeof branchesTable.$inferSelect) {
     lng: branch.lng,
     phone: branch.phone,
     workingHours: branch.workingHours,
+    googleMapsUrl: branch.googleMapsUrl,
     orderIndex: branch.orderIndex,
   };
 }
@@ -395,7 +396,7 @@ router.post("/quotes", async (req, res): Promise<void> => {
   );
 });
 
-router.get("/admin/summary", ...adminOnly, async (_req, res): Promise<void> => {
+router.get("/admin/summary", ...adminOnly, async (req, res): Promise<void> => {
   const [quoteCount, newQuoteCount, productCount, branchCount, publishedCount, recent] =
     await Promise.all([
       db.select({ value: count() }).from(quoteRequestsTable),
@@ -422,7 +423,7 @@ router.get("/admin/summary", ...adminOnly, async (_req, res): Promise<void> => {
       publishedPosts: Number(publishedCount[0]?.value ?? 0),
       products: Number(productCount[0]?.value ?? 0),
       branches: Number(branchCount[0]?.value ?? 0),
-      recentQuotes: recent.map((quote) => ({
+      recentQuotes: (req.adminUser?.role === "admin" || req.adminUser?.permissions?.includes("quotes:view") ? recent : []).map((quote) => ({
         id: quote.id,
         productId: quote.productId,
         productName: productNames.get(quote.productId) ?? "",

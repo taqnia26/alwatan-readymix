@@ -3,6 +3,8 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useLanguage } from '@/lib/i18n';
 import { getGetAuthMeQueryKey, useLogin } from '@workspace/api-client-react';
 import { useLocation } from 'wouter';
+import { ACCESS_RESOURCES, hasPermission } from '@workspace/api-zod';
+import { RESOURCE_PATHS } from '@/hooks/use-admin-access';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -26,9 +28,12 @@ export default function AdminLogin() {
           // A cached anonymous response (or an older in-flight /auth/me)
           // must not send the newly authenticated user back to this page.
           const queryKey = getGetAuthMeQueryKey();
-          await queryClient.cancelQueries({ queryKey });
+          await queryClient.cancelQueries();
+          queryClient.clear();
           queryClient.setQueryData(queryKey, { user: session.user });
-          setLocation('/admin');
+          const u = session.user as { role: string; permissions?: string[] | null };
+          const first = ACCESS_RESOURCES.find((r) => hasPermission(u, `${r.key}:view`));
+          setLocation(first ? RESOURCE_PATHS[first.key] : '/admin');
         },
         onError: (error) => {
           toast({ 

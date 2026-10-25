@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import MediaInput from '@/components/admin/MediaInput';
 import { useLanguage } from '@/lib/i18n';
+import { useAdminAccess } from '@/hooks/use-admin-access';
 import { useListProducts, useCreateProduct, useUpdateProduct, useDeleteProduct } from '@workspace/api-client-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
@@ -32,6 +33,7 @@ type ProductFormValues = z.infer<typeof productSchema>;
 
 export default function AdminProducts() {
   const { t, isRtl } = useLanguage();
+  const canEdit = useAdminAccess().canEdit('products');
   const { data: products, isLoading } = useListProducts();
   const createProduct = useCreateProduct();
   const updateProduct = useUpdateProduct();
@@ -69,6 +71,7 @@ export default function AdminProducts() {
   };
 
   const onSubmit = (data: ProductFormValues) => {
+    if (!canEdit) return;
     if (editingSlug) {
       updateProduct.mutate({ slug: editingSlug, data }, {
         onSuccess: () => {
@@ -92,6 +95,7 @@ export default function AdminProducts() {
   };
 
   const handleDelete = (slug: string) => {
+    if (!canEdit) return;
     if (!confirm(t('هل أنت متأكد من الحذف؟', 'Are you sure you want to delete?'))) return;
     deleteProduct.mutate({ slug }, {
       onSuccess: () => {
@@ -109,7 +113,7 @@ export default function AdminProducts() {
         <div>
           <h2 className="text-xl font-bold text-secondary">{t('إدارة المنتجات', 'Products Management')}</h2>
         </div>
-        <Button onClick={openCreate} className="gap-2 bg-primary hover:bg-primary/90">
+        <Button onClick={openCreate} disabled={!canEdit} className="gap-2 bg-primary hover:bg-primary/90">
           <Plus className="w-4 h-4" />
           {t('إضافة منتج', 'Add Product')}
         </Button>
@@ -134,10 +138,10 @@ export default function AdminProducts() {
               <h3 className="font-bold text-lg text-secondary mb-1">{isRtl ? product.nameAr : product.nameEn}</h3>
               <p className="text-sm text-gray-500 line-clamp-2 mb-4">{isRtl ? product.descriptionAr : product.descriptionEn}</p>
               <div className="mt-auto flex justify-end gap-2 pt-4 border-t border-gray-100">
-                <Button variant="outline" size="sm" className="h-8" onClick={() => openEdit(product)}>
+                <Button variant="outline" size="sm" className="h-8" onClick={() => openEdit(product)} disabled={!canEdit}>
                   <Edit2 className="w-3.5 h-3.5 mr-1" /> {t('تعديل', 'Edit')}
                 </Button>
-                <Button variant="ghost" size="sm" className="h-8 text-destructive hover:bg-destructive/10 hover:text-destructive" onClick={() => handleDelete(product.slug)}>
+                <Button variant="ghost" size="sm" className="h-8 text-destructive hover:bg-destructive/10 hover:text-destructive" onClick={() => handleDelete(product.slug)} disabled={!canEdit}>
                   <Trash2 className="w-3.5 h-3.5" />
                 </Button>
               </div>
@@ -199,7 +203,7 @@ export default function AdminProducts() {
                 )} />
               </div>
 
-              <Button type="submit" className="w-full" disabled={createProduct.isPending || updateProduct.isPending}>
+              <Button type="submit" className="w-full" disabled={!canEdit || createProduct.isPending || updateProduct.isPending}>
                 {t('حفظ', 'Save')}
               </Button>
             </form>

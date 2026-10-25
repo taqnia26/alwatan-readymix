@@ -8,6 +8,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { useLanguage } from '@/lib/i18n';
+import { useAdminAccess } from '@/hooks/use-admin-access';
 import { useToast } from '@/hooks/use-toast';
 import { useMediaUpload, validateFile, mediaUploadError } from '@/hooks/use-media-upload';
 import VideoPlayer from '@/components/VideoPlayer';
@@ -21,6 +22,7 @@ const size = (n: number) => (n > 1048576 ? `${(n / 1048576).toFixed(1)} MB` : `$
 
 export default function AdminMedia() {
   const { t, language, isRtl } = useLanguage();
+  const canEdit = useAdminAccess().canEdit('media');
   const { toast } = useToast();
   const qc = useQueryClient();
   const { data, isLoading, error, refetch } = useListMedia();
@@ -65,7 +67,7 @@ export default function AdminMedia() {
   return (
     <div className="space-y-5">
       <PageHead title={t('مكتبة الوسائط', 'Media library')} desc={t('صور حتى 10 م.ب، فيديو MP4/WebM حتى 100 م.ب، وPDF حتى 25 م.ب.', 'Images up to 10 MB, MP4/WebM video up to 100 MB, PDF up to 25 MB.')}
-        actions={<><input ref={ref} type="file" hidden onChange={onFile} accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm,application/pdf" /><Button onClick={() => ref.current?.click()} disabled={isUploading} className="gap-2" data-testid="button-upload-media">{isUploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <UploadCloud className="h-4 w-4" />}{isUploading ? `${Math.round(progress)}%` : t('رفع ملف', 'Upload file')}</Button></>} />
+        actions={<><input ref={ref} type="file" hidden onChange={onFile} accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm,application/pdf" /><Button onClick={() => ref.current?.click()} disabled={!canEdit || isUploading} className="gap-2" data-testid="button-upload-media">{isUploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <UploadCloud className="h-4 w-4" />}{isUploading ? `${Math.round(progress)}%` : t('رفع ملف', 'Upload file')}</Button></>} />
       <div className="flex flex-wrap gap-3">
         <div className="relative min-w-60 flex-1"><Search className="pointer-events-none absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" /><Input className="ps-9 bg-card" value={q} onChange={(e) => setQ(e.target.value)} placeholder={t('بحث بالاسم...', 'Search by name...')} /></div>
         <div className="flex rounded-lg border bg-card p-0.5">{filters.map(([k, l]) => <button key={k} onClick={() => setType(k)} className={`rounded-md px-3 py-1.5 text-sm font-bold ${type === k ? 'bg-primary text-white' : 'text-muted-foreground'}`}>{l}</button>)}</div>
@@ -87,7 +89,7 @@ export default function AdminMedia() {
                 <div className="mt-2 flex gap-1 border-t pt-2">
                   <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setPreview(m)} aria-label="Preview"><Eye className="h-4 w-4" /></Button>
                   <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => copy(m)} aria-label="Copy URL" data-testid={`button-copy-${m.id}`}><Copy className="h-4 w-4" /></Button>
-                  <Button variant="ghost" size="icon" className="ms-auto h-8 w-8 text-destructive" onClick={() => setToDelete(m)} aria-label="Delete" data-testid={`button-delete-${m.id}`}><Trash2 className="h-4 w-4" /></Button>
+                  <Button variant="ghost" size="icon" className="ms-auto h-8 w-8 text-destructive" onClick={() => setToDelete(m)} disabled={!canEdit} aria-label="Delete" data-testid={`button-delete-${m.id}`}><Trash2 className="h-4 w-4" /></Button>
                 </div>
               </div>
             </div>

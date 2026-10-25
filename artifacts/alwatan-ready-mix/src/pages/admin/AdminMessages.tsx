@@ -1,4 +1,5 @@
 import { useLanguage } from '@/lib/i18n';
+import { useAdminAccess } from '@/hooks/use-admin-access';
 import { useListContactMessages, useUpdateContactMessageStatus, useDeleteContactMessage } from '@workspace/api-client-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -12,6 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 
 export default function AdminMessages() {
   const { t, isRtl } = useLanguage();
+  const canEdit = useAdminAccess().canEdit('messages');
   const { data: paginatedData, isLoading } = useListContactMessages();
   const updateStatus = useUpdateContactMessageStatus();
   const deleteMessage = useDeleteContactMessage();
@@ -19,6 +21,7 @@ export default function AdminMessages() {
   const { toast } = useToast();
 
   const handleStatusChange = (id: number, status: string) => {
+    if (!canEdit) return;
     updateStatus.mutate(
       { id, data: { status } },
       {
@@ -31,6 +34,7 @@ export default function AdminMessages() {
   };
 
   const handleDelete = (id: number) => {
+    if (!canEdit) return;
     if (!confirm(t('هل أنت متأكد من الحذف؟', 'Are you sure you want to delete?'))) return;
     deleteMessage.mutate(
       { id },
@@ -91,7 +95,7 @@ export default function AdminMessages() {
                     <Select 
                       value={msg.status} 
                       onValueChange={(v: string) => handleStatusChange(msg.id, v)}
-                      disabled={updateStatus.isPending}
+                      disabled={!canEdit || updateStatus.isPending}
                     >
                       <SelectTrigger className={`w-28 h-8 text-xs font-bold border-0 ${
                         msg.status === 'new' ? 'bg-blue-100 text-blue-700' : 
@@ -133,7 +137,7 @@ export default function AdminMessages() {
                       variant="ghost" 
                       size="sm" 
                       className="text-destructive hover:text-destructive hover:bg-destructive/10 h-8 w-8 p-0 ml-1"
-                      onClick={() => handleDelete(msg.id)}
+                      onClick={() => handleDelete(msg.id)} disabled={!canEdit}
                     >
                       <Trash2 className="w-4 h-4" />
                     </Button>

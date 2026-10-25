@@ -5,6 +5,7 @@ import {
   useListAdminChats, getListAdminChatsQueryKey, useGetAdminChat, getGetAdminChatQueryKey, useReplyAdminChat, useMarkAdminChatRead, type ChatConversation,
 } from '@workspace/api-client-react';
 import { useLanguage } from '@/lib/i18n';
+import { useAdminAccess } from '@/hooks/use-admin-access';
 
 const when = (iso: string, lang: string) => {
   const d = new Date(iso);
@@ -13,6 +14,7 @@ const when = (iso: string, lang: string) => {
 
 export default function AdminChats() {
   const { t, language } = useLanguage();
+  const canEdit = useAdminAccess().canEdit('chats');
   const qc = useQueryClient();
   const [offset, setOffset] = useState(0);
   const [selected, setSelected] = useState(0);
@@ -112,10 +114,10 @@ export default function AdminChats() {
             <form data-testid="admin-chat-reply-form" onSubmit={submit} className="space-y-2 border-t p-3">
               {error && <p data-testid="admin-chat-error" role="alert" className="text-xs font-semibold text-destructive">{error}</p>}
               <div className="flex items-end gap-2">
-                <textarea data-testid="admin-chat-reply-input" value={draft} maxLength={2000} rows={2} onChange={(e) => setDraft(e.target.value)} aria-label={t('الرد', 'Reply')} placeholder={t('اكتب ردك', 'Write a reply')}
+                <textarea data-testid="admin-chat-reply-input" value={draft} maxLength={2000} rows={2} onChange={(e) => setDraft(e.target.value)} disabled={!canEdit} aria-label={t('الرد', 'Reply')} placeholder={t('اكتب ردك', 'Write a reply')}
                   onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); e.currentTarget.form?.requestSubmit(); } }}
                   className="w-full resize-none rounded-md border bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40" />
-                <button type="submit" data-testid="admin-chat-reply-submit" disabled={reply.isPending || !draft.trim()} className="inline-flex h-10 shrink-0 items-center gap-2 rounded-md bg-primary px-4 text-sm font-bold text-white disabled:opacity-50">
+                <button type="submit" data-testid="admin-chat-reply-submit" disabled={!canEdit || reply.isPending || !draft.trim()} className="inline-flex h-10 shrink-0 items-center gap-2 rounded-md bg-primary px-4 text-sm font-bold text-white disabled:opacity-50">
                   <Send className="h-4 w-4 rtl:-scale-x-100" />{reply.isPending ? t('جارٍ الإرسال', 'Sending') : t('إرسال', 'Send')}
                 </button>
               </div>

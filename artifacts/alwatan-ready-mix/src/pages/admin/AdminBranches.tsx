@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useLanguage } from '@/lib/i18n';
+import { useAdminAccess } from '@/hooks/use-admin-access';
 import { useListAdminBranches, useCreateBranch, useUpdateBranch, useDeleteBranch } from '@workspace/api-client-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
@@ -14,6 +15,19 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 
+const GOOGLE_HOSTS = /^(www\.)?google\.[a-z.]{2,6}$/i;
+export function isGoogleMapsUrl(v: string): boolean {
+  try {
+    const u = new URL(v);
+    if (u.protocol !== 'https:') return false;
+    const h = u.hostname.toLowerCase();
+    if (h === 'maps.app.goo.gl') return true;
+    if (h === 'goo.gl') return u.pathname.startsWith('/maps');
+    if (h === 'maps.google.com' || /^maps\.google\.[a-z.]{2,6}$/.test(h)) return true;
+    return GOOGLE_HOSTS.test(h) && (u.pathname === '/maps' || u.pathname.startsWith('/maps/'));
+  } catch { return false; }
+}
+
 const branchSchema = z.object({
   nameAr: z.string().min(1, 'Required'),
   nameEn: z.string().min(1, 'Required'),
@@ -25,12 +39,14 @@ const branchSchema = z.object({
   phone: z.string().min(1, 'Required'),
   workingHours: z.string().min(1, 'Required'),
   orderIndex: z.coerce.number().default(0),
+  googleMapsUrl: z.string().trim().max(2000, 'Max 2000 characters').refine((v) => v === '' || isGoogleMapsUrl(v), 'Must be a valid HTTPS Google Maps link').default(''),
 });
 
 type BranchFormValues = z.infer<typeof branchSchema>;
 
 export default function AdminBranches() {
   const { t, isRtl } = useLanguage();
+  const canEdit = useAdminAccess().canEdit('branches');
   const { data: branches, isLoading } = useListAdminBranches();
   const createBranch = useCreateBranch();
   const updateBranch = useUpdateBranch();
@@ -46,13 +62,13 @@ export default function AdminBranches() {
     resolver: zodResolver(branchSchema),
     defaultValues: {
       nameAr: '', nameEn: '', city: '', addressAr: '', addressEn: '',
-      lat: 24.7136, lng: 46.6753, phone: '', workingHours: '', orderIndex: 0
+      lat: 24.7136, lng: 46.6753, phone: '', workingHours: '', orderIndex: 0, googleMapsUrl: ''
     }
   });
 
   const openCreate = () => {
     setEditingId(null);
-    form.reset({ nameAr: '', nameEn: '', city: '', addressAr: '', addressEn: '', lat: 24.7136, lng: 46.6753, phone: '', workingHours: '', orderIndex: 0 });
+    form.reset({ nameAr: '', nameEn: '', city: '', addressAr: '', addressEn: '', lat: 24.7136, lng: 46.6753, phone: '', workingHours: '', orderIndex: 0, googleMapsUrl: '' });
     setIsDialogOpen(true);
   };
 
@@ -62,12 +78,13 @@ export default function AdminBranches() {
       nameAr: branch.nameAr, nameEn: branch.nameEn, city: branch.city,
       addressAr: branch.addressAr, addressEn: branch.addressEn,
       lat: branch.lat, lng: branch.lng, phone: branch.phone,
-      workingHours: branch.workingHours, orderIndex: branch.orderIndex
+      workingHours: branch.workingHours, orderIndex: branch.orderIndex, googleMapsUrl: branch.googleMapsUrl ?? ''
     });
     setIsDialogOpen(true);
   };
 
   const onSubmit = (data: BranchFormValues) => {
+    if (!canEdit) return;
     if (editingId) {
       updateBranch.mutate({ id: editingId, data }, {
         onSuccess: () => {
@@ -88,6 +105,7 @@ export default function AdminBranches() {
   };
 
   const handleDelete = (id: number) => {
+    if (!canEdit) return;
     if (!confirm(t('هل أنت متأكد من الحذف؟', 'Are you sure you want to delete?'))) return;
     deleteBranch.mutate({ id }, {
       onSuccess: () => {
@@ -105,7 +123,7 @@ export default function AdminBranches() {
         <div>
           <h2 className="text-xl font-bold text-secondary">{t('إدارة الفروع', 'Branches Management')}</h2>
         </div>
-        <Button onClick={openCreate} className="gap-2 bg-primary hover:bg-primary/90">
+        <Button onClick={openCreate} disabled={!canEdit} className="gap-2 bg-primary hover:bg-primary/90">
           <Plus className="w-4 h-4" />
           {t('إضافة فرع', 'Add Branch')}
         </Button>
@@ -130,10 +148,10 @@ export default function AdminBranches() {
                 <TableCell>{branch.city}</TableCell>
                 <TableCell className="font-mono">{branch.phone}</TableCell>
                 <TableCell className="text-end">
-                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => openEdit(branch)}>
+                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => openEdit(branch)} disabled={!canEdit}>
                     <Edit2 className="w-4 h-4" />
                   </Button>
-                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => handleDelete(branch.id)}>
+                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => handleDelete(branch.id)} disabled={!canEdit}>
                     <Trash2 className="w-4 h-4" />
                   </Button>
                 </TableCell>
@@ -196,11 +214,15 @@ export default function AdminBranches() {
                 )} />
               </div>
 
+              <FormField control={form.control} name="googleMapsUrl" render={({ field }) => (
+                <FormItem><FormLabel>{t('رابط خرائط جوجل (اختياري)', 'Google Maps link (optional)')}</FormLabel><FormControl><Input {...field} dir="ltr" maxLength={2000} placeholder="https://maps.app.goo.gl/..." data-testid="input-branch-google-maps-url" /></FormControl><FormMessage /></FormItem>
+              )} />
+
               <FormField control={form.control} name="workingHours" render={({ field }) => (
                 <FormItem><FormLabel>{t('ساعات العمل', 'Working Hours')}</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
               )} />
 
-              <Button type="submit" className="w-full" disabled={createBranch.isPending || updateBranch.isPending}>
+              <Button type="submit" className="w-full" data-testid="button-save-branch" disabled={!canEdit || createBranch.isPending || updateBranch.isPending}>
                 {t('حفظ', 'Save')}
               </Button>
             </form>

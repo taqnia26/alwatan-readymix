@@ -43,6 +43,7 @@ export function installStudioTransport() {
     const body = init?.body ? JSON.parse(String(init.body)) : undefined;
     requests.push({ path, method, body });
     const json = (data: unknown, status = 200) => new Response(JSON.stringify(data), { status, headers: { 'content-type': 'application/json' } });
+    if (path === '/api/auth/me' && method === 'GET') return json({ user: { id: 1, username: 'fixture-admin', name: 'Fixture admin', role: 'admin', permissions: [], isActive: true } });
     if (path === '/api/admin/studio' && method === 'GET') return json(stored);
     if (path === '/api/admin/studio' && method === 'PUT') {
       if (saveFailure) return json({ error: 'Fixture save failure' }, 500);

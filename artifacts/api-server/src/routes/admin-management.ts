@@ -2,6 +2,7 @@ import { Router, type IRouter } from "express";
 import { and, asc, desc, eq, ilike, or, sql } from "drizzle-orm";
 import {
   adminUsersTable,
+  adminSessionsTable,
   blogPostsTable,
   branchesTable,
   certificatesTable,
@@ -14,6 +15,8 @@ import {
 } from "@workspace/db";
 import { hashPassword, requireAdmin, requireSameOrigin } from "../lib/auth";
 import { ReplitConnectors } from "@replit/connectors-sdk";
+import { ACCESS_ROLES, ALL_PERMISSIONS, defaultPermissions } from "@workspace/api-zod";
+import { validGoogleMapsUrl } from "../lib/access-control";
 
 const router: IRouter = Router();
 const admin = [requireAdmin] as const;
@@ -39,7 +42,53 @@ function publicUser(row: typeof adminUsersTable.$inferSelect) {
   return {
     id: row.id, username: row.username, name: row.name, email: row.email,
     role: row.role, isActive: row.isActive, createdAt: asDate(row.createdAt), updatedAt: asDate(row.updatedAt),
+    permissions: row.permissions ?? [],
   };
+}
+
+function accessInput(body: Record<string, unknown>, existingRole = "custom") {
+  const role = body.role === undefined ? existingRole : body.role;
+  if (!ACCESS_ROLES.some(item => item.key === role)) return null;
+  const raw = body.permissions === undefined ? defaultPermissions(String(role)) : body.permissions;
+  if (!Array.isArray(raw) || raw.length > 40 || raw.some(value => typeof value !== "string" || !ALL_PERMISSIONS.includes(value))) return null;
+  const permissions = [...new Set(raw as string[])];
+  for (const value of [...permissions]) {
+    if (value.endsWith(":edit") && !permissions.includes(value.replace(":edit", ":view"))) permissions.push(value.replace(":edit", ":view"));
+  }
+  return { role: String(role), permissions };
+}
+
+class UserUpdateError extends Error {
+  constructor(public status: number, message: string) { super(message); }
+}
+async function updateUserSafely(callerId: number, id: number, updates: Partial<typeof adminUsersTable.$inferInsert>) {
+  return db.transaction(async tx => {
+    // Serialize privilege changes so two administrators cannot remove the
+    // last active administrator through concurrent requests.
+    await tx.execute(sql`SELECT pg_advisory_xact_lock(8726034)`);
+    const [caller] = await tx.select().from(adminUsersTable).where(eq(adminUsersTable.id, callerId));
+    if (!caller || !caller.isActive || caller.role !== "admin") throw new UserUpdateError(403, "إدارة المستخدمين لمدير النظام فقط");
+    const [existing] = await tx.select().from(adminUsersTable).where(eq(adminUsersTable.id, id));
+    if (!existing) throw new UserUpdateError(404, "المستخدم غير موجود");
+    if (id === callerId && ((updates.role !== undefined && updates.role !== existing.role) || updates.isActive === false)) {
+      throw new UserUpdateError(409, "لا يمكنك إيقاف حسابك أو تغيير دورك بنفسك");
+    }
+    if (existing.isActive && existing.role === "admin" && (updates.isActive === false || (updates.role !== undefined && updates.role !== "admin"))) {
+      const admins = await tx.select({ id: adminUsersTable.id }).from(adminUsersTable).where(and(eq(adminUsersTable.role, "admin"), eq(adminUsersTable.isActive, true)));
+      if (admins.length <= 1) throw new UserUpdateError(409, "يجب الإبقاء على مدير نظام نشط واحد على الأقل");
+    }
+    const [row] = await tx.update(adminUsersTable).set(updates).where(eq(adminUsersTable.id, id)).returning();
+    if (updates.passwordHash || updates.isActive === false) {
+      await tx.update(adminSessionsTable).set({ revokedAt: new Date() }).where(eq(adminSessionsTable.adminUserId, id));
+    }
+    return row;
+  });
+}
+function userMutationFailure(error: unknown, res: import("express").Response): boolean {
+  if (error instanceof UserUpdateError) { res.status(error.status).json({ error: error.message }); return true; }
+  const code = (error as { code?: string; cause?: { code?: string } })?.cause?.code ?? (error as { code?: string })?.code;
+  if (code === "23505") { res.status(409).json({ error: "اسم المستخدم أو البريد الإلكتروني مستخدم بالفعل" }); return true; }
+  return false;
 }
 
 router.get("/admin/branches", ...admin, async (_req, res): Promise<void> => {
@@ -48,6 +97,7 @@ router.get("/admin/branches", ...admin, async (_req, res): Promise<void> => {
 });
 router.post("/branches", ...write, async (req, res): Promise<void> => {
   const body = req.body ?? {};
+  if (!validGoogleMapsUrl(body.googleMapsUrl ?? "")) { res.status(400).json({ error: "رابط قوقل ماب غير صالح؛ استخدم رابط مشاركة HTTPS من Google Maps" }); return; }
   const required = ["nameAr", "nameEn", "addressAr", "addressEn", "city", "phone", "workingHours"];
   if (required.some((key) => !text(body[key]).trim()) || !Number.isFinite(Number(body.lat)) || !Number.isFinite(Number(body.lng))) {
     res.status(400).json({ error: "Invalid branch" }); return;
@@ -56,6 +106,7 @@ router.post("/branches", ...write, async (req, res): Promise<void> => {
     nameAr: text(body.nameAr), nameEn: text(body.nameEn), addressAr: text(body.addressAr),
     addressEn: text(body.addressEn), city: text(body.city), lat: Number(body.lat), lng: Number(body.lng),
     phone: text(body.phone), workingHours: text(body.workingHours), orderIndex: Number(body.orderIndex) || 0,
+    googleMapsUrl: text(body.googleMapsUrl).trim(),
   }).returning();
   res.status(201).json(mapBranch(row));
 });
@@ -64,6 +115,10 @@ router.patch("/branches/:id", ...write, async (req, res): Promise<void> => {
   if (!id) { res.status(400).json({ error: "Invalid branch id" }); return; }
   const body = req.body ?? {};
   const updates: Partial<typeof branchesTable.$inferInsert> = {};
+  if (body.googleMapsUrl !== undefined) {
+    if (!validGoogleMapsUrl(body.googleMapsUrl)) { res.status(400).json({ error: "رابط قوقل ماب غير صالح" }); return; }
+    updates.googleMapsUrl = body.googleMapsUrl.trim();
+  }
   for (const key of ["nameAr", "nameEn", "addressAr", "addressEn", "city", "phone", "workingHours"] as const) if (body[key] !== undefined) updates[key] = text(body[key]);
   for (const key of ["lat", "lng"] as const) if (body[key] !== undefined && Number.isFinite(Number(body[key]))) updates[key] = Number(body[key]);
   if (body.orderIndex !== undefined) updates.orderIndex = Number(body.orderIndex) || 0;
@@ -145,35 +200,50 @@ router.post("/admin/users", ...write, async (req, res): Promise<void> => {
   const body = req.body ?? {};
   const username = text(body.username).trim(), password = text(body.password);
   if (!username || !password || !text(body.email).trim()) { res.status(400).json({ error: "Username, email and password are required" }); return; }
+  const access = accessInput(body);
+  if (!access) { res.status(400).json({ error: "الدور أو الصلاحيات غير صالحة" }); return; }
+  try {
   const [row] = await db.insert(adminUsersTable).values({
     username, email: text(body.email).trim(), name: text(body.name, username),
-    role: text(body.role, "admin"), isActive: body.isActive !== false, passwordHash: await hashPassword(password),
+    ...access, isActive: body.isActive !== false, passwordHash: await hashPassword(password),
   }).returning();
   res.status(201).json(publicUser(row));
+  } catch (error) { if (!userMutationFailure(error, res)) throw error; }
 });
 router.patch("/admin/users/:id", ...write, async (req, res): Promise<void> => {
   const id = asId(req.params.id); if (!id) { res.status(400).json({ error: "Invalid user id" }); return; }
   const body = req.body ?? {};
   const updates: Partial<typeof adminUsersTable.$inferInsert> = {};
-  for (const key of ["username", "name", "email", "role"] as const) if (body[key] !== undefined) updates[key] = text(body[key]);
-  if (body.isActive !== undefined) updates.isActive = Boolean(body.isActive);
+  for (const key of ["username", "name", "email"] as const) if (body[key] !== undefined) {
+    if (typeof body[key] !== "string" || !body[key].trim()) { res.status(400).json({ error: "بيانات المستخدم غير صالحة" }); return; }
+    updates[key] = body[key].trim();
+  }
+  if (body.role !== undefined || body.permissions !== undefined) {
+    const [existing] = await db.select().from(adminUsersTable).where(eq(adminUsersTable.id, id));
+    if (!existing) { res.status(404).json({ error: "المستخدم غير موجود" }); return; }
+    const access = accessInput({ role: body.role ?? existing.role, permissions: body.permissions ?? existing.permissions }, existing.role);
+    if (!access) { res.status(400).json({ error: "الدور أو الصلاحيات غير صالحة" }); return; }
+    Object.assign(updates, access);
+  }
+  if (body.isActive !== undefined) {
+    if (typeof body.isActive !== "boolean") { res.status(400).json({ error: "حالة المستخدم غير صالحة" }); return; }
+    updates.isActive = body.isActive;
+  }
   if (body.password) updates.passwordHash = await hashPassword(text(body.password));
-  const [row] = await db.update(adminUsersTable).set(updates).where(eq(adminUsersTable.id, id)).returning();
-  if (!row) { res.status(404).json({ error: "Admin user not found" }); return; }
-  res.json(publicUser(row));
+  if (!Object.keys(updates).length) { res.status(400).json({ error: "لا توجد تعديلات" }); return; }
+  try { res.json(publicUser(await updateUserSafely(req.adminUser!.id, id, updates))); }
+  catch (error) { if (!userMutationFailure(error, res)) throw error; }
 });
 router.patch("/admin/users/:id/status", ...write, async (req, res): Promise<void> => {
   const id = asId(req.params.id); if (!id || typeof req.body?.isActive !== "boolean") { res.status(400).json({ error: "isActive is required" }); return; }
-  const [row] = await db.update(adminUsersTable).set({ isActive: req.body.isActive }).where(eq(adminUsersTable.id, id)).returning();
-  if (!row) { res.status(404).json({ error: "Admin user not found" }); return; }
-  res.json(publicUser(row));
+  try { res.json(publicUser(await updateUserSafely(req.adminUser!.id, id, { isActive: req.body.isActive }))); }
+  catch (error) { if (!userMutationFailure(error, res)) throw error; }
 });
 router.post("/admin/users/:id/password", ...write, async (req, res): Promise<void> => {
   const id = asId(req.params.id); const password = text(req.body?.password);
   if (!id || !password) { res.status(400).json({ error: "Password is required" }); return; }
-  const [row] = await db.update(adminUsersTable).set({ passwordHash: await hashPassword(password) }).where(eq(adminUsersTable.id, id)).returning();
-  if (!row) { res.status(404).json({ error: "Admin user not found" }); return; }
-  res.json(publicUser(row));
+  try { res.json(publicUser(await updateUserSafely(req.adminUser!.id, id, { passwordHash: await hashPassword(password) }))); }
+  catch (error) { if (!userMutationFailure(error, res)) throw error; }
 });
 
 router.get("/admin/quotes.csv", ...admin, async (req, res): Promise<void> => {

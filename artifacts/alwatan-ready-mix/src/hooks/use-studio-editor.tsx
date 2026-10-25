@@ -7,6 +7,7 @@ import {
 } from '@workspace/api-client-react';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/lib/i18n';
+import { useAdminAccess } from '@/hooks/use-admin-access';
 
 interface Editor {
   config: StudioConfig | null;
@@ -29,7 +30,8 @@ export function StudioEditorProvider({ children }: { children: ReactNode }) {
   const { t } = useLanguage();
   const { toast } = useToast();
   const qc = useQueryClient();
-  const q = useGetAdminStudio();
+  const { hasStudioView } = useAdminAccess();
+  const q = useGetAdminStudio({ query: { enabled: hasStudioView, queryKey: getGetAdminStudioQueryKey() } });
   const saveM = useSaveStudioDraft();
   const pubM = usePublishStudio();
   const [config, setConfig] = useState<StudioConfig | null>(null);

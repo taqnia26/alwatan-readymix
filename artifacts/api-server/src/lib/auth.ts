@@ -5,6 +5,7 @@ import { and, eq, isNull } from "drizzle-orm";
 import { adminSessionsTable, adminUsersTable, db, pageContentTable } from "@workspace/db";
 import { sql } from "drizzle-orm";
 import { getAdminFromToken, hashToken } from "./admin-session";
+import { mayUseAdminEndpoint } from "./access-control";
 export { getAdminFromToken } from "./admin-session";
 
 const scrypt = promisify(scryptCallback);
@@ -69,14 +70,15 @@ export async function revokeAdminSession(token: string | undefined): Promise<voi
 }
 
 export async function requireAdmin(req: Request, res: Response, next: NextFunction): Promise<void> {
+  res.setHeader("Cache-Control", "no-store");
   try {
     const user = await getAdminFromToken(req.cookies?.[ADMIN_SESSION_COOKIE]);
     if (!user || !user.isActive) {
       res.status(401).json({ error: "Authentication required" });
       return;
     }
-    if (user.role !== "admin") {
-      res.status(403).json({ error: "Administrator permission required" });
+    if (!mayUseAdminEndpoint(user, req.method, req.originalUrl || req.path)) {
+      res.status(403).json({ error: "ليس لديك صلاحية لتنفيذ هذا الإجراء" });
       return;
     }
     req.adminUser = user;

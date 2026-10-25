@@ -62,10 +62,10 @@ for (const [label, token, status, error] of [
   ["unknown session", "unknown", 401, "Authentication required"],
   ["expired session", "expired", 401, "Authentication required"],
   ["revoked session", "revoked", 401, "Authentication required"],
-  ["non-admin user", "visitor", 403, "Administrator permission required"],
+  ["non-admin user", "visitor", 403, "ليس لديك صلاحية لتنفيذ هذا الإجراء"],
   ["disabled admin", "disabled", 401, "Authentication required"],
-  ["missing permission", "unprivileged", 403, "Administrator permission required"],
-  ["editor role", "editor", 403, "Administrator permission required"],
+  ["missing permission", "unprivileged", 403, "ليس لديك صلاحية لتنفيذ هذا الإجراء"],
+  ["editor role", "editor", 403, "ليس لديك صلاحية لتنفيذ هذا الإجراء"],
   ["session service failure", "service-error", 401, "Authentication required"],
 ]) {
   test(`${label} cannot read, save or publish with the real authorization middleware`, async () => {

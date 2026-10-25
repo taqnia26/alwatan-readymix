@@ -17,5 +17,7 @@ export interface Branch {
   lng: number;
   phone: string;
   workingHours: string;
+  /** @maxLength 2000 */
+  googleMapsUrl?: string;
   orderIndex: number;
 }

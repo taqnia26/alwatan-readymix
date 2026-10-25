@@ -4,7 +4,7 @@ import express from "express";
 import studioRouter from "../src/routes/studio.ts";
 import alwatanRouter from "../src/routes/alwatan.ts";
 import { defaultStudio, readStudio, STUDIO_KEYS } from "../src/lib/site-studio.ts";
-import { resetFixture, snapshotFixture } from "./fixtures/studio-db.mjs";
+import { db as fixtureDb, resetFixture, snapshotFixture } from "./fixtures/studio-db.mjs";
 
 let server;
 let origin;
@@ -15,6 +15,11 @@ const legacyCopy = [
   { pageSlug: "about", sectionKey: "story", fieldKey: "content", valueAr: "قصتنا الأصلية", valueEn: "Original story" },
   { pageSlug: "about", sectionKey: "values", fieldKey: "vision", valueAr: "الرؤية القديمة", valueEn: "Legacy vision" },
 ];
+test("locked studio reads use the supplied transaction reader for every query", async () => {
+  let selections = 0;
+  await readStudio({ select(...args) { selections++; return fixtureDb.select(...args); } });
+  assert.equal(selections, 3);
+});
 before(async () => {
   const app = express();
   app.use(express.json({ limit: "2mb" }));

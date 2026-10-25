@@ -7,6 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useLanguage } from '@/lib/i18n';
 import { useStudioEditor } from '@/hooks/use-studio-editor';
+import { useAdminAccess } from '@/hooks/use-admin-access';
 import { moveItem, newPage, newSection, patchItem, removeItem, slugify, uid, pick, pageHref } from '@/lib/studio';
 import { Bi, Card, ConfirmDelete, Field, Media, RowControls, Toggle, Txt } from './studio-ui';
 import StudioSections from '@/components/public/StudioSections';
@@ -56,11 +57,12 @@ function SectionEditor({ s, i, count, onChange, onMove, onRemove }: { s: StudioP
 function PageEditor({ page, index, cfg, onBack }: { page: StudioPage; index: number; cfg: StudioConfig; onBack: () => void }) {
   const { t, language } = useLanguage();
   const { update } = useStudioEditor();
+  const canNav = useAdminAccess().canEdit('branding');
   const { toast } = useToast();
   const [preview, setPreview] = useState(false);
   const set = (p: Partial<StudioPage>) => update((c) => ({
     ...c, pages: patchItem(c.pages, index, p),
-    navigation: c.navigation.map(n => n.href === pageHref(page.slug) ? {
+    navigation: !canNav ? c.navigation : c.navigation.map(n => n.href === pageHref(page.slug) ? {
       ...n, href: pageHref(p.slug ?? page.slug),
       labelAr: n.labelAr === page.titleAr ? p.titleAr ?? n.labelAr : n.labelAr,
       labelEn: n.labelEn === page.titleEn ? p.titleEn ?? n.labelEn : n.labelEn,
@@ -79,7 +81,7 @@ function PageEditor({ page, index, cfg, onBack }: { page: StudioPage; index: num
         <Button variant="ghost" onClick={onBack} data-testid="button-back-pages">{t('رجوع للصفحات', 'Back to pages')}</Button>
         <div className="ms-auto flex flex-wrap gap-2">
           <Button variant="outline" size="sm" className="gap-1.5" onClick={() => setPreview(true)} data-testid="button-preview-page"><Eye className="h-4 w-4" />{t('معاينة المسودة', 'Preview draft')}</Button>
-          <Button variant="outline" size="sm" className="gap-1.5" onClick={addNav} disabled={inNav || !slugOk} data-testid="button-add-nav"><Navigation className="h-4 w-4" />{inNav ? t('في القائمة', 'In navigation') : t('إضافة للقائمة', 'Add to navigation')}</Button>
+          <Button variant="outline" size="sm" className="gap-1.5" onClick={addNav} disabled={!canNav || inNav || !slugOk} data-testid="button-add-nav"><Navigation className="h-4 w-4" />{inNav ? t('في القائمة', 'In navigation') : t('إضافة للقائمة', 'Add to navigation')}</Button>
         </div>
       </div>
       <Card className="space-y-4">
@@ -128,6 +130,7 @@ function PageEditor({ page, index, cfg, onBack }: { page: StudioPage; index: num
 export default function PageBuilder({ cfg }: { cfg: StudioConfig }) {
   const { t, language } = useLanguage();
   const { update } = useStudioEditor();
+  const canNav = useAdminAccess().canEdit('branding');
   const [sel, setSel] = useState<string | null>(null);
   const [creating, setCreating] = useState(false);
   const [slug, setSlug] = useState('');
@@ -158,7 +161,7 @@ export default function PageBuilder({ cfg }: { cfg: StudioConfig }) {
                 <div className="mt-1 flex items-center gap-2 text-xs"><span dir="ltr" className="text-muted-foreground">{pageHref(p.slug)}</span><span className={`rounded-full px-2 py-0.5 font-bold ${p.published ? 'bg-emerald-100 text-emerald-800' : 'bg-muted text-muted-foreground'}`}>{p.published ? t('منشورة', 'Published') : t('مسودة', 'Draft')}</span><span className="text-muted-foreground">{p.sections.length} {t('قسم', 'sections')}</span></div>
               </button>
               <Button variant="outline" size="sm" onClick={() => setSel(p.id)}>{t('تحرير', 'Edit')}</Button>
-              {p.slug !== 'about' && <ConfirmDelete title={t('حذف هذه الصفحة؟', 'Remove this page?')} onConfirm={() => update((c) => ({ ...c, pages: removeItem(c.pages, i), navigation: c.navigation.filter((n) => n.href !== pageHref(p.slug)) }))}>
+              {p.slug !== 'about' && <ConfirmDelete title={t('حذف هذه الصفحة؟', 'Remove this page?')} onConfirm={() => update((c) => ({ ...c, pages: removeItem(c.pages, i), navigation: canNav ? c.navigation.filter((n) => n.href !== pageHref(p.slug)) : c.navigation }))}>
                 {(open) => <Button variant="outline" size="icon" className="h-9 w-9 text-destructive" onClick={open} aria-label={t('حذف', 'Remove')}><span className="sr-only">x</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14" /></svg></Button>}
               </ConfirmDelete>}
             </div>

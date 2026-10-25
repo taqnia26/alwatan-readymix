@@ -9,4 +9,5 @@ export const db = {
   select(...args) { cmsCalls.push("select"); return storage.select(...args); },
   insert(...args) { cmsCalls.push("insert"); return storage.insert(...args); },
   transaction(fn) { cmsCalls.push("transaction"); return storage.transaction(() => fn(db)); },
+  execute(query) { cmsCalls.push("lock"); return storage.execute(query); },
 };

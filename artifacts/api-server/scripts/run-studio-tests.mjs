@@ -7,8 +7,8 @@ import { spawn } from "node:child_process";
 const directory = await mkdtemp(path.join(tmpdir(), "alwatan-studio-tests-"));
 try {
   const outputs = [];
-  for (const realAuthorization of [false, true]) {
-    const testFile = realAuthorization ? "studio-authorization.test.mjs" : "studio.test.mjs";
+  for (const testFile of ["studio.test.mjs", "studio-authorization.test.mjs", "access-control.test.mjs"]) {
+    const realAuthorization = testFile === "studio-authorization.test.mjs";
     const output = path.join(directory, testFile);
     outputs.push(output);
     await build({

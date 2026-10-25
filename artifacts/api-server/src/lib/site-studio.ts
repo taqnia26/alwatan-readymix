@@ -21,10 +21,12 @@ const HERO_IMAGES: Record<string, string> = {
   "/media/slider-fleet-night.png": "/media/hero-ai-night-plant.webp",
 };
 
-export async function defaultStudio(): Promise<StudioConfig> {
+type StudioReader = Pick<typeof db, "select">;
+
+export async function defaultStudio(reader: StudioReader = db): Promise<StudioConfig> {
   const [settings, content] = await Promise.all([
-    db.select().from(siteSettingsTable),
-    db.select().from(pageContentTable).where(inArray(pageContentTable.pageSlug, ["home", "about"])),
+    reader.select().from(siteSettingsTable),
+    reader.select().from(pageContentTable).where(inArray(pageContentTable.pageSlug, ["home", "about"])),
   ]);
   const values = Object.fromEntries(settings.map(row => [row.key, row.value]));
   const copy = (section: string, field: string, lang: "Ar" | "En", fallback: string) =>
@@ -120,10 +122,10 @@ export async function defaultStudio(): Promise<StudioConfig> {
   };
 }
 
-export async function readStudio() {
-  const rows = await db.select().from(siteSettingsTable).where(inArray(siteSettingsTable.key, Object.values(STUDIO_KEYS)));
+export async function readStudio(reader: StudioReader = db) {
+  const rows = await reader.select().from(siteSettingsTable).where(inArray(siteSettingsTable.key, Object.values(STUDIO_KEYS)));
   const values = Object.fromEntries(rows.map(row => [row.key, row.value]));
-  const initial = await defaultStudio();
+  const initial = await defaultStudio(reader);
   const decode = (key: string): StudioConfig => {
     if (!values[key]) return initial;
     const config = GetPublicStudioResponse.parse(JSON.parse(values[key]));

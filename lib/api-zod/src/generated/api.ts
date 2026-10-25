@@ -20,6 +20,10 @@ export const HealthCheckResponse = zod.object({
 /**
  * @summary Get the homepage content
  */
+export const getHomeResponseBranchesItemGoogleMapsUrlMax = 2000;
+
+
+
 export const GetHomeResponse = zod.object({
   "products": zod.array(zod.object({
   "id": zod.number(),
@@ -44,6 +48,7 @@ export const GetHomeResponse = zod.object({
   "lng": zod.number(),
   "phone": zod.string(),
   "workingHours": zod.string(),
+  "googleMapsUrl": zod.string().max(getHomeResponseBranchesItemGoogleMapsUrlMax).optional(),
   "orderIndex": zod.number()
 })),
   "certificates": zod.array(zod.object({
@@ -230,6 +235,10 @@ export const DeleteProductResponse = zod.void()
 /**
  * @summary List company branches
  */
+export const listBranchesResponseGoogleMapsUrlMax = 2000;
+
+
+
 export const ListBranchesResponseItem = zod.object({
   "id": zod.number(),
   "nameAr": zod.string(),
@@ -241,9 +250,14 @@ export const ListBranchesResponseItem = zod.object({
   "lng": zod.number(),
   "phone": zod.string(),
   "workingHours": zod.string(),
+  "googleMapsUrl": zod.string().max(listBranchesResponseGoogleMapsUrlMax).optional(),
   "orderIndex": zod.number()
 })
 export const ListBranchesResponse = zod.array(ListBranchesResponseItem)
+
+
+export const createBranchBodyGoogleMapsUrlMax = 2000;
+
 
 
 export const CreateBranchBody = zod.object({
@@ -256,8 +270,13 @@ export const CreateBranchBody = zod.object({
   "lng": zod.number(),
   "phone": zod.string(),
   "workingHours": zod.string(),
+  "googleMapsUrl": zod.string().max(createBranchBodyGoogleMapsUrlMax).optional(),
   "orderIndex": zod.number().optional()
 })
+
+export const createBranchResponseGoogleMapsUrlMax = 2000;
+
+
 
 export const CreateBranchResponse = zod.object({
   "id": zod.number(),
@@ -270,6 +289,7 @@ export const CreateBranchResponse = zod.object({
   "lng": zod.number(),
   "phone": zod.string(),
   "workingHours": zod.string(),
+  "googleMapsUrl": zod.string().max(createBranchResponseGoogleMapsUrlMax).optional(),
   "orderIndex": zod.number()
 })
 
@@ -639,6 +659,7 @@ export const LoginResponse = zod.object({
   "name": zod.string(),
   "email": zod.string(),
   "role": zod.string(),
+  "permissions": zod.array(zod.string()).optional(),
   "isActive": zod.boolean(),
   "createdAt": zod.coerce.date(),
   "updatedAt": zod.coerce.date()
@@ -657,11 +678,16 @@ export const GetAuthMeResponse = zod.object({
   "name": zod.string(),
   "email": zod.string(),
   "role": zod.string(),
+  "permissions": zod.array(zod.string()).optional(),
   "isActive": zod.boolean(),
   "createdAt": zod.coerce.date(),
   "updatedAt": zod.coerce.date()
 })
 })
+
+
+export const listAdminBranchesResponseGoogleMapsUrlMax = 2000;
+
 
 
 export const ListAdminBranchesResponseItem = zod.object({
@@ -675,6 +701,7 @@ export const ListAdminBranchesResponseItem = zod.object({
   "lng": zod.number(),
   "phone": zod.string(),
   "workingHours": zod.string(),
+  "googleMapsUrl": zod.string().max(listAdminBranchesResponseGoogleMapsUrlMax).optional(),
   "orderIndex": zod.number()
 })
 export const ListAdminBranchesResponse = zod.array(ListAdminBranchesResponseItem)
@@ -683,6 +710,10 @@ export const ListAdminBranchesResponse = zod.array(ListAdminBranchesResponseItem
 export const UpdateBranchParams = zod.object({
   "id": zod.coerce.number()
 })
+
+export const updateBranchBodyGoogleMapsUrlMax = 2000;
+
+
 
 export const UpdateBranchBody = zod.object({
   "nameAr": zod.string().optional(),
@@ -694,8 +725,13 @@ export const UpdateBranchBody = zod.object({
   "lng": zod.number().optional(),
   "phone": zod.string().optional(),
   "workingHours": zod.string().optional(),
+  "googleMapsUrl": zod.string().max(updateBranchBodyGoogleMapsUrlMax).optional(),
   "orderIndex": zod.number().optional()
 })
+
+export const updateBranchResponseGoogleMapsUrlMax = 2000;
+
+
 
 export const UpdateBranchResponse = zod.object({
   "id": zod.number(),
@@ -708,6 +744,7 @@ export const UpdateBranchResponse = zod.object({
   "lng": zod.number(),
   "phone": zod.string(),
   "workingHours": zod.string(),
+  "googleMapsUrl": zod.string().max(updateBranchResponseGoogleMapsUrlMax).optional(),
   "orderIndex": zod.number()
 })
 
@@ -793,11 +830,16 @@ export const ListAdminUsersResponseItem = zod.object({
   "name": zod.string(),
   "email": zod.string(),
   "role": zod.string(),
+  "permissions": zod.array(zod.string()).optional(),
   "isActive": zod.boolean(),
   "createdAt": zod.coerce.date(),
   "updatedAt": zod.coerce.date()
 })
 export const ListAdminUsersResponse = zod.array(ListAdminUsersResponseItem)
+
+
+export const createAdminUserBodyPermissionsMax = 40;
+
 
 
 export const CreateAdminUserBody = zod.object({
@@ -806,6 +848,7 @@ export const CreateAdminUserBody = zod.object({
   "email": zod.string(),
   "password": zod.string(),
   "role": zod.string().optional(),
+  "permissions": zod.array(zod.string()).max(createAdminUserBodyPermissionsMax).optional(),
   "isActive": zod.boolean().optional()
 })
 
@@ -815,6 +858,7 @@ export const CreateAdminUserResponse = zod.object({
   "name": zod.string(),
   "email": zod.string(),
   "role": zod.string(),
+  "permissions": zod.array(zod.string()).optional(),
   "isActive": zod.boolean(),
   "createdAt": zod.coerce.date(),
   "updatedAt": zod.coerce.date()
@@ -825,12 +869,17 @@ export const UpdateAdminUserParams = zod.object({
   "id": zod.coerce.number()
 })
 
+export const updateAdminUserBodyPermissionsMax = 40;
+
+
+
 export const UpdateAdminUserBody = zod.object({
   "username": zod.string().optional(),
   "name": zod.string().optional(),
   "email": zod.string().optional(),
   "password": zod.string().optional(),
   "role": zod.string().optional(),
+  "permissions": zod.array(zod.string()).max(updateAdminUserBodyPermissionsMax).optional(),
   "isActive": zod.boolean().optional()
 })
 
@@ -840,6 +889,7 @@ export const UpdateAdminUserResponse = zod.object({
   "name": zod.string(),
   "email": zod.string(),
   "role": zod.string(),
+  "permissions": zod.array(zod.string()).optional(),
   "isActive": zod.boolean(),
   "createdAt": zod.coerce.date(),
   "updatedAt": zod.coerce.date()
@@ -860,6 +910,7 @@ export const SetAdminUserStatusResponse = zod.object({
   "name": zod.string(),
   "email": zod.string(),
   "role": zod.string(),
+  "permissions": zod.array(zod.string()).optional(),
   "isActive": zod.boolean(),
   "createdAt": zod.coerce.date(),
   "updatedAt": zod.coerce.date()
@@ -880,6 +931,7 @@ export const ChangeAdminUserPasswordResponse = zod.object({
   "name": zod.string(),
   "email": zod.string(),
   "role": zod.string(),
+  "permissions": zod.array(zod.string()).optional(),
   "isActive": zod.boolean(),
   "createdAt": zod.coerce.date(),
   "updatedAt": zod.coerce.date()
